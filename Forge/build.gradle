@@ -1,0 +1,38 @@
+
+plugins {
+    id 'net.minecraftforge.gradle' version '6.0.16'
+}
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+group = 'oc.cil.ocreloaded'
+version = mod_version
+
+archivesBaseName = 'ocreloaded'
+
+minecraft {
+     mappings channel: mappings_channel, version: mappings_version
+
+     runs {
+        client {
+            workingDirectory project.file('run')
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+}
+
+processResources {
+    filesMatching(['META-INF/mods.toml']) {
+        expand 'version': mod_version
+    }
+}
+
+sourceSets.each {
+    def dir = layout.buildDirectory.dir("sourceSets/$it.name")
+    it.output.resourcesDir = dir
+    it.java.destinationDirectory = dir
+}

@@ -1,0 +1,14 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven {
+            name = "MinecraftForge"
+            url = "https://maven.minecraftforge.net/"
+        }
+    }
+}
+
+rootProject.name = 'OpenComputersReloaded'
+
+include(":Core")
+include(":Forge")
