@@ -1,0 +1,22 @@
+{
+    "schemaVersion": 1,
+    "id": "ocreloaded",
+    "version": "${version}",
+    "name": "${name}",
+    "description": "Bring programmable computers to Minecraft! This mod is a complete rewrite of OpenComputers, but with extra goodies.",
+    "authors": ["EveryOS", "Authors of OpenComputers (Sangar, payonel, Vexatos, and others)"],
+    "license": "See LICENSE.txt file",
+    "icon": "assets/opencomputers/textures/gui/logo.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "li.cil.ocreloaded.OCReloaded"
+        ]
+    },
+    "depends": {
+		"fabricloader": ">=0.15.0",
+		"minecraft": "~1.20.4",
+		"java": ">=17",
+		"fabric-api": "*"
+	}
+}

@@ -1,10 +1,15 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        mavenCentral()
         maven {
             name = "MinecraftForge"
             url = "https://maven.minecraftforge.net/"
         }
+        maven {
+			name = 'Fabric'
+			url = 'https://maven.fabricmc.net/'
+		}
     }
 }
 
@@ -12,3 +17,4 @@ rootProject.name = 'OpenComputersReloaded'
 
 include(":Core")
 include(":Forge")
+include(":Fabric")

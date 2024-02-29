@@ -2,7 +2,8 @@ Different parts of this repository are governed by different licenses
 
 -------------------------------------------------------------------------------
 
-Except where specified otherwise, Java Source Files are governed by the following license:
+Except where specified otherwise, the license below applies to the following:
+* Java Source Files
 
 MIT License
 
@@ -28,7 +29,8 @@ SOFTWARE.
 
 -------------------------------------------------------------------------------
 
-Lua source files within assets are governed by the following license, unless specified otherwise:
+Except where specified otherwise, the license below applies to the following:
+* Lua Source Files
 
 Copyright (c) 2013-2015 Florian "Sangar" Nücke
 
