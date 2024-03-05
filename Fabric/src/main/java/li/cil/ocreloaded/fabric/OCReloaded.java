@@ -1,4 +1,4 @@
-package li.cil.ocreloaded;
+package li.cil.ocreloaded.fabric;
 
 import net.fabricmc.api.ModInitializer;
 

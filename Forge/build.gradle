@@ -1,4 +1,3 @@
-
 plugins {
     id 'net.minecraftforge.gradle' version '6.0.16'
 }
@@ -23,6 +22,8 @@ minecraft {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    implementation project(':Minecraft')
 }
 
 processResources {
@@ -30,6 +31,13 @@ processResources {
         expand 'version': mod_version
     }
 }
+
+task copyResources(type: Copy) {
+    from project(':Resources').file('src/main/resources')
+    into file('build/sourceSets/main')
+}
+
+processResources.dependsOn copyResources
 
 sourceSets.each {
     def dir = layout.buildDirectory.dir("sourceSets/$it.name")
