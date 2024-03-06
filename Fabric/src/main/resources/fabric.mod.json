@@ -10,7 +10,7 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "li.cil.ocreloaded.OCReloaded"
+            "li.cil.ocreloaded.fabric.OCReloaded"
         ]
     },
     "depends": {

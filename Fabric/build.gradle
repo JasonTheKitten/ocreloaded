@@ -40,3 +40,9 @@ processResources {
 	}
 }
 
+task copyResources(type: Copy) {
+    from project(':Resources').file('src/main/resources')
+    into file('build/resources/main')
+}
+
+processResources.dependsOn copyResources
