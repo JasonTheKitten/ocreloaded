@@ -4,6 +4,8 @@ package li.cil.ocreloaded.forge;
 import li.cil.ocreloaded.minecraft.OCReloadedCommon;
 import li.cil.ocreloaded.minecraft.block.BlockInfo;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,14 +26,21 @@ public class OCReloaded {
     @SubscribeEvent
     public void register(RegisterEvent event) {
         event.register(ForgeRegistries.Keys.BLOCKS, this::registerBlocks);
+        event.register(ForgeRegistries.Keys.ITEMS, this::registerBlockItems);
     }
 
     private void registerBlocks(RegisterEvent.RegisterHelper<Block> helper) {
         for (BlockInfo blockInfo : common.getBlockInfos()) {
-            helper.register(
-                new ResourceLocation(OCReloadedCommon.MOD_ID, blockInfo.blockName()),
-                convertToBlock(blockInfo)
-            );
+            ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, blockInfo.blockName());
+            helper.register(blockResource, convertToBlock(blockInfo));
+        }
+    }
+
+    private void registerBlockItems(RegisterEvent.RegisterHelper<Item> helper) {
+        for (BlockInfo blockInfo : common.getBlockInfos()) {
+            ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, blockInfo.blockName());
+            Block block = ForgeRegistries.BLOCKS.getValue(blockResource);
+            helper.register(blockResource, new BlockItem(block, new Item.Properties()));
         }
     }
 
