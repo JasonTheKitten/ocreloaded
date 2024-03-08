@@ -2,8 +2,9 @@ Different parts of this repository are governed by different licenses
 
 -------------------------------------------------------------------------------
 
-Except where specified otherwise, the license below applies to the following:
-* Java Source Files
+Because this code contains both original code as well as ports of code from the
+original OpenComputers mod, Java source files are dual licensed under both the
+license below (Jason) and the license below that (Sangar).
 
 MIT License
 
@@ -32,6 +33,7 @@ SOFTWARE.
 Except where specified otherwise, the license below applies to the following:
 * Lua Source Files
 * Asset Files, excluding those covered in the below licenses
+* Anywhere else this license has been specified to apply
 
 Copyright (c) 2013-2015 Florian "Sangar" Nücke
 
