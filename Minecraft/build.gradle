@@ -1,6 +1,17 @@
 plugins {
-    id 'java'
+	id 'dev.architectury.loom' version '1.4.386'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+group = 'oc.cil.ocreloaded'
+version = mod_version
+
+archivesBaseName = 'ocreloaded'
+
+loom {
+    splitEnvironmentSourceSets()
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+}

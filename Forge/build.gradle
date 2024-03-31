@@ -2,18 +2,15 @@ plugins {
     id 'net.minecraftforge.gradle' version '6.0.16'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
 group = 'oc.cil.ocreloaded'
 version = mod_version
 
 archivesBaseName = 'ocreloaded'
 
 minecraft {
-     mappings channel: mappings_channel, version: mappings_version
+    mappings channel: mappings_channel, version: mappings_version
 
-     runs {
+    runs {
         client {
             workingDirectory project.file('run')
         }
@@ -23,7 +20,7 @@ minecraft {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation project(':Minecraft')
+    compileOnly project(':Minecraft')
 }
 
 processResources {
@@ -38,6 +35,13 @@ task copyResources(type: Copy) {
 }
 
 processResources.dependsOn copyResources
+
+task copyMinecraftClasses(type: Copy) {
+    from { project(':Minecraft').sourceSets.main.output.classesDirs }
+    into { sourceSets.main.output.classesDirs.singleFile }
+}
+compileJava.dependsOn(copyMinecraftClasses)
+copyMinecraftClasses.dependsOn(':Minecraft:compileJava')
 
 sourceSets.each {
     def dir = layout.buildDirectory.dir("sourceSets/$it.name")

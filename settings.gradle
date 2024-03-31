@@ -7,6 +7,10 @@ pluginManagement {
             url = "https://maven.minecraftforge.net/"
         }
         maven {
+            name = 'Architectury'
+            url = 'https://maven.architectury.dev/'
+        }
+        maven {
 			name = 'Fabric'
 			url = 'https://maven.fabricmc.net/'
 		}
@@ -15,8 +19,4 @@ pluginManagement {
 
 rootProject.name = 'OpenComputersReloaded'
 
-include(":Core")
-include(":Minecraft")
-include(":Forge")
-include(":Fabric")
-include(":Resources")
+include ":Core", ":Minecraft", ":Forge", ":Fabric", ":Resources"

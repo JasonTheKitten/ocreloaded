@@ -2,7 +2,7 @@ package li.cil.ocreloaded.forge;
 
 
 import li.cil.ocreloaded.minecraft.OCReloadedCommon;
-import li.cil.ocreloaded.minecraft.block.BlockInfo;
+import li.cil.ocreloaded.minecraft.OCReloadedCommon.BlockEntry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -12,7 +12,6 @@ import net.minecraft.world.item.CreativeModeTab.Output;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -38,22 +37,18 @@ public class OCReloaded {
     }
 
     private void registerBlocks(RegisterEvent.RegisterHelper<Block> helper) {
-        for (BlockInfo blockInfo : common.getBlockInfos()) {
-            ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, blockInfo.blockName());
-            helper.register(blockResource, convertToBlock(blockInfo));
+        for (BlockEntry blockEntry : common.getBlocks()) {
+            ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, blockEntry.name());
+            helper.register(blockResource, blockEntry.block());
         }
     }
 
     private void registerBlockItems(RegisterEvent.RegisterHelper<Item> helper) {
-        for (BlockInfo blockInfo : common.getBlockInfos()) {
-            ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, blockInfo.blockName());
+        for (BlockEntry blockEntry : common.getBlocks()) {
+            ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, blockEntry.name());
             Block block = ForgeRegistries.BLOCKS.getValue(blockResource);
             helper.register(blockResource, new BlockItem(block, new Item.Properties()));
         }
-    }
-
-    private Block convertToBlock(BlockInfo blockInfo) {
-        return new Block(BlockBehaviour.Properties.of().strength(blockInfo.strength()));
     }
 
     private void registerCreativeTab(RegisterEvent.RegisterHelper<CreativeModeTab> event) {
@@ -70,11 +65,9 @@ public class OCReloaded {
     }
 
     private void addCreativeTabItems(Output output) {
-        for (BlockInfo blockInfo : common.getBlockInfos()) {
-            if (blockInfo.hasCreativeTab()) {
-                ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, blockInfo.blockName());
-                Block block = ForgeRegistries.BLOCKS.getValue(blockResource);
-                output.accept(block);
+        for (BlockEntry blockEntry : common.getBlocks()) {
+            if (blockEntry.hasCreativeTab()) {
+                output.accept(blockEntry.block());
             }
         }
     }

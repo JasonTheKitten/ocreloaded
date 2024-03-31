@@ -1,10 +1,9 @@
 package li.cil.ocreloaded.fabric;
 
 import li.cil.ocreloaded.minecraft.OCReloadedCommon;
-import li.cil.ocreloaded.minecraft.block.BlockInfo;
+import li.cil.ocreloaded.minecraft.OCReloadedCommon.BlockEntry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -26,18 +25,12 @@ public class OCReloaded implements ModInitializer {
     }
 
     private void registerBlocks() {
-        for (BlockInfo blockInfo : common.getBlockInfos()) {
-            Block block = convertToBlock(blockInfo);
-            Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(OCReloadedCommon.MOD_ID, blockInfo.blockName()), block);
+        for (BlockEntry blockEntry : common.getBlocks()) {
+            Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(OCReloadedCommon.MOD_ID, blockEntry.name()), blockEntry.block());
 
-            BlockItem blockItem = new BlockItem(block, new BlockItem.Properties());
-            Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(OCReloadedCommon.MOD_ID, blockInfo.blockName()), blockItem);
+            BlockItem blockItem = new BlockItem(blockEntry.block(), new BlockItem.Properties());
+            Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(OCReloadedCommon.MOD_ID, blockEntry.name()), blockItem);
         }
-    }
-
-    private Block convertToBlock(BlockInfo blockInfo) {
-        return new Block(FabricBlockSettings.create()
-            .strength(blockInfo.strength()));
     }
 
      private void registerCreativeTab() {
@@ -53,9 +46,9 @@ public class OCReloaded implements ModInitializer {
     }
 
     private void addCreativeTabItems(Output output) {
-        for (BlockInfo blockInfo : common.getBlockInfos()) {
+        for (BlockEntry blockInfo : common.getBlocks()) {
             if (blockInfo.hasCreativeTab()) {
-                ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, blockInfo.blockName());
+                ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, blockInfo.name());
                 Block block = BuiltInRegistries.BLOCK.get(blockResource);
                 output.accept(block);
             }

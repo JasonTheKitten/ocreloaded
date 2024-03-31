@@ -1,9 +1,6 @@
 plugins {
-	id 'fabric-loom' version '1.5-SNAPSHOT'
+	id 'dev.architectury.loom' version '1.4.386'
 }
-
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
 
 group = 'oc.cil.ocreloaded'
 version = mod_version
@@ -46,3 +43,10 @@ task copyResources(type: Copy) {
 }
 
 processResources.dependsOn copyResources
+
+task copyMinecraftClasses(type: Copy) {
+    from { project(':Minecraft').sourceSets.main.output.classesDirs }
+    into { sourceSets.main.output.classesDirs.singleFile }
+}
+compileJava.dependsOn(copyMinecraftClasses)
+copyMinecraftClasses.dependsOn(':Minecraft:compileJava')
