@@ -1,8 +1,9 @@
 package li.cil.ocreloaded.forge;
 
 
+import li.cil.ocreloaded.minecraft.Entities;
+import li.cil.ocreloaded.minecraft.Entities.Named;
 import li.cil.ocreloaded.minecraft.OCReloadedCommon;
-import li.cil.ocreloaded.minecraft.OCReloadedCommon.BlockEntry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -37,17 +38,16 @@ public class OCReloaded {
     }
 
     private void registerBlocks(RegisterEvent.RegisterHelper<Block> helper) {
-        for (BlockEntry blockEntry : common.getBlocks()) {
-            ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, blockEntry.name());
-            helper.register(blockResource, blockEntry.block());
+        for (Named<Block> namedBlock : Entities.ALL_BLOCKS) {
+            ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, namedBlock.name());
+            helper.register(blockResource, namedBlock.entity());
         }
     }
 
     private void registerBlockItems(RegisterEvent.RegisterHelper<Item> helper) {
-        for (BlockEntry blockEntry : common.getBlocks()) {
-            ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, blockEntry.name());
-            Block block = ForgeRegistries.BLOCKS.getValue(blockResource);
-            helper.register(blockResource, new BlockItem(block, new Item.Properties()));
+        for (Named<BlockItem> namedBlockItem : Entities.ALL_BLOCK_ITEMS) {
+            ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, namedBlockItem.name());
+            helper.register(blockResource, namedBlockItem.entity());
         }
     }
 
@@ -65,10 +65,8 @@ public class OCReloaded {
     }
 
     private void addCreativeTabItems(Output output) {
-        for (BlockEntry blockEntry : common.getBlocks()) {
-            if (blockEntry.hasCreativeTab()) {
-                output.accept(blockEntry.block());
-            }
+        for (Named<Block> namedBlock : Entities.ALL_BLOCKS) {
+            output.accept(namedBlock.entity());
         }
     }
 
