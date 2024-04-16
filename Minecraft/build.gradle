@@ -1,8 +1,8 @@
 plugins {
-	id 'dev.architectury.loom' version '1.4.386'
+	id 'dev.architectury.loom' version '1.6-SNAPSHOT'
 }
 
-group = 'oc.cil.ocreloaded'
+group = 'li.cil.ocreloaded'
 version = mod_version
 
 archivesBaseName = 'ocreloaded'
@@ -14,4 +14,20 @@ loom {
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.officialMojangMappings()
+}
+
+configurations {
+    clientImplementation.extendsFrom implementation
+    clientImplementation {
+        canBeResolved = true
+        canBeConsumed = true
+    }
+}
+
+task clientJar(type: Jar) {
+    from sourceSets.client.output
+}
+
+artifacts {
+    clientImplementation clientJar
 }

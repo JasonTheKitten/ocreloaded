@@ -1,4 +1,4 @@
-package li.cil.ocreloaded.minecraft;
+package li.cil.ocreloaded.minecraft.common;
 
 public class OCReloadedCommon {
 

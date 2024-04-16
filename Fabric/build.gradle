@@ -2,7 +2,7 @@ plugins {
 	id 'dev.architectury.loom' version '1.4.386'
 }
 
-group = 'oc.cil.ocreloaded'
+group = 'li.cil.ocreloaded'
 version = mod_version
 
 archivesBaseName = 'ocreloaded'
@@ -46,6 +46,9 @@ processResources.dependsOn copyResources
 
 task copyMinecraftClasses(type: Copy) {
     from { project(':Minecraft').sourceSets.main.output.classesDirs }
+    into { sourceSets.main.output.classesDirs.singleFile }
+
+    from { project(':Minecraft').sourceSets.client.output.classesDirs }
     into { sourceSets.main.output.classesDirs.singleFile }
 }
 compileJava.dependsOn(copyMinecraftClasses)

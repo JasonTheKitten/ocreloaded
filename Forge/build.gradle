@@ -1,37 +1,44 @@
 plugins {
-    id 'net.minecraftforge.gradle' version '6.0.16'
+	id 'dev.architectury.loom' version '1.6-SNAPSHOT'
 }
 
-group = 'oc.cil.ocreloaded'
+group = 'li.cil.ocreloaded'
 version = mod_version
 
-archivesBaseName = 'ocreloaded'
+base {
+  archivesName = 'ocreloaded'
+}
 
-minecraft {
-    mappings channel: mappings_channel, version: mappings_version
+loom {
+    silentMojangMappingsLicense()
 
-    runs {
-        client {
-            workingDirectory project.file('run')
+    mods {
+        ocreloaded {
+            sourceSet sourceSets.main
         }
     }
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    mappings loom.officialMojangMappings()
 
-    compileOnly project(':Minecraft')
+    implementation project(':Minecraft')
+    implementation project(path: ':Minecraft', configuration: 'clientImplementation')
 }
 
 processResources {
-    filesMatching(['META-INF/mods.toml']) {
+    inputs.property "version", mod_version
+
+	filesMatching(['META-INF/mods.toml']) {
         expand 'version': mod_version
     }
 }
 
 task copyResources(type: Copy) {
     from project(':Resources').file('src/main/resources')
-    into file('build/sourceSets/main')
+    into file('build/resources/main')
 }
 
 processResources.dependsOn copyResources
@@ -39,12 +46,9 @@ processResources.dependsOn copyResources
 task copyMinecraftClasses(type: Copy) {
     from { project(':Minecraft').sourceSets.main.output.classesDirs }
     into { sourceSets.main.output.classesDirs.singleFile }
+
+    from { project(':Minecraft').sourceSets.client.output.classesDirs }
+    into { sourceSets.main.output.classesDirs.singleFile }
 }
 compileJava.dependsOn(copyMinecraftClasses)
 copyMinecraftClasses.dependsOn(':Minecraft:compileJava')
-
-sourceSets.each {
-    def dir = layout.buildDirectory.dir("sourceSets/$it.name")
-    it.output.resourcesDir = dir
-    it.java.destinationDirectory = dir
-}

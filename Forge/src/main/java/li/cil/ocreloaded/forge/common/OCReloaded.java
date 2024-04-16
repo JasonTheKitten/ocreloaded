@@ -1,19 +1,23 @@
-package li.cil.ocreloaded.forge;
+package li.cil.ocreloaded.forge.common;
 
 
-import li.cil.ocreloaded.minecraft.Entities;
-import li.cil.ocreloaded.minecraft.Entities.Named;
-import li.cil.ocreloaded.minecraft.OCReloadedCommon;
+import li.cil.ocreloaded.forge.client.OCReloadedClient;
+import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
+import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
+import li.cil.ocreloaded.minecraft.common.registry.Named;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTab.Output;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -22,32 +26,39 @@ import net.minecraftforge.registries.RegisterEvent;
 @Mod(OCReloadedCommon.MOD_ID)
 public class OCReloaded {
 
-    private final OCReloadedCommon common = new OCReloadedCommon();
-
     public OCReloaded() {
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> OCReloadedClient::new);
     }
 
     @SubscribeEvent
     public void register(RegisterEvent event) {
         event.register(ForgeRegistries.Keys.BLOCKS, this::registerBlocks);
         event.register(ForgeRegistries.Keys.ITEMS, this::registerBlockItems);
+        event.register(ForgeRegistries.Keys.MENU_TYPES, this::registerMenuTypes);
         event.register(
             ResourceKey.createRegistryKey(new ResourceLocation("minecraft", "creative_mode_tab")),
             this::registerCreativeTab);
     }
 
     private void registerBlocks(RegisterEvent.RegisterHelper<Block> helper) {
-        for (Named<Block> namedBlock : Entities.ALL_BLOCKS) {
+        for (Named<Block> namedBlock : CommonRegistered.ALL_BLOCKS) {
             ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, namedBlock.name());
             helper.register(blockResource, namedBlock.entity());
         }
     }
 
     private void registerBlockItems(RegisterEvent.RegisterHelper<Item> helper) {
-        for (Named<BlockItem> namedBlockItem : Entities.ALL_BLOCK_ITEMS) {
+        for (Named<BlockItem> namedBlockItem : CommonRegistered.ALL_BLOCK_ITEMS) {
             ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, namedBlockItem.name());
             helper.register(blockResource, namedBlockItem.entity());
+        }
+    }
+
+    private void registerMenuTypes(RegisterEvent.RegisterHelper<MenuType<?>> event) {
+        for (Named<MenuType<?>> namedMenuType : CommonRegistered.ALL_MENU_TYPES) {
+            ResourceLocation menuTypeResource = new ResourceLocation(OCReloadedCommon.MOD_ID, namedMenuType.name());
+            event.register(menuTypeResource, namedMenuType.entity());
         }
     }
 
@@ -65,7 +76,7 @@ public class OCReloaded {
     }
 
     private void addCreativeTabItems(Output output) {
-        for (Named<Block> namedBlock : Entities.ALL_BLOCKS) {
+        for (Named<Block> namedBlock : CommonRegistered.ALL_BLOCKS) {
             output.accept(namedBlock.entity());
         }
     }
