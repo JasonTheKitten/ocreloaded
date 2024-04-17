@@ -20,8 +20,8 @@ loom {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${minecraft_version}"
-    forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    minecraft "com.mojang:minecraft:${forge_minecraft_version}"
+    forge "net.minecraftforge:forge:${forge_minecraft_version}-${forge_version}"
     mappings loom.officialMojangMappings()
 
     implementation project(':Minecraft')

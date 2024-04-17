@@ -1,5 +1,5 @@
 plugins {
-	id 'dev.architectury.loom' version '1.4.386'
+	id 'dev.architectury.loom' version '1.6-SNAPSHOT'
 }
 
 group = 'li.cil.ocreloaded'
@@ -19,7 +19,7 @@ loom {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${minecraft_version}"
+    minecraft "com.mojang:minecraft:${fabric_minecraft_version}"
     mappings loom.officialMojangMappings()
 
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"

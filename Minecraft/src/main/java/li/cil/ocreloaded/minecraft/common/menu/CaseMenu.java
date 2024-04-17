@@ -1,22 +1,60 @@
 package li.cil.ocreloaded.minecraft.common.menu;
 
+import java.util.List;
+
+import li.cil.ocreloaded.minecraft.common.assets.SharedTextures;
 import li.cil.ocreloaded.minecraft.common.container.BasicContainer;
+import li.cil.ocreloaded.minecraft.common.item.CPUItem;
+import li.cil.ocreloaded.minecraft.common.item.CardItem;
+import li.cil.ocreloaded.minecraft.common.item.EepromItem;
+import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
+import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.DataSlot;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 public class CaseMenu extends AbstractContainerMenu {
 
-    private Inventory inventory;
-    private Container container;
+    private static final List<List<ComponentSlotEntry>> COMPONENT_SLOTS = List.of(
+        List.of(
+            new ComponentSlotEntry(0, 0, CardItem.class, SharedTextures.CARD_ICON, 1),
+            new ComponentSlotEntry(0, 1, CardItem.class, SharedTextures.CARD_ICON, 1),
+            new ComponentSlotEntry(1, 0, CPUItem.class, SharedTextures.CPU_ICON, 1),
+            new ComponentSlotEntry(1, 1, MemoryItem.class, SharedTextures.MEMORY_ICON, 1),
+            new ComponentSlotEntry(1, 2, MemoryItem.class, SharedTextures.MEMORY_ICON, 1),
+            new ComponentSlotEntry(2, 0, HardDiskItem.class, SharedTextures.HDD_ICON, 1)
+        )
+    );
 
-    public CaseMenu(int id, Inventory inventory) {
+    private final Inventory inventory;
+    private final Container container;
+    private final DataSlot power;
+
+    private final int tier;
+
+    public CaseMenu(int id, Inventory inventory, FriendlyByteBuf data) {
         super(CommonRegistered.CASE_MENU_TYPE, id);
+
         this.inventory = inventory;
-        this.container = new BasicContainer(9);
+        this.container = new BasicContainer(10);
+        this.power = addDataSlot(DataSlot.standalone());
+        this.tier = data.readInt();
+
+        addContainerSlots();
+        addInventorySlots();
+        addHotbarSlots();
+    }
+
+    public DataSlot getPower() {
+        return power;
     }
 
     @Override
@@ -28,5 +66,40 @@ public class CaseMenu extends AbstractContainerMenu {
     public boolean stillValid(Player player) {
         return inventory.stillValid(player);
     }
+
+    private void addContainerSlots() {
+        this.addSlot(new ComponentSlot(container, 0, 48, 34, EepromItem.class, SharedTextures.EEPROM_ICON));
+
+        List<ComponentSlotEntry> componentSlots = COMPONENT_SLOTS.get(tier - 1);
+        for (ComponentSlotEntry entry : componentSlots) {
+            addComponentSlot(entry);
+        }
+    }
+
+    private void addInventorySlots() {
+        for (int y = 0; y < 3; y++) {
+            for (int x = 0; x < 9; x++) {
+                this.addSlot(new Slot(inventory, x + (1 + y) * 9, 8 + x * 18, 84 + y * 18));
+            }
+        }
+    }
+
+    private void addHotbarSlots() {
+        for (int x = 0; x < 9; x++) {
+            this.addSlot(new Slot(inventory, x, 8 + x * 18, 142));
+        }
+    }
+
+    private void addComponentSlot(ComponentSlotEntry entry) {
+        int x = entry.x();
+        int y = entry.y();
+        this.addSlot(new ComponentSlot(
+            container, 1 + x + y * 3,
+            98 + x * 22, 17 + y * 18,
+            entry.itemClass(), entry.texture(),
+            entry.teir()));
+    }
+
+    private record ComponentSlotEntry(int x, int y, Class<? extends Item> itemClass, ResourceLocation texture, int teir) { }
     
 }

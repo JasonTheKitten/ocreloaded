@@ -1,4 +1,6 @@
 {
     "title.ocreloaded": "OpenComputers Reloaded",
-    "block.ocreloaded.case": "Case"
+    "block.ocreloaded.case": "Case",
+    "item.ocreloaded.eeprom": "EEPROM",
+    "gui.ocreloaded.computer": "Computer"
 }

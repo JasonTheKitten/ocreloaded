@@ -9,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTab.Output;
 import net.minecraft.world.item.Item;
@@ -34,7 +33,7 @@ public class OCReloaded {
     @SubscribeEvent
     public void register(RegisterEvent event) {
         event.register(ForgeRegistries.Keys.BLOCKS, this::registerBlocks);
-        event.register(ForgeRegistries.Keys.ITEMS, this::registerBlockItems);
+        event.register(ForgeRegistries.Keys.ITEMS, this::registerItems);
         event.register(ForgeRegistries.Keys.MENU_TYPES, this::registerMenuTypes);
         event.register(
             ResourceKey.createRegistryKey(new ResourceLocation("minecraft", "creative_mode_tab")),
@@ -48,10 +47,10 @@ public class OCReloaded {
         }
     }
 
-    private void registerBlockItems(RegisterEvent.RegisterHelper<Item> helper) {
-        for (Named<BlockItem> namedBlockItem : CommonRegistered.ALL_BLOCK_ITEMS) {
-            ResourceLocation blockResource = new ResourceLocation(OCReloadedCommon.MOD_ID, namedBlockItem.name());
-            helper.register(blockResource, namedBlockItem.entity());
+    private void registerItems(RegisterEvent.RegisterHelper<Item> helper) {
+        for (Named<Item> namedItem : CommonRegistered.ALL_ITEMS) {
+            ResourceLocation itemResource = new ResourceLocation(OCReloadedCommon.MOD_ID, namedItem.name());
+            helper.register(itemResource, namedItem.entity());
         }
     }
 
@@ -76,7 +75,7 @@ public class OCReloaded {
     }
 
     private void addCreativeTabItems(Output output) {
-        for (Named<Block> namedBlock : CommonRegistered.ALL_BLOCKS) {
+        for (Named<Item> namedBlock : CommonRegistered.ALL_ITEMS) {
             output.accept(namedBlock.entity());
         }
     }
