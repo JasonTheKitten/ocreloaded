@@ -2,14 +2,18 @@ package li.cil.ocreloaded.minecraft.common.menu;
 
 import java.util.List;
 
+import li.cil.ocreloaded.minecraft.common.PlatformSpecific;
 import li.cil.ocreloaded.minecraft.common.assets.SharedTextures;
 import li.cil.ocreloaded.minecraft.common.container.BasicContainer;
+import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
 import li.cil.ocreloaded.minecraft.common.item.CPUItem;
 import li.cil.ocreloaded.minecraft.common.item.CardItem;
 import li.cil.ocreloaded.minecraft.common.item.EepromItem;
 import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
 import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
+import li.cil.ocreloaded.minecraft.common.network.power.PowerNetworkMessage;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -34,6 +38,7 @@ public class CaseMenu extends AbstractContainerMenu {
         )
     );
 
+    private final CaseBlockEntity blockEntity;
     private final Inventory inventory;
     private final Container container;
     private final DataSlot power;
@@ -43,28 +48,46 @@ public class CaseMenu extends AbstractContainerMenu {
     public CaseMenu(int id, Inventory inventory, FriendlyByteBuf data) {
         super(CommonRegistered.CASE_MENU_TYPE, id);
 
+        this.blockEntity = (CaseBlockEntity) inventory.player.level().getBlockEntity(data.readBlockPos());
         this.inventory = inventory;
-        this.container = new BasicContainer(10);
+        this.container = new BasicContainer(blockEntity.getItems(), () -> blockEntity.setChanged());
         this.power = addDataSlot(DataSlot.standalone());
         this.tier = data.readInt();
+
+        power.set(blockEntity.isPowered() ? 1 : 0);
 
         addContainerSlots();
         addInventorySlots();
         addHotbarSlots();
     }
 
-    public DataSlot getPower() {
-        return power;
+    @Override
+    public boolean stillValid(Player player) {
+        return inventory.stillValid(player);
     }
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
-        return ItemStack.EMPTY;
+        return ComponentQuickMove.quickMoveStack(slots, player, index);
     }
 
     @Override
-    public boolean stillValid(Player player) {
-        return inventory.stillValid(player);
+    public void broadcastChanges() {
+        super.broadcastChanges();
+        int newPower = blockEntity.isPowered() ? 1 : 0;
+        power.checkAndClearUpdateFlag();
+        if (power.get() != newPower) {
+            power.set(newPower);
+        }
+    }
+
+    public DataSlot getPower() {
+        return power;
+    }
+
+    public void sendServerPowerState() {
+        BlockPos targetBlockPos = blockEntity.getBlockPos();
+        PlatformSpecific.get().getNetworkInterface().messageServer(new PowerNetworkMessage(targetBlockPos, power.get() == 1));
     }
 
     private void addContainerSlots() {

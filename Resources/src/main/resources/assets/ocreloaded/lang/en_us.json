@@ -2,5 +2,7 @@
     "title.ocreloaded": "OpenComputers Reloaded",
     "block.ocreloaded.case": "Case",
     "item.ocreloaded.eeprom": "EEPROM",
-    "gui.ocreloaded.computer": "Computer"
+    "gui.ocreloaded.case": "Computer",
+    "gui.ocreloaded.case.power_on": "Turn on\n§7Use an Analyzer to troubleshoot errors.§r",
+    "gui.ocreloaded.case.power_off": "Turn off"
 }

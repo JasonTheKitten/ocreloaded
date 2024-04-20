@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.common;
 
+import li.cil.ocreloaded.minecraft.common.network.NetworkInterface;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -7,6 +9,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 public interface PlatformSpecificImp {
     
@@ -14,7 +20,11 @@ public interface PlatformSpecificImp {
 
     <T extends AbstractContainerMenu> MenuType<T> createMenuTypeWithData(MenuConstructorWithData<Integer, Inventory, T> constructor);
 
+    <T extends BlockEntity> BlockEntityType<T> createBlockEntityType(BlockEntityConstructor<T> constructor, Block block);
+
     void openMenu(Player player, NetworkMenuProvider menuProvider);
+
+    NetworkInterface getNetworkInterface();
 
     public static interface MenuConstructor<T, U, V extends AbstractContainerMenu> {
         V get(T t, U u);
@@ -24,10 +34,12 @@ public interface PlatformSpecificImp {
         V get(T t, U u, FriendlyByteBuf data);
     }
 
-    public static interface NetworkMenuProvider extends MenuProvider {
-        
-        void writeData(Player player, FriendlyByteBuf data);
+    public static interface BlockEntityConstructor<T extends BlockEntity> {
+        T get(BlockPos blockPos, BlockState blockState);
+    }
 
+    public static interface NetworkMenuProvider extends MenuProvider {
+        void writeData(Player player, FriendlyByteBuf data);
     }
 
 }

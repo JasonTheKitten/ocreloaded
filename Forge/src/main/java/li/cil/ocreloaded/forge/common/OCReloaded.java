@@ -3,6 +3,9 @@ package li.cil.ocreloaded.forge.common;
 
 import li.cil.ocreloaded.forge.client.OCReloadedClient;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
+import li.cil.ocreloaded.minecraft.common.PlatformSpecific;
+import li.cil.ocreloaded.minecraft.common.network.NetworkHandler;
+import li.cil.ocreloaded.minecraft.common.network.NetworkInterface;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import li.cil.ocreloaded.minecraft.common.registry.Named;
 import net.minecraft.network.chat.Component;
@@ -14,6 +17,7 @@ import net.minecraft.world.item.CreativeModeTab.Output;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -28,6 +32,7 @@ public class OCReloaded {
     public OCReloaded() {
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> OCReloadedClient::new);
+        registerNetworkHandlers(PlatformSpecific.get().getNetworkInterface());
     }
 
     @SubscribeEvent
@@ -35,6 +40,7 @@ public class OCReloaded {
         event.register(ForgeRegistries.Keys.BLOCKS, this::registerBlocks);
         event.register(ForgeRegistries.Keys.ITEMS, this::registerItems);
         event.register(ForgeRegistries.Keys.MENU_TYPES, this::registerMenuTypes);
+        event.register(ForgeRegistries.Keys.BLOCK_ENTITY_TYPES, this::registerBlockEntities);
         event.register(
             ResourceKey.createRegistryKey(new ResourceLocation("minecraft", "creative_mode_tab")),
             this::registerCreativeTab);
@@ -61,6 +67,13 @@ public class OCReloaded {
         }
     }
 
+    private void registerBlockEntities(RegisterEvent.RegisterHelper<BlockEntityType<?>> event) {
+        for (Named<BlockEntityType<?>> namedBlockEntity : CommonRegistered.ALL_BLOCK_ENTITIES) {
+            ResourceLocation blockEntityResource = new ResourceLocation(OCReloadedCommon.MOD_ID, namedBlockEntity.name());
+            event.register(blockEntityResource, namedBlockEntity.entity());
+        }
+    }
+
     private void registerCreativeTab(RegisterEvent.RegisterHelper<CreativeModeTab> event) {
         CreativeModeTab tab = CreativeModeTab.builder()
             .icon(() ->
@@ -77,6 +90,12 @@ public class OCReloaded {
     private void addCreativeTabItems(Output output) {
         for (Named<Item> namedBlock : CommonRegistered.ALL_ITEMS) {
             output.accept(namedBlock.entity());
+        }
+    }
+
+    private void registerNetworkHandlers(NetworkInterface networkInterface) {
+        for (NetworkHandler<?> handler : OCReloadedCommon.NETWORK_HANDLERS) {
+            networkInterface.registerNetworkHandler(handler);
         }
     }
 

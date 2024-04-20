@@ -1,6 +1,8 @@
 package li.cil.ocreloaded.fabric.common;
 
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
+import li.cil.ocreloaded.minecraft.common.PlatformSpecific;
+import li.cil.ocreloaded.minecraft.common.network.NetworkHandler;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import li.cil.ocreloaded.minecraft.common.registry.Named;
 import net.fabricmc.api.ModInitializer;
@@ -15,6 +17,7 @@ import net.minecraft.world.item.CreativeModeTab.Output;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class OCReloaded implements ModInitializer {
 
@@ -22,6 +25,7 @@ public class OCReloaded implements ModInitializer {
     public void onInitialize() {
         registerBlocks();
         registerCreativeTab();
+        registerNetworkHandlers();
     }
 
     private void registerBlocks() {
@@ -33,7 +37,10 @@ public class OCReloaded implements ModInitializer {
         }
         for (Named<MenuType<?>> namedMenu : CommonRegistered.ALL_MENU_TYPES) {
             Registry.register(BuiltInRegistries.MENU, new ResourceLocation(OCReloadedCommon.MOD_ID, namedMenu.name()), namedMenu.entity());
-        }   
+        }
+        for (Named<BlockEntityType<?>> namedBlockEntity : CommonRegistered.ALL_BLOCK_ENTITIES) {
+            Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, new ResourceLocation(OCReloadedCommon.MOD_ID, namedBlockEntity.name()), namedBlockEntity.entity());
+        }
     }
 
      private void registerCreativeTab() {
@@ -51,6 +58,12 @@ public class OCReloaded implements ModInitializer {
     private void addCreativeTabItems(Output output) {
         for (Named<Item> namedItem : CommonRegistered.ALL_ITEMS) {
             output.accept(namedItem.entity());
+        }
+    }
+
+    private void registerNetworkHandlers() {
+        for (NetworkHandler<?> handler : OCReloadedCommon.NETWORK_HANDLERS) {
+            PlatformSpecific.get().getNetworkInterface().registerNetworkHandler(handler);
         }
     }
 

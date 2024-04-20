@@ -4,12 +4,14 @@ import java.util.List;
 
 import li.cil.ocreloaded.minecraft.common.PlatformSpecific;
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
+import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
 import li.cil.ocreloaded.minecraft.common.item.EepromItem;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class CommonRegistered {
@@ -19,6 +21,8 @@ public class CommonRegistered {
     public static final Block CASE_BLOCK = new CaseBlock(DEFAULT_BLOCK_PROPERTIES);
 
     public static final BlockItem CASE_BLOCK_ITEM = new BlockItem(CASE_BLOCK, new BlockItem.Properties());
+
+    public static final BlockEntityType<CaseBlockEntity> CASE_BLOCK_ENTITY = PlatformSpecific.get().createBlockEntityType(CaseBlockEntity::new, CASE_BLOCK);
 
     public static final Item EEPROM = new EepromItem(new Item.Properties());
 
@@ -35,6 +39,10 @@ public class CommonRegistered {
 
     public static final List<Named<MenuType<?>>> ALL_MENU_TYPES = List.of(
         new Named<>(CASE_MENU_TYPE, "case")
+    );
+
+    public static final List<Named<BlockEntityType<?>>> ALL_BLOCK_ENTITIES = List.of(
+        new Named<>(CASE_BLOCK_ENTITY, "case")
     );
 
 }

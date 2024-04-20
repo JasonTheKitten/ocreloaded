@@ -1,21 +1,18 @@
 package li.cil.ocreloaded.minecraft.common.container;
 
-import java.util.List;
-import java.util.ArrayList;
-
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class BasicContainer implements Container {
 
-    private final List<ItemStack> items;
+    private final NonNullList<ItemStack> items;
+    private final Runnable onChanged;
 
-    public BasicContainer(int size) {
-        this.items = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            this.items.add(ItemStack.EMPTY);
-        }
+    public BasicContainer(NonNullList<ItemStack> items, Runnable onChanged) {
+        this.items = items;
+        this.onChanged = onChanged;
     }
 
     @Override
@@ -73,7 +70,7 @@ public class BasicContainer implements Container {
 
     @Override
     public void setChanged() {
-        // No-op
+        this.onChanged.run();
     }
 
     @Override

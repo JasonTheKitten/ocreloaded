@@ -1,0 +1,8 @@
+{
+    "parent": "ocreloaded:block/case",
+    "textures": {
+        "east": "ocreloaded:block/case_side_running",
+        "south": "ocreloaded:block/case_back_running",
+        "west": "ocreloaded:block/case_side_running"
+    }
+}

@@ -1,5 +1,6 @@
 {
     "variants": {
-      "": { "model": "ocreloaded:block/case" }
+      "running=true": { "model": "ocreloaded:block/case_running" },
+      "running=false": { "model": "ocreloaded:block/case" }
     }
   }

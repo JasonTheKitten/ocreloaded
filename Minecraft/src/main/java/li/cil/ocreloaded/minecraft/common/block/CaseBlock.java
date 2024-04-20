@@ -1,8 +1,11 @@
 package li.cil.ocreloaded.minecraft.common.block;
 
+import com.mojang.serialization.MapCodec;
+
 import io.netty.buffer.Unpooled;
 import li.cil.ocreloaded.minecraft.common.PlatformSpecific;
 import li.cil.ocreloaded.minecraft.common.PlatformSpecificImp.NetworkMenuProvider;
+import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,16 +17,24 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
-public class CaseBlock extends Block implements NetworkMenuProvider {
+public class CaseBlock extends BaseEntityBlock {
 
-    private static final Component MENU_NAME = Component.translatable("gui.ocreloaded.computer");
+    public static BooleanProperty RUNNING = BooleanProperty.create("running");
+
+    private static final Component MENU_NAME = Component.translatable("gui.ocreloaded.case");
 
     public CaseBlock(Properties properties) {
         super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(RUNNING, false));
     }
 
     @Override
@@ -40,25 +51,57 @@ public class CaseBlock extends Block implements NetworkMenuProvider {
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
-        FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
-        writeData(player, data);
-        return new CaseMenu(windowId, playerInventory, data);
-    }
-
-    @Override
     public MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
-        return this;
+        return new CaseNetworkMenuProvider(pos);
     }
 
     @Override
-    public Component getDisplayName() {
-        return MENU_NAME;
+    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+        return new CaseBlockEntity(blockPos, blockState);
     }
 
     @Override
-    public void writeData(Player player, FriendlyByteBuf data) {
-        data.writeInt(1);
+    public RenderShape getRenderShape(BlockState blockState) {
+      return RenderShape.MODEL;
+   }
+
+   @Override
+   protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+      builder.add(RUNNING);
+   }
+
+    // This should be an override, but the IDE doesn't recognize it as such.
+    public MapCodec<? extends BaseEntityBlock> codec() {
+        throw new UnsupportedOperationException("Unimplemented method 'codec'");
     }
     
+    private class CaseNetworkMenuProvider implements NetworkMenuProvider {
+
+        private final BlockPos blockPos;
+
+        public CaseNetworkMenuProvider(BlockPos blockPos) {
+            this.blockPos = blockPos;
+        }
+        
+        @Override
+        public Component getDisplayName() {
+            return MENU_NAME;
+        }
+
+        @Override
+        public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
+            FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
+            writeData(player, data);
+            return new CaseMenu(windowId, playerInventory, data);
+        }
+
+        @Override
+        public void writeData(Player player, FriendlyByteBuf data) {
+            data.writeBlockPos(this.blockPos);
+            data.writeInt(1);
+        }
+
+    }
+
+
 }

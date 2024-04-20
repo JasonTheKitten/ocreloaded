@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.client.screen;
 
+import java.util.List;
+
 import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -28,7 +30,7 @@ public class CaseScreen extends AbstractContainerScreen<CaseMenu> {
     @Override
     protected void init() {
         super.init();
-        this.powerButton = new ButtonWidget(this.leftPos + 70, this.topPos + 33, 18, 18, ClientTextures.POWER_BUTTON);
+        this.powerButton = new ButtonWidget(this.leftPos + 70, this.topPos + 33, 18, 18, ClientTextures.POWER_BUTTON, this.menu.getPower(), this.menu::sendServerPowerState);
         this.addRenderableWidget(this.powerButton);
     }
 
@@ -46,6 +48,11 @@ public class CaseScreen extends AbstractContainerScreen<CaseMenu> {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
+        if (this.powerButton.isHovered() && this.menu.getPower().get() == 0) {
+            guiGraphics.renderComponentTooltip(this.font, List.of(Component.translatable("gui.ocreloaded.case.power_on")), mouseX, mouseY);
+        } else if (this.powerButton.isHovered() && this.menu.getPower().get() == 1) {
+            guiGraphics.renderComponentTooltip(this.font, List.of(Component.translatable("gui.ocreloaded.case.power_off")), mouseX, mouseY);
+        }
     }
 
     private void drawSlotBackgrounds(GuiGraphics guiGraphics, int x, int y) {
