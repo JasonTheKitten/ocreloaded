@@ -66,7 +66,11 @@ public class ComponentQuickMove {
             if (slot.hasItem() && slot.getItem().getCount() >= slot.getMaxStackSize()) continue;
 
             // If and a target is already found, and target is a component slot, then must be of a lower tier than the chosen target
-            if (isComponentSlot && target != -1 && ((ComponentSlot) slot).getTier() >= ((ComponentSlot) slots.get(target)).getTier()) continue;
+            if (
+                isComponentSlot
+                && target != -1 
+                && ((ComponentSlot) slot).getTier() >= ((ComponentSlot) slots.get(target)).getTier()
+            ) continue;
             target = i;
         }
 
