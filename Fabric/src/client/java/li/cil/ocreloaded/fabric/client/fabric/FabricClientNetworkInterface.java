@@ -21,11 +21,10 @@ public class FabricClientNetworkInterface implements NetworkInterface {
     @Override
     public void registerNetworkHandler(NetworkHandler<?> handler) {
         handlers.put(handler.getType(), handler);
-        System.out.println("Registering client handler for " + handler.getType());
         ClientPlayNetworking.registerGlobalReceiver(new ResourceLocation(OCReloadedCommon.MOD_ID, handler.getType()), (client, handler1, buf, responseSender) -> {
             client.execute(() -> {
                 NetworkMessage message = handler.decode(buf);
-                ClientNetworkMessageContext context = new ClientNetworkMessageContext();
+                ClientNetworkMessageContext context = new ClientNetworkMessageContext(client.player);
                 handleClientMessage(handler, message, context);
             });
         });

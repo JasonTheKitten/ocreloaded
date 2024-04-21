@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.common.network;
 
-public record ClientNetworkMessageContext() {
+import net.minecraft.world.entity.player.Player;
+
+public record ClientNetworkMessageContext(Player player) {
     
 }

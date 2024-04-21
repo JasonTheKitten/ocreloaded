@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.common;
 
+import java.util.Set;
+
 import li.cil.ocreloaded.minecraft.common.network.NetworkInterface;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -21,6 +23,8 @@ public interface PlatformSpecificImp {
     <T extends AbstractContainerMenu> MenuType<T> createMenuTypeWithData(MenuConstructorWithData<Integer, Inventory, T> constructor);
 
     <T extends BlockEntity> BlockEntityType<T> createBlockEntityType(BlockEntityConstructor<T> constructor, Block block);
+
+    <T extends BlockEntity> BlockEntityType<T> createBlockEntityType(BlockEntityConstructor<T> constructor, Set<Block> blocks);
 
     void openMenu(Player player, NetworkMenuProvider menuProvider);
 

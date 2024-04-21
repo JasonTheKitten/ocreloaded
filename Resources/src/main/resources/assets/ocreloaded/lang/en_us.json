@@ -1,8 +1,11 @@
 {
     "title.ocreloaded": "OpenComputers Reloaded",
-    "block.ocreloaded.case": "Case",
+    "block.ocreloaded.case1": "Computer Case (Tier 1)",
+    "block.ocreloaded.case2": "Computer Case (Tier 2)",
+    "block.ocreloaded.case3": "Computer Case (Tier 3)",
+    "block.ocreloaded.casecreative": "Computer Case (Creative)",
     "item.ocreloaded.eeprom": "EEPROM",
     "gui.ocreloaded.case": "Computer",
-    "gui.ocreloaded.case.power_on": "Turn on\n§7Use an Analyzer to troubleshoot errors.§r",
+    "gui.ocreloaded.case.power_on": "Turn on\nUse an Analyzer to troubleshoot errors.",
     "gui.ocreloaded.case.power_off": "Turn off"
 }

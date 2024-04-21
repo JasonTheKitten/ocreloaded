@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.forge.common;
 
+import java.util.Set;
+
 import li.cil.ocreloaded.forge.common.network.ForgeNetworkInterface;
 import li.cil.ocreloaded.minecraft.common.PlatformSpecificImp;
 import li.cil.ocreloaded.minecraft.common.network.NetworkInterface;
@@ -13,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.common.extensions.IForgeServerPlayer;
+
 public class ForgePlatformSpecificImp implements PlatformSpecificImp {
 
     private final NetworkInterface networkInterface = new ForgeNetworkInterface();
@@ -29,6 +32,12 @@ public class ForgePlatformSpecificImp implements PlatformSpecificImp {
     @Override
     public <T extends BlockEntity> BlockEntityType<T> createBlockEntityType(BlockEntityConstructor<T> constructor, Block block) {
         return BlockEntityType.Builder.of(constructor::get, block).build(null);
+    }
+
+    @SuppressWarnings("null")
+    @Override
+    public <T extends BlockEntity> BlockEntityType<T> createBlockEntityType(BlockEntityConstructor<T> constructor, Set<Block> blocks) {
+        return BlockEntityType.Builder.of(constructor::get, blocks.toArray(new Block[0])).build(null);
     }
 
     @Override

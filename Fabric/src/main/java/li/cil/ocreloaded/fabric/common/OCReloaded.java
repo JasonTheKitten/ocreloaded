@@ -46,7 +46,7 @@ public class OCReloaded implements ModInitializer {
      private void registerCreativeTab() {
         CreativeModeTab tab = FabricItemGroup.builder()
             .icon(() ->
-                new ItemStack(BuiltInRegistries.BLOCK.get(new ResourceLocation(OCReloadedCommon.MOD_ID, "case"))))
+                new ItemStack(BuiltInRegistries.BLOCK.get(new ResourceLocation(OCReloadedCommon.MOD_ID, "case1"))))
             .title(Component.translatable("title.ocreloaded"))
             .displayItems((params, output) -> {
                 addCreativeTabItems(output);

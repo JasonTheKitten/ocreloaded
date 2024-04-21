@@ -77,7 +77,7 @@ public class OCReloaded {
     private void registerCreativeTab(RegisterEvent.RegisterHelper<CreativeModeTab> event) {
         CreativeModeTab tab = CreativeModeTab.builder()
             .icon(() ->
-                new ItemStack(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(OCReloadedCommon.MOD_ID, "case"))))
+                new ItemStack(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(OCReloadedCommon.MOD_ID, "case1"))))
             .title(Component.translatable("title.ocreloaded"))
             .displayItems((params, output) -> {
                 addCreativeTabItems(output);

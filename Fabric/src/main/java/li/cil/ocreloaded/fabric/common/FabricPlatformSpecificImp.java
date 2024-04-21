@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.fabric.common;
 
+import java.util.Set;
+
 import li.cil.ocreloaded.fabric.common.network.FabricNetworkInterface;
 import li.cil.ocreloaded.minecraft.common.PlatformSpecificImp;
 import li.cil.ocreloaded.minecraft.common.network.NetworkInterface;
@@ -35,6 +37,12 @@ public class FabricPlatformSpecificImp implements PlatformSpecificImp {
     public <T extends BlockEntity> BlockEntityType<T> createBlockEntityType(BlockEntityConstructor<T> constructor, Block block) {
         return BlockEntityType.Builder.of(constructor::get, block).build(null);
     }
+
+    @Override
+    public <T extends BlockEntity> BlockEntityType<T> createBlockEntityType(BlockEntityConstructor<T> constructor, Set<Block> blocks) {
+        return BlockEntityType.Builder.of(constructor::get, blocks.toArray(new Block[0])).build(null);
+    }
+
 
     @Override
     public void openMenu(Player player, NetworkMenuProvider menuProvider) {

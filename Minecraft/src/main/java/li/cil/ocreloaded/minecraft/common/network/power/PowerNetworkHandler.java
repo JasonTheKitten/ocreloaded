@@ -1,7 +1,9 @@
 package li.cil.ocreloaded.minecraft.common.network.power;
 
+import li.cil.ocreloaded.minecraft.common.PlatformSpecific;
 import li.cil.ocreloaded.minecraft.common.WorldUtil;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
+import li.cil.ocreloaded.minecraft.common.network.ClientNetworkMessageContext;
 import li.cil.ocreloaded.minecraft.common.network.NetworkHandler;
 import li.cil.ocreloaded.minecraft.common.network.ServerNetworkMessageContext;
 import net.minecraft.core.BlockPos;
@@ -33,6 +35,16 @@ public class PowerNetworkHandler implements NetworkHandler<PowerNetworkMessage> 
     }
 
     @Override
+    public void handleClient(PowerNetworkMessage message, ClientNetworkMessageContext context) {
+        BlockPos position = message.position();
+        Level level = context.player().level();
+        if (!level.isLoaded(position)) return;
+        if (level.getBlockEntity(position) instanceof CaseBlockEntity entity) {
+            entity.setPowered(message.powerState());
+        }
+    }
+
+    @Override
     public void handleServer(PowerNetworkMessage message, ServerNetworkMessageContext context) {
         BlockPos position = message.position();
         Player player = context.sender();
@@ -41,6 +53,13 @@ public class PowerNetworkHandler implements NetworkHandler<PowerNetworkMessage> 
         if (!WorldUtil.isPlayerCloseEnough(player, position)) return;
         if (level.getBlockEntity(position) instanceof CaseBlockEntity entity) {
             entity.setPowered(message.powerState());
+            redistributeMessage(message, level);
+        }
+    }
+
+    private void redistributeMessage(PowerNetworkMessage message, Level level) {
+        for (Player otherPlayer : level.players()) {
+            PlatformSpecific.get().getNetworkInterface().messageClient(message, otherPlayer);
         }
     }
     

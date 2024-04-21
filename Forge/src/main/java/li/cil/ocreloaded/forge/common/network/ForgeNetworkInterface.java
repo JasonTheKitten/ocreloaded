@@ -10,6 +10,7 @@ import li.cil.ocreloaded.minecraft.common.network.NetworkHandler;
 import li.cil.ocreloaded.minecraft.common.network.NetworkInterface;
 import li.cil.ocreloaded.minecraft.common.network.NetworkMessage;
 import li.cil.ocreloaded.minecraft.common.network.ServerNetworkMessageContext;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,15 +65,18 @@ public class ForgeNetworkInterface implements NetworkInterface {
             .add();
     }
 
+    @SuppressWarnings("resource")
     private <T extends NetworkMessage> void handleMessage(NetworkHandler<T> handler, T message, CustomPayloadEvent.Context context) {
         NetworkDirection direction = context.getDirection();
         if (direction == NetworkDirection.PLAY_TO_SERVER) {
             ServerNetworkMessageContext serverContext = new ServerNetworkMessageContext(context.getSender());
             handler.handleServer(message, serverContext);
         } else if (direction == NetworkDirection.PLAY_TO_CLIENT) {
-            ClientNetworkMessageContext clientContext = new ClientNetworkMessageContext();
+            // TODO: Don't rely on client package in common code{
+            ClientNetworkMessageContext clientContext = new ClientNetworkMessageContext(Minecraft.getInstance().player);
             handler.handleClient(message, clientContext);
         }
+        context.setPacketHandled(true);
     }
     
 }

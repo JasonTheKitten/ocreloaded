@@ -36,6 +36,14 @@ public class CaseBlockEntity extends BlockEntity {
         compoundTag.putBoolean("ocreloaded:powered", this.powered);
     }
 
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag compoundTag = super.getUpdateTag();
+        compoundTag.putBoolean("ocreloaded:powered", this.powered);
+
+        return compoundTag;
+    }
+
     public NonNullList<ItemStack> getItems() {
         return this.items;
     }
@@ -51,10 +59,12 @@ public class CaseBlockEntity extends BlockEntity {
     }
 
     private void updateBlockState() {
-        if (this.level == null) return;
+        if (this.level == null || !level.isClientSide) return;
 
-        BlockState newBlockState = this.level.getBlockState(this.worldPosition).setValue(CaseBlock.RUNNING, this.powered);
-        this.level.setBlock(this.worldPosition, newBlockState, 3);
+        if (this.level.isLoaded(this.worldPosition) && this.getBlockState().getBlock() instanceof CaseBlock) {  
+            BlockState newBlockState = level.getBlockState(this.worldPosition).setValue(CaseBlock.RUNNING, this.powered);
+            level.setBlock(this.worldPosition, newBlockState, 3);
+        }
     }
     
 }

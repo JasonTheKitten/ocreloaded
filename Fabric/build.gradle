@@ -50,6 +50,8 @@ task copyMinecraftClasses(type: Copy) {
 
     from { project(':Minecraft').sourceSets.client.output.classesDirs }
     into { sourceSets.main.output.classesDirs.singleFile }
+
+    exclude '**/li/cil/ocreloaded/minecraft/client/ClientPlatformSpecific.class'
 }
 compileJava.dependsOn(copyMinecraftClasses)
 copyMinecraftClasses.dependsOn(':Minecraft:compileJava')
