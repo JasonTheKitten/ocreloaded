@@ -9,7 +9,6 @@ import net.minecraft.world.item.ItemStack;
 public class ComponentQuickMove {
     
     public static ItemStack quickMoveStack(List<Slot> slots, Player player, int index) {
-        // TODO: Prefer exact tier match - can make isBetterMatch method
         Slot slot = slots.get(index);
         if (slot == null || !slot.hasItem()) {
             return ItemStack.EMPTY;
@@ -54,12 +53,20 @@ public class ComponentQuickMove {
         int target = -1;
         for (int i = 0; i < slots.size(); i++) {
             Slot slot = slots.get(i);
-            if ((slot instanceof ComponentSlot) != isComponentSlot) continue;
+            // Must be type specified in passed flag
+            if (slot instanceof ComponentSlot != isComponentSlot) continue;
+
+            // Must pass the slot's checks
             if (!slot.mayPlace(sourceStack)) continue;
+
+            // If occupied, must be the same item
             if (slot.hasItem() && !ItemStack.isSameItem(slot.getItem(), sourceStack)) continue;
+
+            // If occupied, must fit the slot's stack size
             if (slot.hasItem() && slot.getItem().getCount() >= slot.getMaxStackSize()) continue;
-            if (!slot.hasItem() && target != -1) continue;
-            if (slot.hasItem()) return i;
+
+            // If and a target is already found, and target is a component slot, then must be of a lower tier than the chosen target
+            if (isComponentSlot && target != -1 && ((ComponentSlot) slot).getTier() >= ((ComponentSlot) slots.get(target)).getTier()) continue;
             target = i;
         }
 
