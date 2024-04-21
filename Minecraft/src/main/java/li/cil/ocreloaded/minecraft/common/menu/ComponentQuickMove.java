@@ -53,6 +53,7 @@ public class ComponentQuickMove {
         int target = -1;
         for (int i = 0; i < slots.size(); i++) {
             Slot slot = slots.get(i);
+            
             // Must be type specified in passed flag
             if (slot instanceof ComponentSlot != isComponentSlot) continue;
 
@@ -71,6 +72,7 @@ public class ComponentQuickMove {
                 && target != -1 
                 && ((ComponentSlot) slot).getTier() >= ((ComponentSlot) slots.get(target)).getTier()
             ) continue;
+
             target = i;
         }
 
