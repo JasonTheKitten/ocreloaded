@@ -121,7 +121,7 @@ public class CaseBlock extends Block implements EntityBlock, TieredBlock {
         @Override
         public void writeData(Player player, FriendlyByteBuf data) {
             data.writeBlockPos(this.blockPos);
-            data.writeInt(1);
+            data.writeInt(getTier());
         }
 
     }
