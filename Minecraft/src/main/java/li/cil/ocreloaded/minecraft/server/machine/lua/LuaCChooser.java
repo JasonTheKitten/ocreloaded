@@ -1,4 +1,4 @@
-package li.cil.ocreloaded.minecraft.server.lua;
+package li.cil.ocreloaded.minecraft.server.machine.lua;
 
 
 
@@ -10,7 +10,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import li.cil.ocreloaded.core.architecture.luac.LuaCStateFactory;
+import li.cil.ocreloaded.core.machine.architecture.luac.LuaCStateFactory;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;

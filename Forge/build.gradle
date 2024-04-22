@@ -58,6 +58,7 @@ processResources.dependsOn copyResources
 task copyMinecraftClasses(type: Copy) {
     from { project(':Minecraft').sourceSets.main.output.classesDirs }
     from { project(':Minecraft').sourceSets.client.output.classesDirs }
+    from { project(':Core').sourceSets.main.output.classesDirs }
     into { sourceSets.main.output.classesDirs.singleFile }
 
     exclude '**/li/cil/ocreloaded/minecraft/client/ClientPlatformSpecific.class'

@@ -1,4 +1,4 @@
-package li.cil.ocreloaded.core.architecture.luac;
+package li.cil.ocreloaded.core.machine.architecture.luac;
 
 import li.cil.repack.com.naef.jnlua.LuaState;
 

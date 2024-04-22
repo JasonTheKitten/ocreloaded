@@ -5,7 +5,9 @@ import li.cil.ocreloaded.minecraft.common.PlatformSpecific;
 import li.cil.ocreloaded.minecraft.common.network.NetworkHandler;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import li.cil.ocreloaded.minecraft.common.registry.Named;
+import li.cil.ocreloaded.minecraft.server.CommonServerHooks;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -26,6 +28,8 @@ public class OCReloaded implements ModInitializer {
         registerBlocks();
         registerCreativeTab();
         registerNetworkHandlers();
+
+        runServerHandlers();
     }
 
     private void registerBlocks() {
@@ -65,6 +69,12 @@ public class OCReloaded implements ModInitializer {
         for (NetworkHandler<?> handler : OCReloadedCommon.NETWORK_HANDLERS) {
             PlatformSpecific.get().getNetworkInterface().registerNetworkHandler(handler);
         }
+    }
+
+    private void runServerHandlers() {
+        ServerWorldEvents.LOAD.register((server, level) -> {
+            CommonServerHooks.setup(server);
+        });
     }
 
 }
