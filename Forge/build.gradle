@@ -37,18 +37,30 @@ processResources {
 }
 
 task copyResources(type: Copy) {
-    from project(':Resources').file('src/main/resources')
-    into file('build/resources/main')
+    copy {
+        from project(':Resources').file('src/main/resources')
+        into file('build/resources/main')
+    }
+
+    copy {
+        from "${rootProject.projectDir}/libs/lua52"
+        into file('build/resources/main/data/ocreloaded/libs/lua52')
+    }
+
+    copy {
+        from "${rootProject.projectDir}/libs/lua53"
+        into file('build/resources/main/data/ocreloaded/libs/lua53')
+    }
 }
 
 processResources.dependsOn copyResources
 
 task copyMinecraftClasses(type: Copy) {
     from { project(':Minecraft').sourceSets.main.output.classesDirs }
-    into { sourceSets.main.output.classesDirs.singleFile }
-
     from { project(':Minecraft').sourceSets.client.output.classesDirs }
     into { sourceSets.main.output.classesDirs.singleFile }
+
+    exclude '**/li/cil/ocreloaded/minecraft/client/ClientPlatformSpecific.class'
 }
 compileJava.dependsOn(copyMinecraftClasses)
 copyMinecraftClasses.dependsOn(':Minecraft:compileJava')

@@ -32,6 +32,7 @@ public class OCReloaded {
     public OCReloaded() {
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> OCReloadedClient::new);
+
         registerNetworkHandlers(PlatformSpecific.get().getNetworkInterface());
     }
 

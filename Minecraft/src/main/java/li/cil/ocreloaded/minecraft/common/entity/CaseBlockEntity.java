@@ -2,6 +2,9 @@ package li.cil.ocreloaded.minecraft.common.entity;
 
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
+import li.cil.ocreloaded.minecraft.server.lua.LuaCChooser;
+import li.cil.repack.com.naef.jnlua.LuaState;
+import li.cil.repack.com.naef.jnlua.LuaState.Library;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -41,7 +44,7 @@ public class CaseBlockEntity extends BlockEntity {
         CompoundTag compoundTag = super.getUpdateTag();
         compoundTag.putBoolean("ocreloaded:powered", this.powered);
 
-        return compoundTag;
+        return compoundTag; 
     }
 
     public NonNullList<ItemStack> getItems() {
@@ -56,6 +59,12 @@ public class CaseBlockEntity extends BlockEntity {
         this.powered = b;
         setChanged();
         updateBlockState();
+
+        if (this.level.isClientSide) return;
+
+        if (this.powered) {
+            startLua();
+        }
     }
 
     private void updateBlockState() {
@@ -65,6 +74,14 @@ public class CaseBlockEntity extends BlockEntity {
             BlockState newBlockState = level.getBlockState(this.worldPosition).setValue(CaseBlock.RUNNING, this.powered);
             level.setBlock(this.worldPosition, newBlockState, 3);
         }
+    }
+
+    private void startLua() {
+        LuaState luaState = new LuaCChooser(this.getLevel().getServer()).createFactory("lua52").get().create();
+        luaState.openLib(Library.BASE);
+        luaState.load("print('Hello, World!')", "MAIN");
+        luaState.call(0, 0);
+        luaState.close();
     }
     
 }

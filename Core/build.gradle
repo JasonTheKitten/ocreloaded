@@ -2,13 +2,12 @@ plugins {
     id 'java'
 }
 
-repositories {
-    flatDir {
-        dirs '../libs'
-    }
+dependencies {
+    implementation fileTree(dir: '../libs', include: ['OpenComputers-JNLua.jar', 'OpenComputers-LuaJ.jar'])
 }
 
-dependencies {
-    implementation ":OpenComputers-LuaJ"
-    implementation ":OpenComputers-JNLua"
+jar {
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
