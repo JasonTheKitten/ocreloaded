@@ -11,6 +11,7 @@ import li.cil.ocreloaded.minecraft.client.screen.widget.ButtonWidget;
 import li.cil.ocreloaded.minecraft.common.assets.SharedTextures;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
 import li.cil.ocreloaded.minecraft.common.menu.ComponentSlot;
+import li.cil.ocreloaded.minecraft.common.menu.ComponentHighlightHint;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -47,6 +48,9 @@ public class CaseScreen extends AbstractContainerScreen<CaseMenu> {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
+        for (Slot slot: ComponentHighlightHint.findHighlightHintSlots(this.menu.slots, this.hoveredSlot)) {
+            renderSlotHighlight(guiGraphics, slot.x + (this.width - this.imageWidth) / 2, slot.y + (this.height - this.imageHeight) / 2, 0);
+        }
         this.renderTooltip(guiGraphics, mouseX, mouseY);
         if (this.powerButton.isHovered() && this.menu.getPower().get() == 0) {
             guiGraphics.renderComponentTooltip(this.font, List.of(Component.translatable("gui.ocreloaded.case.power_on")), mouseX, mouseY);
