@@ -10,7 +10,7 @@ license="See the LICENSE file included in the source code of this mod"
   displayURL="https://oc.cil.li/"
   logoFile="assets/ocreloaded/textures/gui/logo.png"
   credits="Based on the original OpenComputers mod, which was inspired by a few mods, most notably ComputerCraft."
-  authors="EveryOS. Resources are from authors of original OpenComputers (Sangar, payonel, Vexatos and others)"
+  authors="EveryOS, 6TELOIV. Resources are from authors of original OpenComputers (Sangar, payonel, Vexatos and others)"
   description="Bring programmable computers to Minecraft! This mod is a complete rewrite of OpenComputers, but with extra goodies."
 
 [[dependencies.ocreloaded]]
