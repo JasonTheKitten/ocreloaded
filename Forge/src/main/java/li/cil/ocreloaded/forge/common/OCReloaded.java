@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -31,7 +32,9 @@ public class OCReloaded {
 
     public OCReloaded() {
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
+        MinecraftForge.EVENT_BUS.register(new ForgeEventBus());
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> OCReloadedClient::new);
+
         registerNetworkHandlers(PlatformSpecific.get().getNetworkInterface());
     }
 

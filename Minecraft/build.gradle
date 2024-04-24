@@ -14,6 +14,8 @@ loom {
 dependencies {
     minecraft "com.mojang:minecraft:${fabric_minecraft_version}"
     mappings loom.officialMojangMappings()
+
+    implementation project(':Core')
 }
 
 configurations {
