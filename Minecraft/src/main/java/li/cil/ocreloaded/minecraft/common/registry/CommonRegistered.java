@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import li.cil.ocreloaded.minecraft.common.PlatformSpecific;
+import li.cil.ocreloaded.minecraft.common.PlatformSpecificImp;
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
 import li.cil.ocreloaded.minecraft.common.item.CPUItem;
@@ -86,6 +87,8 @@ public class CommonRegistered {
         new Named<>(MEMORY_TIER_3, "memory3"),
         new Named<>(MEMORY_TIER_3_5, "memory3_5")
     );
+
+    private static final PlatformSpecificImp XPLAT = PlatformSpecific.get();
 
     // Menu types
     public static final MenuType<CaseMenu> CASE_MENU_TYPE = PlatformSpecific.get().createMenuTypeWithData(CaseMenu::new);

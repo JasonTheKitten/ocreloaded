@@ -1,6 +1,5 @@
 package li.cil.ocreloaded.minecraft.common.block;
 
-import com.mojang.serialization.MapCodec;
 
 import io.netty.buffer.Unpooled;
 import li.cil.ocreloaded.minecraft.common.PlatformSpecific;
@@ -20,7 +19,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -93,11 +91,6 @@ public class CaseBlock extends Block implements EntityBlock, TieredBlock {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
-    @Override
-    protected MapCodec<? extends DirectionalBlock> codec() {
-        throw new UnsupportedOperationException("Unimplemented method 'codec'");
-    }
-    
     private class CaseNetworkMenuProvider implements NetworkMenuProvider {
 
         private final BlockPos blockPos;

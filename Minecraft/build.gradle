@@ -1,35 +1,21 @@
 plugins {
-	id 'dev.architectury.loom' version '1.6-SNAPSHOT'
+    id 'com.github.johnrengelman.shadow'
 }
 
-group = 'li.cil.ocreloaded'
-version = mod_version
 
-archivesBaseName = 'ocreloaded'
-
-loom {
-    splitEnvironmentSourceSets()
+architectury {
+    common rootProject.enabled_platforms.split(',')
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${fabric_minecraft_version}"
-    mappings loom.officialMojangMappings()
+    // We depend on Fabric Loader here to use the Fabric @Environment annotations,
+    // which get remapped to the correct annotations on each platform.
+    // Do NOT use other classes from Fabric Loader.
+    modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
 
-    implementation project(':Core')
-}
+    // Architectury API. This is optional, and you can comment it out if you don't need it.
+    modImplementation "dev.architectury:architectury:$rootProject.architectury_api_version"
 
-configurations {
-    clientImplementation.extendsFrom implementation
-    clientImplementation {
-        canBeResolved = true
-        canBeConsumed = true
-    }
-}
-
-task clientJar(type: Jar) {
-    from sourceSets.client.output
-}
-
-artifacts {
-    clientImplementation clientJar
+    implementation fileTree(dir: '../libs', include: ['OpenComputers-JNLua.jar', 'OpenComputers-LuaJ.jar'])
+    shadow fileTree(dir: '../libs', include: ['OpenComputers-JNLua.jar', 'OpenComputers-LuaJ.jar'])
 }
