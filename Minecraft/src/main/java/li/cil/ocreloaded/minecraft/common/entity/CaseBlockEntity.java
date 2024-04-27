@@ -34,7 +34,7 @@ public class CaseBlockEntity extends BlockEntity {
     private Optional<Machine> machine = Optional.empty();
 
     public CaseBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(CommonRegistered.CASE_BLOCK_ENTITY, blockPos, blockState);
+        super(CommonRegistered.CASE_BLOCK_ENTITY.get(), blockPos, blockState);
     }
 
     @Override

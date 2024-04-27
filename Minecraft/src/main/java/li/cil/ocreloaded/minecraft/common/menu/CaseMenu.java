@@ -77,7 +77,7 @@ public class CaseMenu extends AbstractContainerMenu {
     private final int tier;
 
     public CaseMenu(int id, Inventory inventory, FriendlyByteBuf data) {
-        super(CommonRegistered.CASE_MENU_TYPE, id);
+        super(CommonRegistered.CASE_MENU_TYPE.get(), id);
 
         this.blockEntity = (CaseBlockEntity) inventory.player.level().getBlockEntity(data.readBlockPos());
         this.inventory = inventory;

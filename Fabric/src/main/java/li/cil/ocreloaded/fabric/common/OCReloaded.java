@@ -12,6 +12,7 @@ import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
@@ -20,6 +21,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+
+import java.util.Map;
 
 public class OCReloaded implements ModInitializer {
 
@@ -33,18 +36,7 @@ public class OCReloaded implements ModInitializer {
     }
 
     private void registerBlocks() {
-        for (Named<Block> namedBlock : CommonRegistered.ALL_BLOCKS) {
-            Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(OCReloadedCommon.MOD_ID, namedBlock.name()), namedBlock.entity());
-        }
-        for (Named<Item> namedItem : CommonRegistered.ALL_ITEMS) {
-            Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(OCReloadedCommon.MOD_ID, namedItem.name()), namedItem.entity());
-        }
-        for (Named<MenuType<?>> namedMenu : CommonRegistered.ALL_MENU_TYPES) {
-            Registry.register(BuiltInRegistries.MENU, new ResourceLocation(OCReloadedCommon.MOD_ID, namedMenu.name()), namedMenu.entity());
-        }
-        for (Named<BlockEntityType<?>> namedBlockEntity : CommonRegistered.ALL_BLOCK_ENTITIES) {
-            Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, new ResourceLocation(OCReloadedCommon.MOD_ID, namedBlockEntity.name()), namedBlockEntity.entity());
-        }
+
     }
 
      private void registerCreativeTab() {
@@ -60,8 +52,8 @@ public class OCReloaded implements ModInitializer {
     }
 
     private void addCreativeTabItems(Output output) {
-        for (Named<Item> namedItem : CommonRegistered.ALL_ITEMS) {
-            output.accept(namedItem.entity());
+        for (Map.Entry<ResourceKey<Item>, Item> namedItem : CommonRegistered.ITEMS.entrySet()) {
+            output.accept(namedItem.getValue());
         }
     }
 
