@@ -1,4 +1,4 @@
-package li.cil.ocreloaded.forge.client;
+package li.cil.ocreloaded.neoforge.client;
 
 import li.cil.ocreloaded.minecraft.client.CommonClientHooks;
 import li.cil.ocreloaded.minecraft.client.registry.ClientRegistered;

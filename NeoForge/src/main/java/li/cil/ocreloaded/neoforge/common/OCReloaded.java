@@ -1,7 +1,7 @@
-package li.cil.ocreloaded.forge.common;
+package li.cil.ocreloaded.neoforge.common;
 
 
-import li.cil.ocreloaded.forge.client.OCReloadedClient;
+import li.cil.ocreloaded.neoforge.client.OCReloadedClient;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import li.cil.ocreloaded.minecraft.server.CommonServerHooks;

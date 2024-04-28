@@ -22,11 +22,39 @@ allprojects {
         }
     }
 }
+["Fabric", "Forge", "NeoForge"].each { projectName ->
+    configure(project(projectName)) {
+        apply plugin: 'com.github.johnrengelman.shadow'
+        apply plugin: 'dev.architectury.loom'
+        apply plugin: 'architectury-plugin'
+
+        configurations {
+            common {
+                canBeResolved = true
+                canBeConsumed = false
+            }
+            compileClasspath.extendsFrom common
+            runtimeClasspath.extendsFrom common
+            developmentForge.extendsFrom common
+
+            shadowBundle {
+                canBeResolved = true
+                canBeConsumed = false
+            }
+        }
+
+        dependencies {
+            common project(':Core')
+            shadowBundle project(':Core')
+        }
+    }
+}
 
 subprojects {
     apply plugin: 'dev.architectury.loom'
     apply plugin: 'architectury-plugin'
     apply plugin: 'maven-publish'
+    apply plugin: 'com.github.johnrengelman.shadow'
 
     base {
         // Set up a suffixed format for the mod jar names, e.g. `example-fabric`.
@@ -44,6 +72,9 @@ subprojects {
     dependencies {
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
         mappings loom.officialMojangMappings()
+
+        implementation fileTree(dir: '../libs', include: ['OpenComputers-JNLua.jar', 'OpenComputers-LuaJ.jar'])
+        shadow fileTree(dir: '../libs', include: ['OpenComputers-JNLua.jar', 'OpenComputers-LuaJ.jar'])
     }
 
     java {

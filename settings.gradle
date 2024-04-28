@@ -19,4 +19,4 @@ pluginManagement {
 
 rootProject.name = 'OpenComputersReloaded'
 
-include ":Minecraft", ":Forge", ":Fabric", ":NeoForge"
+include ":Core", ":Minecraft", ":Forge", ":Fabric", ":NeoForge"
