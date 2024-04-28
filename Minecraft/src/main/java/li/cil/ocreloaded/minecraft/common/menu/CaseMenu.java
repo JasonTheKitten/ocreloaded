@@ -2,7 +2,6 @@ package li.cil.ocreloaded.minecraft.common.menu;
 
 import java.util.List;
 
-import li.cil.ocreloaded.minecraft.common.PlatformSpecific;
 import li.cil.ocreloaded.minecraft.common.assets.SharedTextures;
 import li.cil.ocreloaded.minecraft.common.container.BasicContainer;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
@@ -11,6 +10,7 @@ import li.cil.ocreloaded.minecraft.common.item.CardItem;
 import li.cil.ocreloaded.minecraft.common.item.EepromItem;
 import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
 import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
+import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
 import li.cil.ocreloaded.minecraft.common.network.power.PowerNetworkMessage;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import net.minecraft.core.BlockPos;
@@ -118,7 +118,7 @@ public class CaseMenu extends AbstractContainerMenu {
 
     public void sendServerPowerState() {
         BlockPos targetBlockPos = blockEntity.getBlockPos();
-        PlatformSpecific.get().getNetworkInterface().messageServer(new PowerNetworkMessage(targetBlockPos, power.get() == 1));
+        NetworkUtil.getInstance().messageServer(new PowerNetworkMessage(targetBlockPos, power.get() == 1));
     }
 
     private void addContainerSlots() {

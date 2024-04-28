@@ -28,6 +28,8 @@ public class CaseBlockEntity extends BlockEntity {
 
     private static final Logger logger = LoggerFactory.getLogger(CaseBlockEntity.class);
 
+    private static final String TAG_POWERED = "ocreloaded:powered";
+
     private final NonNullList<ItemStack> items = NonNullList.withSize(10, ItemStack.EMPTY);
 
     private boolean powered;
@@ -42,7 +44,7 @@ public class CaseBlockEntity extends BlockEntity {
         super.load(compoundTag);
 
         ContainerHelper.loadAllItems(compoundTag, this.items);
-        this.powered = compoundTag.getBoolean("ocreloaded:powered");
+        this.powered = compoundTag.getBoolean(TAG_POWERED);
         updateBlockState();
     }
 
@@ -51,13 +53,13 @@ public class CaseBlockEntity extends BlockEntity {
         super.saveAdditional(compoundTag);
 
         ContainerHelper.saveAllItems(compoundTag, this.items);
-        compoundTag.putBoolean("ocreloaded:powered", this.powered);
+        compoundTag.putBoolean(TAG_POWERED, this.powered);
     }
 
     @Override
     public CompoundTag getUpdateTag() {
         CompoundTag compoundTag = super.getUpdateTag();
-        compoundTag.putBoolean("ocreloaded:powered", this.powered);
+        compoundTag.putBoolean(TAG_POWERED, this.powered);
 
         return compoundTag;
     }
@@ -89,7 +91,7 @@ public class CaseBlockEntity extends BlockEntity {
     }
 
     private void updateBlockState() {
-        if (this.level == null || !level.isClientSide) return;
+        if (this.level == null || level.isClientSide) return;
         if (!(this.level.isLoaded(this.worldPosition) && this.getBlockState().getBlock() instanceof CaseBlock)) return;
 
         BlockState newBlockState = level.getBlockState(this.worldPosition).setValue(CaseBlock.RUNNING, this.powered);

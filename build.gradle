@@ -13,6 +13,22 @@ allprojects {
     version = rootProject.mod_version
 }
 
+configure(project('Minecraft')) {
+    apply plugin: 'dev.architectury.loom'
+    
+    loom {
+        splitEnvironmentSourceSets()
+    }
+}
+
+configure(project('Fabric')) {
+    apply plugin: 'dev.architectury.loom'
+    
+    loom {
+        splitEnvironmentSourceSets()
+    }
+}
+
 subprojects {
     apply plugin: 'dev.architectury.loom'
     apply plugin: 'architectury-plugin'

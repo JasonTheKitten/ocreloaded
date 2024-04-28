@@ -1,10 +1,10 @@
 package li.cil.ocreloaded.minecraft.common.network.power;
 
-import li.cil.ocreloaded.minecraft.common.PlatformSpecific;
 import li.cil.ocreloaded.minecraft.common.WorldUtil;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
 import li.cil.ocreloaded.minecraft.common.network.ClientNetworkMessageContext;
 import li.cil.ocreloaded.minecraft.common.network.NetworkHandler;
+import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
 import li.cil.ocreloaded.minecraft.common.network.ServerNetworkMessageContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -59,7 +59,7 @@ public class PowerNetworkHandler implements NetworkHandler<PowerNetworkMessage> 
 
     private void redistributeMessage(PowerNetworkMessage message, Level level) {
         for (Player otherPlayer : level.players()) {
-            PlatformSpecific.get().getNetworkInterface().messageClient(message, otherPlayer);
+            NetworkUtil.getInstance().messageClient(message, otherPlayer);
         }
     }
     

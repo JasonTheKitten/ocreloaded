@@ -19,3 +19,15 @@ dependencies {
     implementation fileTree(dir: '../libs', include: ['OpenComputers-JNLua.jar', 'OpenComputers-LuaJ.jar'])
     shadow fileTree(dir: '../libs', include: ['OpenComputers-JNLua.jar', 'OpenComputers-LuaJ.jar'])
 }
+
+task copyResources(type: Copy) {
+    copy {
+        from "${rootProject.projectDir}/libs/lua52"
+        into file('build/resources/main/data/ocreloaded/libs/lua52')
+    }
+
+    copy {
+        from "${rootProject.projectDir}/libs/lua53"
+        into file('build/resources/main/data/ocreloaded/libs/lua53')
+    }
+}
