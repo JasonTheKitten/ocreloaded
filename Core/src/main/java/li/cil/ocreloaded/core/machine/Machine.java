@@ -6,4 +6,8 @@ public interface Machine {
 
     void stop();
 
+    void runSync();
+
+    void runAsync();
+
 }

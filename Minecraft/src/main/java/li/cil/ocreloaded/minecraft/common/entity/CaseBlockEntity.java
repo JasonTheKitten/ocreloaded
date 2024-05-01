@@ -3,6 +3,8 @@ package li.cil.ocreloaded.minecraft.common.entity;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -34,6 +37,7 @@ public class CaseBlockEntity extends BlockEntity {
 
     private boolean powered;
     private Optional<Machine> machine = Optional.empty();
+    private Level oldLevel;
 
     public CaseBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(CommonRegistered.CASE_BLOCK_ENTITY.get(), blockPos, blockState);
@@ -62,6 +66,10 @@ public class CaseBlockEntity extends BlockEntity {
         compoundTag.putBoolean(TAG_POWERED, this.powered);
 
         return compoundTag;
+    }
+
+    public void tick() {
+        machine.ifPresent(Machine::runSync);
     }
 
     public String getArchitecture() {
@@ -94,6 +102,11 @@ public class CaseBlockEntity extends BlockEntity {
         if (this.level == null || level.isClientSide) return;
         if (!(this.level.isLoaded(this.worldPosition) && this.getBlockState().getBlock() instanceof CaseBlock)) return;
 
+        if (this.oldLevel != this.level) {
+            this.oldLevel = this.level;
+            this.level.addBlockEntityTicker(new CaseBlockEntityTicker(this));
+        }
+
         BlockState newBlockState = level.getBlockState(this.worldPosition).setValue(CaseBlock.RUNNING, this.powered);
         level.setBlock(this.worldPosition, newBlockState, 3);
 
@@ -118,7 +131,8 @@ public class CaseBlockEntity extends BlockEntity {
 
         if (codeStreamSupplier.isEmpty()) return Optional.empty();
 
-        MachineParameters parameters = new MachineParameters(getId(), codeStreamSupplier.get(), this::scanComponents);
+        ExecutorService threadService = Executors.newCachedThreadPool(); // TODO: Custom thread pool
+        MachineParameters parameters = new MachineParameters(getId(), codeStreamSupplier.get(), this::scanComponents, threadService);
 
         return
             MachineRegistry.getDefaultInstance().getEntry(getArchitecture())

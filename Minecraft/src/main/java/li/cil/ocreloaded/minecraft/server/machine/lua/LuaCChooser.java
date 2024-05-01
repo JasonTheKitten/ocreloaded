@@ -39,7 +39,7 @@ public class LuaCChooser {
             && (resource = getResource(architecture)).isPresent();
 
         if (isAvailable) {
-            LOGGER.info("LuaJIT native library available for this platform: " + resource.get());
+            LOGGER.trace("LuaJIT native library available for this platform: " + resource.get());
         } else {
             LOGGER.error("LuaJIT native library not available for this platform.");
         }
@@ -98,14 +98,14 @@ public class LuaCChooser {
         }
 
         if (new File(tempName).exists()) {
-            LOGGER.info("LuaJIT native library already copied to temporary directory.");
+            LOGGER.trace("LuaJIT native library already copied to temporary directory.");
             new File(tempName).delete();
             //return true;
         }
 
         try (InputStream in = resource.get().open();) {
             Files.copy(in, new File(tempName).toPath());
-            LOGGER.info("Copied LuaJIT native library to temporary directory: " + tempName + ".");
+            LOGGER.trace("Copied LuaJIT native library to temporary directory: " + tempName + ".");
             return true;
         } catch (Exception e) {
             LOGGER.error("Failed to copy LuaJIT native library to temporary directory.", e);
