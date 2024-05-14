@@ -29,10 +29,10 @@ public abstract class Component {
         return component_methods;
     }
 
-    @ComponentMethod("Prints hello world to console")
-    void testFunc() {
-        System.out.println("hello world");
-    }
+//    @ComponentMethod("Prints hello world to console")
+//    void exampleMethod() {
+//        System.out.println("hello world");
+//    }
 
     public void loadFromState(PersistenceHolder holder) {
         holder.storeLong("INTERNAL_ID1",id.getMostSignificantBits());
