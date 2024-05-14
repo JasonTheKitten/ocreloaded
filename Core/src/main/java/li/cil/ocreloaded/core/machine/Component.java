@@ -18,6 +18,8 @@ public abstract class Component {
             if (m.isAnnotationPresent(ComponentMethod.class)) {
                 if (Arrays.equals(m.getParameterTypes(), ComponentMethodArgs)) {
                     methods.put(m.getName(),m);
+                } else {
+                    System.err.printf("WARN method \"%s\" on %s does not match method args", m.getName(),this.getClass().getCanonicalName());
                 }
             }
         }
