@@ -12,7 +12,7 @@ public abstract class Component {
     private final Map<String,Method> component_methods;
     private UUID id;
 
-    Component(UUID id) {
+    protected Component(UUID id) {
         Map<String, Method> methods = new HashMap<>();
         for (Method m :this.getClass().getDeclaredMethods()) {
             if (m.isAnnotationPresent(ComponentMethod.class)) {
@@ -25,6 +25,10 @@ public abstract class Component {
         }
         component_methods = Collections.unmodifiableMap(methods);
         this.id = id;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public final Map<String,Method> componentMethods() {
