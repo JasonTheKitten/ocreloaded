@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.MachineParameters;
 import li.cil.ocreloaded.core.machine.MachineResult;
-import li.cil.ocreloaded.core.machine.architecture.component.Component;
+import li.cil.ocreloaded.core.machine.architecture.component.base.Component;
 
 public class ArchitectureMachine implements Machine {
 

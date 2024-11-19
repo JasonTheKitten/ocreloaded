@@ -6,9 +6,11 @@ import net.minecraft.nbt.CompoundTag;
 public class NBTPersistenceHolder implements PersistenceHolder {
 
     private final CompoundTag tag;
+    private final String prefix;
 
-    public NBTPersistenceHolder(CompoundTag tag) {
+    public NBTPersistenceHolder(CompoundTag tag, String prefix) {
         this.tag = tag;
+        this.prefix = prefix;
     }
 
     @Override
@@ -31,7 +33,7 @@ public class NBTPersistenceHolder implements PersistenceHolder {
 
     @Override
     public void storeLong(String key, long val) {
-        tag.putLong(key, val);
+        tag.putLong(prefix + key, val);
     }
 
     @Override
@@ -44,6 +46,11 @@ public class NBTPersistenceHolder implements PersistenceHolder {
     public void storeByte(String key, byte val) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'storeByte'");
+    }
+
+    @Override
+    public void storeString(String key, String val) {
+        tag.putString(prefix + key, val);
     }
 
     @Override
@@ -66,7 +73,7 @@ public class NBTPersistenceHolder implements PersistenceHolder {
 
     @Override
     public long loadLong(String key) {
-        return tag.getLong(key);
+        return tag.getLong(prefix + key);
     }
 
     @Override
@@ -82,8 +89,13 @@ public class NBTPersistenceHolder implements PersistenceHolder {
     }
 
     @Override
+    public String loadString(String key) {
+        return tag.getString(prefix + key);
+    }
+
+    @Override
     public boolean hasKey(String key) {
-        return tag.contains(key);
+        return tag.contains(prefix + key);
     }
     
 }

@@ -2,12 +2,15 @@ package li.cil.ocreloaded.core.machine.architecture.luac.api;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.architecture.ArchitectureMachine;
-import li.cil.ocreloaded.core.machine.architecture.component.Component;
-import li.cil.ocreloaded.core.machine.architecture.component.ComponentCall;
-import li.cil.ocreloaded.core.machine.architecture.component.ComponentMethod;
+import li.cil.ocreloaded.core.machine.architecture.component.base.Component;
+import li.cil.ocreloaded.core.machine.architecture.component.base.ComponentCall;
+import li.cil.ocreloaded.core.machine.architecture.component.base.ComponentCallContext;
+import li.cil.ocreloaded.core.machine.architecture.component.base.ComponentMethod;
+import li.cil.ocreloaded.core.machine.architecture.luac.LuaCComponentCallArguments;
 import li.cil.repack.com.naef.jnlua.LuaState;
 
 public final class ComponentAPI {
@@ -23,10 +26,19 @@ public final class ComponentAPI {
     }
 
     private static int list(LuaState luaState, Machine machine) {
-        luaState.newTable();
+        String filter = luaState.isString(1) ? luaState.toString(1) : null;
+        boolean exact = luaState.isBoolean(2) && luaState.toBoolean(2);
 
+        Function<String, Boolean> filterFunction = filter == null ?
+            s -> true :
+            s -> exact ?
+                s.equals(filter) :
+                s.contains(filter);
+
+        luaState.newTable();
         Map<UUID, Component> components = ((ArchitectureMachine) machine).getComponents();
         for (Component component : components.values()) {
+            if (!filterFunction.apply(component.getType())) continue;
             luaState.pushString(component.getId().toString());
             luaState.pushString(component.getType());
             luaState.setTable(-3);
@@ -78,7 +90,11 @@ public final class ComponentAPI {
             return 2;
         }
 
-        ComponentCall.ComponentCallResult result = call.call();
+        ComponentCall.ComponentCallResult result = call.call(
+            new ComponentCallContext(),
+            new LuaCComponentCallArguments(luaState, 3, luaState.getTop() - 2)
+        );
+
         if (result.error() != null) {
             luaState.pushNil();
             luaState.pushString(result.error());

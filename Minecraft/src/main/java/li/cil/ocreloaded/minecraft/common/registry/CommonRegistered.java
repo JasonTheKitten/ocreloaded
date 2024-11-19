@@ -11,6 +11,7 @@ import li.cil.ocreloaded.minecraft.common.item.CPUItem;
 import li.cil.ocreloaded.minecraft.common.item.CardItem;
 import li.cil.ocreloaded.minecraft.common.item.EepromItem;
 import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
+import li.cil.ocreloaded.minecraft.common.item.LuaEepromItem;
 import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
 import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
@@ -72,6 +73,7 @@ public class CommonRegistered {
     public static final RegistrySupplier<Item> DATACARD_TIER_2 = ITEMS.register("datacard2", () -> new CardItem(DEFAULT_ITEM_PROPERTIES, 2));
     public static final RegistrySupplier<Item> DATACARD_TIER_3 = ITEMS.register("datacard3", () -> new CardItem(DEFAULT_ITEM_PROPERTIES, 3));
     public static final RegistrySupplier<Item> EEPROM = ITEMS.register("eeprom", () -> new EepromItem(DEFAULT_ITEM_PROPERTIES));
+    public static final RegistrySupplier<Item> EEPROM_LUA = ITEMS.register("eeprom_lua", () -> new LuaEepromItem(DEFAULT_ITEM_PROPERTIES));
     public static final RegistrySupplier<Item> GRAPHICSCARD_TIER_1 = ITEMS.register("graphicscard1", () -> new CardItem(DEFAULT_ITEM_PROPERTIES, 1));
     public static final RegistrySupplier<Item> GRAPHICSCARD_TIER_2 = ITEMS.register("graphicscard2", () -> new CardItem(DEFAULT_ITEM_PROPERTIES, 2));
     public static final RegistrySupplier<Item> GRAPHICSCARD_TIER_3 = ITEMS.register("graphicscard3", () -> new CardItem(DEFAULT_ITEM_PROPERTIES, 3));

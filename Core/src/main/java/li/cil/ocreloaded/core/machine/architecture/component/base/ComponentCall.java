@@ -1,8 +1,8 @@
-package li.cil.ocreloaded.core.machine.architecture.component;
+package li.cil.ocreloaded.core.machine.architecture.component.base;
 
 public interface ComponentCall {
     
-    ComponentCallResult call();
+    ComponentCallResult call(ComponentCallContext context, ComponentCallArguments arguments);
 
     ComponentMethod getAnnotation();
 

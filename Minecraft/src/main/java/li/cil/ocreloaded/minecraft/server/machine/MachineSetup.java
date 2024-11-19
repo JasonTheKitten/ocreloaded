@@ -7,7 +7,7 @@ import java.util.Optional;
 import com.google.common.base.Supplier;
 
 import li.cil.ocreloaded.core.machine.MachineRegistry;
-import li.cil.ocreloaded.core.machine.MachineStartCodeSupplierRegistry;
+import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
 import li.cil.ocreloaded.minecraft.server.machine.lua.LuaMachineRegistryEntry;
 import net.minecraft.resources.ResourceLocation;
@@ -26,11 +26,23 @@ public class MachineSetup {
 
     private static void registerStartCode(MinecraftServer server) {
         registerLuaStartCode(server);
+        registerLuaBiosCode(server);
     }
 
     private static void registerLuaStartCode(MinecraftServer server) {
         ResourceLocation resourceLocation = new ResourceLocation(OCReloadedCommon.MOD_ID, "lua/machine.lua");
-        Supplier<Optional<InputStream>> supplier = () -> {
+        Supplier<Optional<InputStream>> supplier = createCodeSupplier(server, resourceLocation);
+        MachineCodeRegistry.getDefaultInstance().registerMachineCode("lua52", supplier);
+    }
+
+    private static void registerLuaBiosCode(MinecraftServer server) {
+        ResourceLocation resourceLocation = new ResourceLocation(OCReloadedCommon.MOD_ID, "lua/bios.lua");
+        Supplier<Optional<InputStream>> supplier = createCodeSupplier(server, resourceLocation);
+        MachineCodeRegistry.getDefaultInstance().registerBiosCode("lua", supplier);
+    }
+
+    private static Supplier<Optional<InputStream>> createCodeSupplier(MinecraftServer server, ResourceLocation resourceLocation) {
+        return () -> {
             return server.getResourceManager().getResource(resourceLocation)
                 .flatMap(resource -> {
                     try {
@@ -40,8 +52,6 @@ public class MachineSetup {
                     }
                 });
         };
-
-        MachineStartCodeSupplierRegistry.getDefaultInstance().register("lua52", supplier);
     }
     
 }

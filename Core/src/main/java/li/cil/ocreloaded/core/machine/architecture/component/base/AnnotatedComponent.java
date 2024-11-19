@@ -1,4 +1,4 @@
-package li.cil.ocreloaded.core.machine.architecture.component;
+package li.cil.ocreloaded.core.machine.architecture.component.base;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -8,11 +8,14 @@ import java.util.Map;
 import java.util.UUID;
 
 import li.cil.ocreloaded.core.machine.PersistenceHolder;
-import li.cil.ocreloaded.core.machine.architecture.component.ComponentCall.ComponentCallResult;
+import li.cil.ocreloaded.core.machine.architecture.component.base.ComponentCall.ComponentCallResult;
 
 public abstract class AnnotatedComponent implements Component {
     
-    private static final Class<?>[] componentMethodArgs = new Class<?>[] {};
+    private static final Class<?>[] componentMethodArgs = new Class<?>[] {
+        ComponentCallContext.class,
+        ComponentCallArguments.class
+    };
 
     private final Map<String, ComponentCall> componentMethods;
     private final String type;
@@ -72,8 +75,8 @@ public abstract class AnnotatedComponent implements Component {
         return new ComponentCall() {
 
             @Override
-            public ComponentCallResult call() {
-                return invoke(m);
+            public ComponentCallResult call(ComponentCallContext context, ComponentCallArguments arguments) {
+                return invoke(m, context, arguments);
             }
 
             @Override
@@ -84,9 +87,9 @@ public abstract class AnnotatedComponent implements Component {
         };
     }
 
-    private ComponentCallResult invoke(Method m) {
+    private ComponentCallResult invoke(Method m, Object... args) {
         try {
-            return (ComponentCallResult) m.invoke(this);
+            return (ComponentCallResult) m.invoke(this, args);
         } catch (Exception e) {
             return ComponentCallResult.failure(e.getMessage());
         }

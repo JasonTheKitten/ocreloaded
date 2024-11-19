@@ -1,4 +1,4 @@
-package li.cil.ocreloaded.core.machine.architecture.component;
+package li.cil.ocreloaded.core.machine.architecture.component.base;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
