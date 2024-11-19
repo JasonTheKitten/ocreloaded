@@ -1,19 +1,21 @@
 package li.cil.ocreloaded.core.machine;
 
-import java.util.List;
+public interface PersistenceHolder {
+    
+    void storeSubHolder(String key, PersistenceHolder val);
+    void storeBool(String key, boolean val);
+    void storeInt(String key, int val);
+    void storeLong(String key, long val);
+    void storeShort(String key, short val);
+    void storeByte(String key, byte val);
 
-public abstract class PersistenceHolder {
-    abstract void  storeSubHolder(String key, PersistenceHolder val);
-    abstract void       storeBool(String key, boolean val);
-    abstract void        storeInt(String key, int val);
-    abstract void       storeLong(String key, long val);
-    abstract void      storeShort(String key, short val);
-    abstract void       storeByte(String key, byte val);
+    PersistenceHolder loadSubHolder(String key);
+    boolean loadBool(String key);
+    int loadInt(String key);
+    long loadLong(String key);
+    short loadShort(String key);
+    byte loadByte(String key);
 
-    abstract PersistenceHolder loadSubHolder(String key);
-    abstract boolean                loadBool(String key);
-    abstract int                     loadInt(String key);
-    abstract long                   loadLong(String key);
-    abstract short                 loadShort(String key);
-    abstract byte                   loadByte(String key);
+    boolean hasKey(String key);
+
 }

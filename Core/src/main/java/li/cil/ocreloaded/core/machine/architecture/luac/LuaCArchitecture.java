@@ -15,6 +15,7 @@ import li.cil.ocreloaded.core.machine.architecture.Architecture;
 import li.cil.ocreloaded.core.machine.architecture.luac.api.ComponentAPI;
 import li.cil.ocreloaded.core.machine.architecture.luac.api.ComputerAPI;
 import li.cil.ocreloaded.core.machine.architecture.luac.api.OSAPI;
+import li.cil.ocreloaded.core.machine.architecture.luac.api.SystemAPI;
 import li.cil.repack.com.naef.jnlua.LuaState;
 import li.cil.repack.com.naef.jnlua.LuaState.Library;
 import li.cil.repack.com.naef.jnlua.LuaType;
@@ -24,7 +25,7 @@ public class LuaCArchitecture implements Architecture {
     private static final Logger LOGGER = LoggerFactory.getLogger(LuaCArchitecture.class);
 
     private static final List<BiConsumer<LuaState, Machine>> API_REGISTRATIONS = List.of(
-        ComputerAPI::register, OSAPI::register, ComponentAPI::register
+        ComputerAPI::register, OSAPI::register, ComponentAPI::register, SystemAPI::register
     );
 
     private static final List<Library> LIBRARIES = List.of(

@@ -4,15 +4,17 @@ import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 import org.slf4j.LoggerFactory;
 
-import li.cil.ocreloaded.core.machine.Component;
 import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.MachineParameters;
 import li.cil.ocreloaded.core.machine.MachineResult;
+import li.cil.ocreloaded.core.machine.architecture.component.Component;
 
 public class ArchitectureMachine implements Machine {
 
@@ -128,7 +130,7 @@ public class ArchitectureMachine implements Machine {
         }
     }
 
-    public List<Component> getComponents() {
+    public Map<UUID, Component> getComponents() {
         return parameters.componentScanner().get();
     }
 

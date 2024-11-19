@@ -1,8 +1,10 @@
 package li.cil.ocreloaded.minecraft.common.entity;
 
 import java.io.InputStream;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -10,13 +12,15 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import li.cil.ocreloaded.core.machine.Component;
 import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.MachineParameters;
 import li.cil.ocreloaded.core.machine.MachineRegistry;
 import li.cil.ocreloaded.core.machine.MachineRegistryEntry;
 import li.cil.ocreloaded.core.machine.MachineStartCodeSupplierRegistry;
+import li.cil.ocreloaded.core.machine.architecture.component.Component;
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
+import li.cil.ocreloaded.minecraft.common.item.ComponentItem;
+import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -38,6 +42,8 @@ public class CaseBlockEntity extends BlockEntity {
     private boolean powered;
     private Optional<Machine> machine = Optional.empty();
     private Level oldLevel;
+
+    private Map<UUID, Component> components = new HashMap<>();
 
     public CaseBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(CommonRegistered.CASE_BLOCK_ENTITY.get(), blockPos, blockState);
@@ -94,8 +100,8 @@ public class CaseBlockEntity extends BlockEntity {
         return "AAAAAAAAAAHHHHHHHHHHH";
     }
 
-    public List<Component> scanComponents() {
-        return List.of();
+    public Map<UUID, Component> scanComponents() {
+        return components;
     }
 
     private void updateBlockState() {
@@ -112,6 +118,7 @@ public class CaseBlockEntity extends BlockEntity {
 
         if (this.powered && this.machine.isEmpty()) {
             this.machine = createMachine();
+            loadComponents();
             boolean started = this.machine.map(Machine::start).orElse(false);
             if (!started) {
                 this.powered = false;
@@ -121,6 +128,23 @@ public class CaseBlockEntity extends BlockEntity {
         } else if (!this.powered && this.machine.isPresent()) {
             this.machine.ifPresent(Machine::stop);
             this.machine = Optional.empty();
+        }
+    }
+
+    private void loadComponents() {
+        // TODO: Ensure only one instance gets instantiated per item
+        components.clear();
+        for (ItemStack itemStack : this.items) {
+            if (itemStack.isEmpty()) continue;
+
+            if (!(itemStack.getItem() instanceof ComponentItem componentItem)) continue;
+
+            Component component = componentItem.initComponent();
+
+            CompoundTag tag = itemStack.getOrCreateTag();
+            component.loadFromState(new NBTPersistenceHolder(tag));
+
+            components.put(component.getId(), component);
         }
     }
 

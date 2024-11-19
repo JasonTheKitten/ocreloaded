@@ -1,15 +1,18 @@
 package li.cil.ocreloaded.core.machine;
 
 import java.io.InputStream;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
+
+import li.cil.ocreloaded.core.machine.architecture.component.Component;
 
 public record MachineParameters(
     String id,
     Supplier<Optional<InputStream>> codeStreamSupplier,
-    Supplier<List<Component>> componentScanner,
+    Supplier<Map<UUID, Component>> componentScanner,
     ExecutorService threadService
 ) {
     
