@@ -33,7 +33,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class CaseBlockEntity extends BlockEntity {
+public class CaseBlockEntity extends BlockEntity implements ComponentBlockEntity {
 
     private static final Logger logger = LoggerFactory.getLogger(CaseBlockEntity.class);
 
@@ -50,6 +50,11 @@ public class CaseBlockEntity extends BlockEntity {
 
     public CaseBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(CommonRegistered.CASE_BLOCK_ENTITY.get(), blockPos, blockState);
+    }
+
+    @Override
+    public Component initComponent() {
+        return new ComputerComponent(getId());
     }
 
     @Override
