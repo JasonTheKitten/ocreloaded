@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +79,7 @@ public class LuaCArchitecture implements Architecture {
             return new MachineResult.Error("Machine not running");
         }
         LuaState l = luaState.get();
+        LoggerFactory.getLogger(LuaCArchitecture.class).info("Resuming machine with state: " + state);
         return switch (state) {
             case STOPPED -> new MachineResult.Error("Cannot resume");
             case SYNC_CALL -> shield(() -> handleSyncCall(l));
@@ -102,6 +104,8 @@ public class LuaCArchitecture implements Architecture {
         l.call(0, 1);
         l.checkType(2, LuaType.TABLE);
 
+        state = ArchState.SYNC_RESULT;
+
         // Returning table result
         return new MachineResult.ExecAsync();
     }
@@ -124,10 +128,9 @@ public class LuaCArchitecture implements Architecture {
         return determineMachineResult(l, results);
     }
 
-    private MachineResult shield(Runnable runnable) {
+    private MachineResult shield(Supplier<MachineResult> runnable) {
         try {
-            runnable.run();
-            return new MachineResult.ExecAsync();
+            return runnable.get();
         } catch (Exception e) {
             // TODO: More versatile error handling
             return new MachineResult.Error(e.getMessage());

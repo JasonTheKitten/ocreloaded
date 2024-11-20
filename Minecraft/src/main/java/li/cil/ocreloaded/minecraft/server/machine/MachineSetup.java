@@ -6,9 +6,11 @@ import java.util.Optional;
 
 import com.google.common.base.Supplier;
 
-import li.cil.ocreloaded.core.machine.MachineRegistry;
 import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
+import li.cil.ocreloaded.core.machine.MachineRegistry;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
+import li.cil.ocreloaded.minecraft.server.machine.fssup.FileSystemSupplierRegistry;
+import li.cil.ocreloaded.minecraft.server.machine.fssup.LootFileSystemSupplier;
 import li.cil.ocreloaded.minecraft.server.machine.lua.LuaMachineRegistryEntry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -18,6 +20,7 @@ public class MachineSetup {
     public static void setup(MinecraftServer server) {
         registerArchitectures(server);
         registerStartCode(server);
+        registerFilesystemSuppliers(server);
     }
 
     private static void registerArchitectures(MinecraftServer server) {
@@ -39,6 +42,11 @@ public class MachineSetup {
         ResourceLocation resourceLocation = new ResourceLocation(OCReloadedCommon.MOD_ID, "lua/bios.lua");
         Supplier<Optional<InputStream>> supplier = createCodeSupplier(server, resourceLocation);
         MachineCodeRegistry.getDefaultInstance().registerBiosCode("lua", supplier);
+    }
+
+    private static void registerFilesystemSuppliers(MinecraftServer server) {
+        ResourceLocation resourceLocation = new ResourceLocation(OCReloadedCommon.MOD_ID, "loot");
+        FileSystemSupplierRegistry.getDefaultInstance().register("loot", (uuid, data) -> LootFileSystemSupplier.createLootFS(server, resourceLocation, data));
     }
 
     private static Supplier<Optional<InputStream>> createCodeSupplier(MinecraftServer server, ResourceLocation resourceLocation) {

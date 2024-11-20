@@ -9,5 +9,9 @@ public interface Machine {
     void runSync();
 
     void runAsync();
+    
+    long uptime();
+
+    MachineParameters parameters();
 
 }

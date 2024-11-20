@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 import li.cil.ocreloaded.core.machine.architecture.component.base.Component;
 
 public record MachineParameters(
-    String id,
+    UUID id,
     Supplier<Optional<InputStream>> codeStreamSupplier,
     Supplier<Map<UUID, Component>> componentScanner,
     ExecutorService threadService

@@ -40,4 +40,6 @@ public interface Component {
      */
     void storeIntoState(PersistenceHolder holder);
 
+    default void dispose() {}
+
 }

@@ -11,12 +11,18 @@ public final class SystemAPI {
 
     public static void register(LuaState luaState, Machine machine) {
         APIRegistrationUtil.register(luaState, machine, "system", Map.of(
-            "timeout", SystemAPI::timeout
+            "timeout", SystemAPI::timeout,
+            "allowBytecode", SystemAPI::allowBytecode
         ));
     }
 
     private static int timeout(LuaState luaState, Machine machine) {
         luaState.pushNumber(5); // TODO: Implement config option
+        return 1;
+    }
+
+    private static int allowBytecode(LuaState luaState, Machine machine) {
+        luaState.pushBoolean(true); // TODO: Implement config option
         return 1;
     }
     

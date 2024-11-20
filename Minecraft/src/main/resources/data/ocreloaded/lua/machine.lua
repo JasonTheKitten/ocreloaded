@@ -1246,7 +1246,7 @@ local function isDirect(address, method)
       return info.direct
     end
   end
-  error("no such method", 1)
+  error("no such method: " .. method, 1)
 end
 
 local componentProxy = {

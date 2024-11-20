@@ -16,15 +16,32 @@ public class LuaCComponentCallArguments implements ComponentCallArguments {
     }
 
     @Override
+    public String checkString(int index) {
+        return luaState.checkString(this.index + index);
+    }
+
+    @Override
     public String optionalString(int index, String defaultValue) {
-        if (index < count && !luaState.isString(this.index + index)) {
-            throw new IllegalArgumentException(
-                "Expected string at index " + index + ", got " + luaState.typeName(this.index + index));
+        if (index >= count || luaState.isNoneOrNil(this.index + index)) {
+            return defaultValue;
         }
 
-        return index < count ?
-            luaState.toString(this.index + index) :
-            defaultValue;
+        return luaState.checkString(this.index + index);
+    }
+
+    @Override
+    public int checkInteger(int index) {
+        double number = luaState.toNumber(this.index + index);
+        return number > Integer.MAX_VALUE ? Integer.MAX_VALUE : number < Integer.MIN_VALUE ? Integer.MIN_VALUE : (int) number;
+    }
+
+    @Override
+    public int optionalInteger(int index, int defaultValue) {
+        if (index >= count || luaState.isNoneOrNil(this.index + index)) {
+            return defaultValue;
+        }
+
+        return checkInteger(this.index + index);
     }
 
 }

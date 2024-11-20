@@ -8,6 +8,7 @@ import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
 import li.cil.ocreloaded.minecraft.common.item.CPUItem;
 import li.cil.ocreloaded.minecraft.common.item.CardItem;
 import li.cil.ocreloaded.minecraft.common.item.EepromItem;
+import li.cil.ocreloaded.minecraft.common.item.FloppyDiskItem;
 import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
 import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
 import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
@@ -54,7 +55,7 @@ public class CaseMenu extends AbstractContainerMenu {
             new ComponentSlotEntry(1, 2, MemoryItem.class, SharedTextures.MEMORY_ICON, 3),
             new ComponentSlotEntry(2, 0, HardDiskItem.class, SharedTextures.HDD_ICON, 3),
             new ComponentSlotEntry(2, 1, HardDiskItem.class, SharedTextures.HDD_ICON, 2),
-            new ComponentSlotEntry(2, 2, HardDiskItem.class, SharedTextures.FLOPPY_ICON, 1)
+            new ComponentSlotEntry(2, 2, FloppyDiskItem.class, SharedTextures.FLOPPY_ICON, 1)
         ),
         List.of(
             new ComponentSlotEntry(0, 0, CardItem.class, SharedTextures.CARD_ICON, 3),
@@ -65,7 +66,7 @@ public class CaseMenu extends AbstractContainerMenu {
             new ComponentSlotEntry(1, 2, MemoryItem.class, SharedTextures.MEMORY_ICON, 3),
             new ComponentSlotEntry(2, 0, HardDiskItem.class, SharedTextures.HDD_ICON, 3),
             new ComponentSlotEntry(2, 1, HardDiskItem.class, SharedTextures.HDD_ICON, 3),
-            new ComponentSlotEntry(2, 2, HardDiskItem.class, SharedTextures.FLOPPY_ICON, 1)
+            new ComponentSlotEntry(2, 2, FloppyDiskItem.class, SharedTextures.FLOPPY_ICON, 1)
         )
     );
 

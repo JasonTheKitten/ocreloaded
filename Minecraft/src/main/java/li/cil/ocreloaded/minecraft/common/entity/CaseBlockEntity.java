@@ -17,6 +17,7 @@ import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
 import li.cil.ocreloaded.core.machine.MachineParameters;
 import li.cil.ocreloaded.core.machine.MachineRegistry;
 import li.cil.ocreloaded.core.machine.MachineRegistryEntry;
+import li.cil.ocreloaded.core.machine.architecture.component.ComputerComponent;
 import li.cil.ocreloaded.core.machine.architecture.component.base.Component;
 import li.cil.ocreloaded.minecraft.common.SettingsConstants;
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
@@ -40,6 +41,7 @@ public class CaseBlockEntity extends BlockEntity {
 
     private final NonNullList<ItemStack> items = NonNullList.withSize(10, ItemStack.EMPTY);
 
+    private UUID id = UUID.randomUUID();
     private boolean powered;
     private Optional<Machine> machine = Optional.empty();
     private Level oldLevel;
@@ -97,8 +99,8 @@ public class CaseBlockEntity extends BlockEntity {
         updateBlockState();
     }
 
-    public String getId() {
-        return "AAAAAAAAAAHHHHHHHHHHH";
+    public UUID getId() {
+        return this.id;
     }
 
     public Map<UUID, Component> scanComponents() {
@@ -147,6 +149,7 @@ public class CaseBlockEntity extends BlockEntity {
 
             components.put(component.getId(), component);
         }
+        components.put(id, new ComputerComponent());
     }
 
     private Optional<Machine> createMachine() {

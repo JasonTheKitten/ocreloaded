@@ -10,7 +10,7 @@ import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
 import li.cil.ocreloaded.minecraft.common.item.CPUItem;
 import li.cil.ocreloaded.minecraft.common.item.CardItem;
 import li.cil.ocreloaded.minecraft.common.item.EepromItem;
-import li.cil.ocreloaded.minecraft.common.item.FloppyItem;
+import li.cil.ocreloaded.minecraft.common.item.FloppyDiskItem;
 import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
 import li.cil.ocreloaded.minecraft.common.item.LuaEepromItem;
 import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
@@ -29,11 +29,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class CommonRegistered {
-
-    private static final String[] FLOPPY_COLORS = {
-        "black", "blue", "brown", "cyan", "green", "lightblue", "lightgray",
-        "lime", "magenta", "orange", "pink", "purple", "red", "white", "yellow"
-    };
 
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(OCReloadedCommon.MOD_ID, Registries.BLOCK);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(OCReloadedCommon.MOD_ID, Registries.ITEM);
@@ -80,7 +75,7 @@ public class CommonRegistered {
     public static final RegistrySupplier<Item> DATACARD_TIER_3 = ITEMS.register("datacard3", () -> new CardItem(DEFAULT_ITEM_PROPERTIES, 3));
     public static final RegistrySupplier<Item> EEPROM = ITEMS.register("eeprom", () -> new EepromItem(DEFAULT_ITEM_PROPERTIES));
     public static final RegistrySupplier<Item> EEPROM_LUA = ITEMS.register("eeprom_lua", () -> new LuaEepromItem(DEFAULT_ITEM_PROPERTIES));
-    public static final RegistrySupplier<Item> FLOPPY = ITEMS.register("floppy_dyegray", () -> new FloppyItem(DEFAULT_ITEM_PROPERTIES));
+    public static final RegistrySupplier<Item> FLOPPY = ITEMS.register("floppy", () -> new FloppyDiskItem(DEFAULT_ITEM_PROPERTIES));
     public static final RegistrySupplier<Item> GRAPHICSCARD_TIER_1 = ITEMS.register("graphicscard1", () -> new CardItem(DEFAULT_ITEM_PROPERTIES, 1));
     public static final RegistrySupplier<Item> GRAPHICSCARD_TIER_2 = ITEMS.register("graphicscard2", () -> new CardItem(DEFAULT_ITEM_PROPERTIES, 2));
     public static final RegistrySupplier<Item> GRAPHICSCARD_TIER_3 = ITEMS.register("graphicscard3", () -> new CardItem(DEFAULT_ITEM_PROPERTIES, 3));
@@ -93,12 +88,8 @@ public class CommonRegistered {
     public static final RegistrySupplier<Item> MEMORY_TIER_2_5 = ITEMS.register("memory2_5", () -> new MemoryItem(DEFAULT_ITEM_PROPERTIES, 2));
     public static final RegistrySupplier<Item> MEMORY_TIER_3 = ITEMS.register("memory3", () -> new MemoryItem(DEFAULT_ITEM_PROPERTIES, 3));
     public static final RegistrySupplier<Item> MEMORY_TIER_3_5 = ITEMS.register("memory3_5", () -> new MemoryItem(DEFAULT_ITEM_PROPERTIES, 3));
-    
-    static {
-        for (String color : FLOPPY_COLORS) {
-            ITEMS.register("floppy_dye" + color, () -> new FloppyItem(new Item.Properties()));
-        }
-    }
+
+    public static final RegistrySupplier<Item> FLOPPY_OPENOS = ITEMS.register("floppy_openos", () -> new FloppyDiskItem(DEFAULT_ITEM_PROPERTIES, "loot:openos"));
 
     // Menu types
     public static final RegistrySupplier<MenuType<CaseMenu>> CASE_MENU_TYPE = MENUS.register("case", () -> MenuRegistry.ofExtended(CaseMenu::new));

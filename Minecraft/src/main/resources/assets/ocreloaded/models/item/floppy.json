@@ -1,0 +1,104 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "ocreloaded:item/floppy_dyegray"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "ocreloaded_color": 0
+            },
+            "model": "ocreloaded:item/floppy_dyeblack"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 1
+            },
+            "model": "ocreloaded:item/floppy_dyered"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 2
+            },
+            "model": "ocreloaded:item/floppy_dyegreen"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 3
+            },
+            "model": "ocreloaded:item/floppy_dyebrown"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 4
+            },
+            "model": "ocreloaded:item/floppy_dyeblue"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 5
+            },
+            "model": "ocreloaded:item/floppy_dyepurple"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 6
+            },
+            "model": "ocreloaded:item/floppy_dyecyan"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 7
+            },
+            "model": "ocreloaded:item/floppy_dyelightgray"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 8
+            },
+            "model": "ocreloaded:item/floppy_dyegray"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 9
+            },
+            "model": "ocreloaded:item/floppy_dyepink"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 10
+            },
+            "model": "ocreloaded:item/floppy_dyelime"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 11
+            },
+            "model": "ocreloaded:item/floppy_dyeyellow"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 12
+            },
+            "model": "ocreloaded:item/floppy_dyelightblue"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 13
+            },
+            "model": "ocreloaded:item/floppy_dyemagenta"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 14
+            },
+            "model": "ocreloaded:item/floppy_dyeorange"
+        },
+        {
+            "predicate": {
+                "ocreloaded_color": 15
+            },
+            "model": "ocreloaded:item/floppy_dyewhite"
+        }
+    ]
+}

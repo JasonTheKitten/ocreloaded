@@ -24,6 +24,7 @@ public class ArchitectureMachine implements Machine {
     private final Deque<State> state = new ArrayDeque<>(List.of(State.STOPPED));
 
     private int waitTicks = 0;
+    private long startTime = 0;
 
     public ArchitectureMachine(Function<Machine, Architecture> architectureFactory, MachineParameters parameters) {
         this.architecture = architectureFactory.apply(this);
@@ -82,10 +83,21 @@ public class ArchitectureMachine implements Machine {
         handleMachineResult(architecture.resume());
     }
 
+    @Override
+    public long uptime() {
+        return System.currentTimeMillis() - startTime;
+    }
+
+    @Override
+    public MachineParameters parameters() {
+        return parameters;
+    }
+
     private boolean startInternal() {
         Optional<InputStream> codeStream = parameters.codeStreamSupplier().get();
         if (codeStream.isEmpty()) return false;
 
+        startTime = System.currentTimeMillis();
         MachineResult result = architecture.start(codeStream.get());
         handleMachineResult(result);
 

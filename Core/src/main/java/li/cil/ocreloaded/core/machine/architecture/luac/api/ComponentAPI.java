@@ -1,5 +1,6 @@
 package li.cil.ocreloaded.core.machine.architecture.luac.api;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
@@ -21,7 +22,9 @@ public final class ComponentAPI {
         APIRegistrationUtil.register(luaState, machine, "component", Map.of(
             "list", ComponentAPI::list,
             "invoke", ComponentAPI::invoke,
-            "methods", ComponentAPI::methods
+            "methods", ComponentAPI::methods,
+            "type", ComponentAPI::type,
+            "slot", ComponentAPI::slot
         ));
     }
 
@@ -52,6 +55,12 @@ public final class ComponentAPI {
 
         Map<UUID, Component> components = ((ArchitectureMachine) machine).getComponents();
         Component component = components.get(UUID.fromString(componentId));
+        if (component == null) {
+            luaState.pushNil();
+            luaState.pushString("no such component");
+            return 2;
+        }
+
         Map<String, ComponentCall> componentCalls = component.componentCalls();
 
         luaState.newTable();
@@ -109,6 +118,36 @@ public final class ComponentAPI {
         return result.result().length + 1;
     }
 
+    private static int type(LuaState luaState, Machine machine) {
+        String componentId = luaState.checkString(1);
+
+        Map<UUID, Component> components = ((ArchitectureMachine) machine).getComponents();
+        Component component = components.get(UUID.fromString(componentId));
+        if (component == null) {
+            luaState.pushNil();
+            luaState.pushString("no such component");
+            return 2;
+        }
+
+        luaState.pushString(component.getType());
+        return 1;
+    }
+
+    private static int slot(LuaState luaState, Machine machine) {
+        String componentId = luaState.checkString(1);
+
+        Map<UUID, Component> components = ((ArchitectureMachine) machine).getComponents();
+        Component component = components.get(UUID.fromString(componentId));
+        if (component == null) {
+            luaState.pushNil();
+            luaState.pushString("no such component");
+            return 2;
+        }
+
+        luaState.pushNumber(-1); // TODO: Implement
+        return 1;
+    }
+
     private static void pushValue(LuaState luaState, Object o) {
         if (o instanceof String) {
             luaState.pushString((String) o);
@@ -116,6 +155,13 @@ public final class ComponentAPI {
             luaState.pushNumber(((Number) o).doubleValue());
         } else if (o instanceof Boolean) {
             luaState.pushBoolean((Boolean) o);
+        } else if (o instanceof List oList) {
+            luaState.newTable();
+            for (int i = 0; i < oList.size(); i++) {
+                luaState.pushNumber(i + 1);
+                pushValue(luaState, oList.get(i));
+                luaState.setTable(-3);
+            }
         } else {
             luaState.pushNil();
         }
