@@ -1,4 +1,4 @@
-package li.cil.ocreloaded.core.machine.architecture.component.base;
+package li.cil.ocreloaded.core.machine.component;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import li.cil.ocreloaded.core.machine.PersistenceHolder;
-import li.cil.ocreloaded.core.machine.architecture.component.base.ComponentCall.ComponentCallResult;
+import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResult;
 
 public abstract class AnnotatedComponent implements Component {
     

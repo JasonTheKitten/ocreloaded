@@ -7,7 +7,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
 
-import li.cil.ocreloaded.core.machine.architecture.component.base.Component;
+import li.cil.ocreloaded.core.machine.component.Component;
 
 public record MachineParameters(
     UUID id,

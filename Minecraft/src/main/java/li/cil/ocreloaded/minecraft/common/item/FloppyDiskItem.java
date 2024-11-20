@@ -1,7 +1,7 @@
 package li.cil.ocreloaded.minecraft.common.item;
 
-import li.cil.ocreloaded.core.machine.architecture.component.FilesystemComponent;
-import li.cil.ocreloaded.core.machine.architecture.component.base.Component;
+import li.cil.ocreloaded.core.component.FilesystemComponent;
+import li.cil.ocreloaded.core.machine.component.Component;
 import li.cil.ocreloaded.core.machine.fs.FileSystem;
 import li.cil.ocreloaded.minecraft.server.machine.fssup.FileSystemSupplierRegistry;
 import net.minecraft.world.item.Item;

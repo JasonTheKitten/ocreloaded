@@ -1,6 +1,6 @@
 package li.cil.ocreloaded.core.machine.architecture.luac;
 
-import li.cil.ocreloaded.core.machine.architecture.component.base.ComponentCallArguments;
+import li.cil.ocreloaded.core.machine.component.ComponentCallArguments;
 import li.cil.repack.com.naef.jnlua.LuaState;
 
 public class LuaCComponentCallArguments implements ComponentCallArguments {

@@ -7,9 +7,9 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import li.cil.ocreloaded.core.component.EepromComponent;
 import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
-import li.cil.ocreloaded.core.machine.architecture.component.EepromComponent;
-import li.cil.ocreloaded.core.machine.architecture.component.base.Component;
+import li.cil.ocreloaded.core.machine.component.Component;
 
 public class LuaEepromItem extends EepromItem {
 

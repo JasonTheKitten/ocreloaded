@@ -12,13 +12,13 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import li.cil.ocreloaded.core.component.ComputerComponent;
 import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
 import li.cil.ocreloaded.core.machine.MachineParameters;
 import li.cil.ocreloaded.core.machine.MachineRegistry;
 import li.cil.ocreloaded.core.machine.MachineRegistryEntry;
-import li.cil.ocreloaded.core.machine.architecture.component.ComputerComponent;
-import li.cil.ocreloaded.core.machine.architecture.component.base.Component;
+import li.cil.ocreloaded.core.machine.component.Component;
 import li.cil.ocreloaded.minecraft.common.SettingsConstants;
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
 import li.cil.ocreloaded.minecraft.common.item.ComponentItem;

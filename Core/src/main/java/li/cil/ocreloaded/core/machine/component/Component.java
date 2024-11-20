@@ -1,4 +1,4 @@
-package li.cil.ocreloaded.core.machine.architecture.component.base;
+package li.cil.ocreloaded.core.machine.component;
 
 import java.util.Map;
 import java.util.UUID;

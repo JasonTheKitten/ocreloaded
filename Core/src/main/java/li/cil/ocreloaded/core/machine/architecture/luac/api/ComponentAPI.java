@@ -7,11 +7,11 @@ import java.util.function.Function;
 
 import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.architecture.ArchitectureMachine;
-import li.cil.ocreloaded.core.machine.architecture.component.base.Component;
-import li.cil.ocreloaded.core.machine.architecture.component.base.ComponentCall;
-import li.cil.ocreloaded.core.machine.architecture.component.base.ComponentCallContext;
-import li.cil.ocreloaded.core.machine.architecture.component.base.ComponentMethod;
 import li.cil.ocreloaded.core.machine.architecture.luac.LuaCComponentCallArguments;
+import li.cil.ocreloaded.core.machine.component.Component;
+import li.cil.ocreloaded.core.machine.component.ComponentCall;
+import li.cil.ocreloaded.core.machine.component.ComponentCallContext;
+import li.cil.ocreloaded.core.machine.component.ComponentMethod;
 import li.cil.repack.com.naef.jnlua.LuaState;
 
 public final class ComponentAPI {

@@ -1,7 +1,7 @@
 package li.cil.ocreloaded.minecraft.common.item;
 
-import li.cil.ocreloaded.core.machine.architecture.component.EepromComponent;
-import li.cil.ocreloaded.core.machine.architecture.component.base.Component;
+import li.cil.ocreloaded.core.component.EepromComponent;
+import li.cil.ocreloaded.core.machine.component.Component;
 import net.minecraft.world.item.Item;
 
 public class EepromItem extends Item implements ComponentItem {
