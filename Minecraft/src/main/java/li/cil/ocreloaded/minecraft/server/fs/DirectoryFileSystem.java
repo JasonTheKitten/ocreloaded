@@ -12,6 +12,18 @@ public class DirectoryFileSystem implements FileSystem {
     }
 
     @Override
+    public boolean isReadOnly() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isReadOnly'");
+    }
+
+    @Override
+    public boolean exists(String path) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'exists'");
+    }
+
+    @Override
     public boolean isDirectory(String path) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'isDirectory'");

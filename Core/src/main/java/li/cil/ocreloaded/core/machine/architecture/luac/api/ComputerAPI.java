@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.core.machine.architecture.luac.api;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import li.cil.ocreloaded.core.machine.Machine;
@@ -13,7 +15,11 @@ public final class ComputerAPI {
         APIRegistrationUtil.register(luaState, machine, "computer", Map.of(
             "realTime", ComputerAPI::realTime,
             "uptime", ComputerAPI::uptime,
-            "address", ComputerAPI::address
+            "address", ComputerAPI::address,
+            "freeMemory", ComputerAPI::freeMemory,
+            "totalMemory", ComputerAPI::totalMemory,
+            "pushSignal", ComputerAPI::pushSignal,
+            "tmpAddress", ComputerAPI::tmpAddress
         ));
     }
 
@@ -30,6 +36,36 @@ public final class ComputerAPI {
     private static int address(LuaState luaState, Machine machine) {
         luaState.pushString(machine.parameters().id().toString());
         return 1;
+    }
+
+    private static int freeMemory(LuaState luaState, Machine machine) {
+        // TODO: Consider kernel memory usage
+        luaState.pushNumber(Runtime.getRuntime().freeMemory());
+        return 1;
+    }
+
+    private static int totalMemory(LuaState luaState, Machine machine) {
+        luaState.pushNumber(Runtime.getRuntime().totalMemory());
+        return 1;
+    }
+
+    private static int pushSignal(LuaState luaState, Machine machine) {
+        List<Object> signalInfo = new ArrayList<>();
+
+        String signalName = luaState.checkString(1);
+        for (int i = 2; i <= luaState.getTop(); i++) {
+            signalInfo.add(luaState.toJavaObjectRaw(i));
+        }
+
+        luaState.pushBoolean(machine.signal(signalName, signalInfo.toArray()));
+
+        return 1;
+    }
+
+    private static int tmpAddress(LuaState luaState, Machine machine) {
+        // TODO: Implement tmpAddress
+        luaState.pushNil();
+        return 0;
     }
 
 }

@@ -25,6 +25,19 @@ public class ArchiveFileSystem implements FileSystem {
     }
 
     @Override
+    public boolean isReadOnly() {
+        return true;
+    }
+
+    @Override
+    public boolean exists(String path) {
+        return archive.entries.keySet().stream()
+            .anyMatch(entry ->
+                entry.startsWith(PathUtil.minimizePath(archive.prefix + "/" + path) + "/")
+                || entry.equals(PathUtil.minimizePath(archive.prefix + "/" + path)));
+    }
+
+    @Override
     public boolean isDirectory(String path) {
         // TODO: A bit of a hack, may not detect empty directories correctly
         String fixedPath = PathUtil.minimizePath(archive.prefix + "/" + path) + "/";

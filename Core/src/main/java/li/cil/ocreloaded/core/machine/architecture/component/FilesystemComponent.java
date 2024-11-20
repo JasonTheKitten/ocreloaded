@@ -24,6 +24,17 @@ public class FilesystemComponent extends AnnotatedComponent {
         this.filesystem = filesystem;
     }
 
+    @ComponentMethod(direct = true, doc = "function():boolean -- Returns whether the file system is read-only.")
+    public ComponentCallResult isReadOnly(ComponentCallContext context, ComponentCallArguments arguments) {
+        return ComponentCallResult.success(filesystem.isReadOnly());
+    }
+
+    @ComponentMethod(direct = true, doc = "function(path:string):boolean -- Returns whether an object exists at the specified absolute path in the file system.")
+    public ComponentCallResult exists(ComponentCallContext context, ComponentCallArguments arguments) {
+        String path = PathUtil.minimizePath(arguments.checkString(0));
+        return ComponentCallResult.success(filesystem.exists(path));
+    }
+
     @ComponentMethod(direct = true, doc = "function(path:string):boolean -- Returns whether the object at the specified absolute path in the file system is a directory.")
     public ComponentCallResult isDirectory(ComponentCallContext context, ComponentCallArguments arguments) {
         String path = PathUtil.minimizePath(arguments.checkString(0));

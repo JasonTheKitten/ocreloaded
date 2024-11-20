@@ -38,6 +38,11 @@ public abstract class AnnotatedComponent implements Component {
         this.type = type;
     }
 
+    protected AnnotatedComponent(String type, UUID id) {
+        this(type);
+        this.id = id;
+    }
+
     @Override
     public UUID getId() {
         return id;
@@ -56,7 +61,7 @@ public abstract class AnnotatedComponent implements Component {
     @Override
     public void loadFromState(PersistenceHolder holder) {
         if (!(holder.hasKey("INTERNAL_ID1") && holder.hasKey("INTERNAL_ID2"))) {
-            id = UUID.randomUUID();
+            if (id == null) id = UUID.randomUUID();
         } else {
             id = new UUID(
                     holder.loadLong("INTERNAL_ID1"),

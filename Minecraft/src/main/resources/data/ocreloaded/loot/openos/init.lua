@@ -10,14 +10,7 @@ do
     invoke(addr, "close", handle)
     return load(buffer, "=" .. file, "bt", _G)
   end
-  local err
-  xpcall(function()
-    loadfile("/lib/core/boot.lua")(loadfile)
-  end, function(msg)
-    err = tostring(msg).."\n"..debug.traceback().."\n"
-  end)
-  error(err, 0)
-  --loadfile("/lib/core/boot.lua")(loadfile)
+  loadfile("/lib/core/boot.lua")(loadfile)
 end
 
 while true do

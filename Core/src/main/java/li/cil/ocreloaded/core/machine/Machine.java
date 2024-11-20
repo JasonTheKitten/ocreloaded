@@ -9,9 +9,15 @@ public interface Machine {
     void runSync();
 
     void runAsync();
+
+    boolean signal(String name, Object... args);
+
+    Signal popSignal();
     
     long uptime();
 
     MachineParameters parameters();
+
+    public static record Signal(String name, Object[] args) {}
 
 }

@@ -22,6 +22,7 @@ public class ArchitectureMachine implements Machine {
     private final MachineParameters parameters;
 
     private final Deque<State> state = new ArrayDeque<>(List.of(State.STOPPED));
+    private final Deque<Signal> signals = new ArrayDeque<>();
 
     private int waitTicks = 0;
     private long startTime = 0;
@@ -66,7 +67,7 @@ public class ArchitectureMachine implements Machine {
             // TODO: Event queue
             if (waitTicks <= 0) {
                 state.pop();
-                state.push(State.ASYNC);
+                setState(State.ASYNC);
             }
         }
 
@@ -81,6 +82,19 @@ public class ArchitectureMachine implements Machine {
         state.pop();
 
         handleMachineResult(architecture.resume());
+    }
+
+    @Override
+    public boolean signal(String name, Object... args) {
+        signals.push(new Signal(name, args));
+
+        return true;
+    }
+
+    @Override
+    public Signal popSignal() {
+        if (signals.isEmpty()) return null;
+        return signals.poll();
     }
 
     @Override

@@ -11,12 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import li.cil.ocreloaded.core.machine.Machine;
+import li.cil.ocreloaded.core.machine.Machine.Signal;
 import li.cil.ocreloaded.core.machine.MachineResult;
 import li.cil.ocreloaded.core.machine.architecture.Architecture;
 import li.cil.ocreloaded.core.machine.architecture.luac.api.ComponentAPI;
 import li.cil.ocreloaded.core.machine.architecture.luac.api.ComputerAPI;
 import li.cil.ocreloaded.core.machine.architecture.luac.api.OSAPI;
 import li.cil.ocreloaded.core.machine.architecture.luac.api.SystemAPI;
+import li.cil.ocreloaded.core.machine.architecture.luac.api.UnicodeAPI;
 import li.cil.repack.com.naef.jnlua.LuaState;
 import li.cil.repack.com.naef.jnlua.LuaState.Library;
 import li.cil.repack.com.naef.jnlua.LuaType;
@@ -26,7 +28,7 @@ public class LuaCArchitecture implements Architecture {
     private static final Logger LOGGER = LoggerFactory.getLogger(LuaCArchitecture.class);
 
     private static final List<BiConsumer<LuaState, Machine>> API_REGISTRATIONS = List.of(
-        ComputerAPI::register, OSAPI::register, ComponentAPI::register, SystemAPI::register
+        ComputerAPI::register, OSAPI::register, ComponentAPI::register, SystemAPI::register, UnicodeAPI::register
     );
 
     private static final List<Library> LIBRARIES = List.of(
@@ -79,7 +81,7 @@ public class LuaCArchitecture implements Architecture {
             return new MachineResult.Error("Machine not running");
         }
         LuaState l = luaState.get();
-        LoggerFactory.getLogger(LuaCArchitecture.class).info("Resuming machine with state: " + state);
+        LOGGER.trace("Resuming machine with state: " + state);
         return switch (state) {
             case STOPPED -> new MachineResult.Error("Cannot resume");
             case SYNC_CALL -> shield(() -> handleSyncCall(l));
@@ -115,15 +117,25 @@ public class LuaCArchitecture implements Architecture {
         if (!(l.getTop() == 2 && l.isThread(1) && l.isTable(2))) {
             return new MachineResult.Error("Invalid stack state");
         }
-
         int results = l.resume(1, 1);
 
         return determineMachineResult(l, results);
     }
 
     private MachineResult handleNormal(LuaState l) {
-        // TODO: Push the event queue
-        int results = l.resume(1, 0);
+        if (!l.isThread(1)) {
+            return new MachineResult.Error("Invalid stack state");
+        }
+
+        Signal signal = machine.popSignal();
+        if (signal != null) {
+            l.pushString(signal.name());
+            for (Object arg : signal.args()) {
+                l.pushJavaObject(arg);
+            }
+        }
+
+        int results = l.resume(1, signal != null ? signal.args().length + 1 : 0);
 
         return determineMachineResult(l, results);
     }
@@ -157,9 +169,13 @@ public class LuaCArchitecture implements Architecture {
         } else if (results == 1 && l.isNumber(2)) {
             // Bounded Wait
             waitTicks = l.toInteger(2) * 20;
+            state = ArchState.YIELD;
             // No Ret
+        } else {
+            state = ArchState.YIELD;
         }
         l.pop(results);
+
         return new MachineResult.Wait(waitTicks);
     }
 

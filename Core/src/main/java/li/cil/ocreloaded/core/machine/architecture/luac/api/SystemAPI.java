@@ -12,7 +12,8 @@ public final class SystemAPI {
     public static void register(LuaState luaState, Machine machine) {
         APIRegistrationUtil.register(luaState, machine, "system", Map.of(
             "timeout", SystemAPI::timeout,
-            "allowBytecode", SystemAPI::allowBytecode
+            "allowBytecode", SystemAPI::allowBytecode,
+            "allowGC", SystemAPI::allowGC
         ));
     }
 
@@ -26,4 +27,9 @@ public final class SystemAPI {
         return 1;
     }
     
+    private static int allowGC(LuaState luaState, Machine machine) {
+        luaState.pushBoolean(true); // TODO: Implement config option
+        return 1;
+    }
+
 }

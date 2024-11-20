@@ -149,7 +149,7 @@ public class CaseBlockEntity extends BlockEntity {
 
             components.put(component.getId(), component);
         }
-        components.put(id, new ComputerComponent());
+        components.put(id, new ComputerComponent(id));
     }
 
     private Optional<Machine> createMachine() {

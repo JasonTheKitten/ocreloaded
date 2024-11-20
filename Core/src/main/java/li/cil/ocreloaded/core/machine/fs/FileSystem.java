@@ -5,6 +5,10 @@ import java.util.List;
 
 public interface FileSystem {
 
+    boolean isReadOnly();
+
+    boolean exists(String path);
+
     boolean isDirectory(String path);
 
     List<String> list(String path);
