@@ -54,15 +54,22 @@ public class ScreenBorderRenderer {
 
         boolean up = sideProperty(blockState, screenDirection, attachFace, Side.TOP);
         boolean down = sideProperty(blockState, screenDirection, attachFace, Side.BOTTOM);
-        String upDown = switch(side) {
-            case FRONT, BACK, LEFT, RIGHT -> selectPart(up, down, "single", "bottom", "top", "middle");
-            case TOP, BOTTOM -> "single";
-        };
 
         boolean left = sideProperty(blockState, screenDirection, attachFace, Side.LEFT);
         boolean right = sideProperty(blockState, screenDirection, attachFace, Side.RIGHT);
-        String leftRight = switch(side) {
-            case FRONT, TOP, BOTTOM -> selectPart(left, right, "single", "right", "left", "middle");
+
+        boolean isTopNonWall = attachFace != AttachFace.WALL && side == Side.TOP;
+        boolean isSideNonWall = attachFace != AttachFace.WALL && (side == Side.LEFT || side == Side.RIGHT);
+        
+        String upDown = isSideNonWall ? "single" : switch(side) {
+            case FRONT, BACK, LEFT, RIGHT -> selectPart(up, down, "single", "bottom", "top", "middle");
+            case TOP, BOTTOM -> "single";
+        };
+        String leftRight = isSideNonWall ? selectPart(up, down, "single", "left", "right", "middle") : switch(side) {
+            case FRONT, TOP, BOTTOM -> selectPart(
+                isTopNonWall ? right: left,
+                isTopNonWall ? left : right,
+                "single", "right", "left", "middle");
             case BACK -> selectPart(left, right, "single", "left", "right", "middle");
             case LEFT, RIGHT -> "single";
         };
@@ -75,7 +82,7 @@ public class ScreenBorderRenderer {
         textureName.append("_");
         textureName.append(leftRight);
 
-        if (direction != Direction.UP && direction != Direction.DOWN && !down) {
+        if (direction != Direction.UP && direction != Direction.DOWN && (attachFace != AttachFace.WALL || !down)) {
             textureName.append("_side");
         }
 
@@ -101,8 +108,6 @@ public class ScreenBorderRenderer {
         // Block origin
         poseStack.translate(.5, .5, .5);
 
-        
-
         // Next, rotate to front
         switch (screenDirection) {
             case NORTH -> poseStack.mulPose(Axis.YP.rotationDegrees(0));
@@ -112,20 +117,28 @@ public class ScreenBorderRenderer {
             default -> poseStack.mulPose(Axis.YP.rotationDegrees(0));
         }
 
-        switch (attachFace) {
-            case FLOOR -> poseStack.mulPose(Axis.XP.rotationDegrees(270));
-            case CEILING -> poseStack.mulPose(Axis.XP.rotationDegrees(90));
-            default -> poseStack.mulPose(Axis.XP.rotationDegrees(0));
-        }
-
-        // Rotate to the side
-        switch (side) {
-            case FRONT -> poseStack.mulPose(Axis.YP.rotationDegrees(0));
-            case BACK -> poseStack.mulPose(Axis.YP.rotationDegrees(180));
-            case LEFT -> poseStack.mulPose(Axis.YP.rotationDegrees(270));
-            case RIGHT -> poseStack.mulPose(Axis.YP.rotationDegrees(90));
-            case TOP -> poseStack.mulPose(Axis.XP.rotationDegrees(90));
-            case BOTTOM -> poseStack.mulPose(Axis.XP.rotationDegrees(270));
+        // Finally, rotate to side
+        if (attachFace == AttachFace.WALL) {
+            switch (side) {
+                case FRONT -> poseStack.mulPose(Axis.YP.rotationDegrees(0));
+                case BACK -> poseStack.mulPose(Axis.YP.rotationDegrees(180));
+                case LEFT -> poseStack.mulPose(Axis.YP.rotationDegrees(270));
+                case RIGHT -> poseStack.mulPose(Axis.YP.rotationDegrees(90));
+                case TOP -> poseStack.mulPose(Axis.XP.rotationDegrees(90));
+                case BOTTOM -> poseStack.mulPose(Axis.XP.rotationDegrees(270));
+            }
+        } else {
+            switch (side) {
+                case TOP -> poseStack.mulPose(Axis.YP.rotationDegrees(180));
+                case BOTTOM -> poseStack.mulPose(Axis.YP.rotationDegrees(0));
+                case LEFT -> poseStack.mulPose(Axis.YP.rotationDegrees(270));
+                case RIGHT -> poseStack.mulPose(Axis.YP.rotationDegrees(90));
+                case FRONT -> poseStack.mulPose(Axis.XP.rotationDegrees(attachFace == AttachFace.FLOOR ? 270 : 90));
+                case BACK -> poseStack.mulPose(Axis.XP.rotationDegrees(attachFace == AttachFace.FLOOR ? 90 : 270));
+            }
+            if (side == Side.BACK) {
+                poseStack.mulPose(Axis.ZP.rotationDegrees(180));
+            }
         }
     }
 
