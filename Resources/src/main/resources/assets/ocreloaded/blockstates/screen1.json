@@ -1,0 +1,16 @@
+{
+    "multipart": [
+        { "when": { "facing": "north", "face": "wall" }, "apply": { "model": "ocreloaded:block/screen", "y": 0 } },
+        { "when": { "facing": "east", "face": "wall" }, "apply": { "model": "ocreloaded:block/screen", "y": 90 } },
+        { "when": { "facing": "south", "face": "wall" }, "apply": { "model": "ocreloaded:block/screen", "y": 180 } },
+        { "when": { "facing": "west", "face": "wall" }, "apply": { "model": "ocreloaded:block/screen", "y": 270 } },
+        { "when": { "facing": "north", "face": "ceiling" }, "apply": { "model": "ocreloaded:block/screen", "x": 270, "y": 0 } },
+        { "when": { "facing": "east", "face": "ceiling" }, "apply": { "model": "ocreloaded:block/screen", "x": 270, "y": 90 } },
+        { "when": { "facing": "south", "face": "ceiling" }, "apply": { "model": "ocreloaded:block/screen", "x": 270, "y": 180 } },
+        { "when": { "facing": "west", "face": "ceiling" }, "apply": { "model": "ocreloaded:block/screen", "x": 270, "y": 270 } },
+        { "when": { "facing": "north", "face": "floor" }, "apply": { "model": "ocreloaded:block/screen", "x": 90, "y": 0 } },
+        { "when": { "facing": "east", "face": "floor" }, "apply": { "model": "ocreloaded:block/screen", "x": 90, "y": 90 } },
+        { "when": { "facing": "south", "face": "floor" }, "apply": { "model": "ocreloaded:block/screen", "x": 90, "y": 180 } },
+        { "when": { "facing": "west", "face": "floor" }, "apply": { "model": "ocreloaded:block/screen", "x": 90, "y": 270 } }
+    ]
+}
