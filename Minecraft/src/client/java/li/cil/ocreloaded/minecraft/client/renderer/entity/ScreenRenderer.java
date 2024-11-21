@@ -9,11 +9,16 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
 public class ScreenRenderer implements BlockEntityRenderer<ScreenBlockEntity> {
 
+    private ScreenBorderRenderer borderRenderer = new ScreenBorderRenderer();
+
     public ScreenRenderer(BlockEntityRendererProvider.Context context) {}
 
     @Override
-    public void render(ScreenBlockEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        
+    public void render(
+        ScreenBlockEntity blockEntity, float partialTick, PoseStack poseStack,
+        MultiBufferSource bufferSource, int combinedLight, int combinedOverlay
+    ) {
+        borderRenderer.render(blockEntity, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay);
     }
     
 }
