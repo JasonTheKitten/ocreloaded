@@ -25,7 +25,7 @@ public class ScreenBorderRenderer {
         MultiBufferSource bufferSource, int combinedLight, int combinedOverlay
     ) {
         for (Side side : Side.values()) {
-            renderSide(poseStack, blockEntity, bufferSource, side, RenderUtil.FULL_BRIGHTNESS);
+            renderSide(poseStack, blockEntity, bufferSource, side, combinedLight);
         }
     }
 
@@ -35,7 +35,11 @@ public class ScreenBorderRenderer {
 
         String textureName = determineTextureName(blockEntity, side);
         ResourceLocation textureLocation = new ResourceLocation(OCReloadedCommon.MOD_ID, textureName);
-        RenderUtil.renderOverlayTexture(poseStack, bufferSource, textureLocation, brightness);
+        Direction direction = getDirectionForSide(
+            blockEntity.getBlockState().getValue(ScreenBlock.FACING),
+            blockEntity.getBlockState().getValue(ScreenBlock.ATTACH_FACE),
+            side);
+        RenderUtil.renderSideTexture(poseStack, bufferSource, textureLocation, blockEntity.getLevel(), blockEntity.getBlockPos(), direction);
 
         poseStack.popPose();
     }
@@ -60,19 +64,23 @@ public class ScreenBorderRenderer {
 
         boolean isTopNonWall = attachFace != AttachFace.WALL && side == Side.TOP;
         boolean isSideNonWall = attachFace != AttachFace.WALL && (side == Side.LEFT || side == Side.RIGHT);
+        boolean isInvertedNonWall = (attachFace == AttachFace.FLOOR && side == Side.LEFT) || (attachFace == AttachFace.CEILING && side == Side.RIGHT);
         
         String upDown = isSideNonWall ? "single" : switch(side) {
             case FRONT, BACK, LEFT, RIGHT -> selectPart(up, down, "single", "bottom", "top", "middle");
             case TOP, BOTTOM -> "single";
         };
-        String leftRight = isSideNonWall ? selectPart(up, down, "single", "left", "right", "middle") : switch(side) {
-            case FRONT, TOP, BOTTOM -> selectPart(
-                isTopNonWall ? right: left,
-                isTopNonWall ? left : right,
-                "single", "right", "left", "middle");
-            case BACK -> selectPart(left, right, "single", "left", "right", "middle");
-            case LEFT, RIGHT -> "single";
-        };
+        String leftRight =
+            isInvertedNonWall ? selectPart(up, down, "single", "left", "right", "middle") :
+            isSideNonWall ? selectPart(up, down, "single", "right", "left", "middle") :
+            switch(side) {
+                case FRONT, TOP, BOTTOM -> selectPart(
+                    isTopNonWall ? right: left,
+                    isTopNonWall ? left : right,
+                    "single", "right", "left", "middle");
+                case BACK -> selectPart(left, right, "single", "left", "right", "middle");
+                case LEFT, RIGHT -> "single";
+            };
 
         StringBuilder textureName = new StringBuilder("block/screen/");
         textureName.append(side == Side.FRONT ? "front" : "back");

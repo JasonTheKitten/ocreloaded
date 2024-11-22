@@ -55,7 +55,7 @@ public class CommonRegistered {
     ));
 
     // Default properties
-    private static final BlockBehaviour.Properties DEFAULT_BLOCK_PROPERTIES = BlockBehaviour.Properties.of().strength(2f);
+    private static final BlockBehaviour.Properties DEFAULT_BLOCK_PROPERTIES = BlockBehaviour.Properties.of().strength(2f).noOcclusion();
     private static final Item.Properties DEFAULT_ITEM_PROPERTIES = new Item.Properties().arch$tab(CREATIVE_TAB);
 
     // Blocks

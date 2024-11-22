@@ -40,11 +40,6 @@ public class ScreenBlockEntity extends BlockEntity implements ComponentBlockEnti
     }
 
     @Override
-    public void setBlockState(BlockState blockState) {
-        // check the blocks in the directions set on blockstate
-    }
-
-    @Override
     public void saveAdditional(CompoundTag compoundTag) {
         super.saveAdditional(compoundTag);
     }

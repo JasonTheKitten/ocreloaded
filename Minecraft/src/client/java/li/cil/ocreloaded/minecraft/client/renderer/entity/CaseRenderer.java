@@ -22,11 +22,12 @@ public class CaseRenderer implements BlockEntityRenderer<CaseBlockEntity> {
         poseStack.pushPose();
 
         poseStack.translate(.5, .5, 0.5);
-        applyBlockRotation(poseStack, blockEntity.getBlockState().getValue(CaseBlock.FACING));
+        Direction direction = blockEntity.getBlockState().getValue(CaseBlock.FACING);
+        applyBlockRotation(poseStack, direction);
         poseStack.translate(0, 0, .505);
 
         if (blockEntity.isPowered()) {
-            RenderUtil.renderOverlayTexture(poseStack, bufferSource, ClientTextures.CASE_FRONT_RUNNING, RenderUtil.FULL_BRIGHTNESS);
+            RenderUtil.renderOverlayTexture(poseStack, bufferSource, ClientTextures.CASE_FRONT_RUNNING);
         }
 
         poseStack.popPose();
