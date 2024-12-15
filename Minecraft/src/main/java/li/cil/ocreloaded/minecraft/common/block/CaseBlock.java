@@ -2,20 +2,15 @@ package li.cil.ocreloaded.minecraft.common.block;
 
 
 import dev.architectury.registry.menu.MenuRegistry;
-import io.netty.buffer.Unpooled;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
-import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
+import li.cil.ocreloaded.minecraft.common.menu.provider.CaseMenuProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -33,8 +28,6 @@ public class CaseBlock extends Block implements EntityBlock, TieredBlock {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty RUNNING = BooleanProperty.create("running");
-
-    private static final Component MENU_NAME = Component.translatable("gui.ocreloaded.case");
     
     private final int tier;
 
@@ -66,7 +59,7 @@ public class CaseBlock extends Block implements EntityBlock, TieredBlock {
 
     @Override
     public MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
-        return new CaseMenuProvider(pos);
+        return new CaseMenuProvider(pos, tier);
     }
 
     @Override
@@ -88,33 +81,6 @@ public class CaseBlock extends Block implements EntityBlock, TieredBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
-    }
-
-    private class CaseMenuProvider implements MenuProvider {
-
-        private final BlockPos blockPos;
-
-        public CaseMenuProvider(BlockPos blockPos) {
-            this.blockPos = blockPos;
-        }
-        
-        @Override
-        public Component getDisplayName() {
-            return MENU_NAME;
-        }
-
-        @Override
-        public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
-            FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
-            writeData(data);
-            return new CaseMenu(windowId, playerInventory, data);
-        }
-
-        public void writeData(FriendlyByteBuf data) {
-            data.writeBlockPos(this.blockPos);
-            data.writeInt(getTier());
-        }
-
     }
 
 }

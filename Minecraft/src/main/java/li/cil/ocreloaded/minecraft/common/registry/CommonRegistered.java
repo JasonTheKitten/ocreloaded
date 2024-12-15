@@ -6,17 +6,20 @@ import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
+import li.cil.ocreloaded.minecraft.common.block.KeyboardBlock;
 import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
 import li.cil.ocreloaded.minecraft.common.item.CPUItem;
-import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
+import li.cil.ocreloaded.minecraft.common.item.DataCardItem;
 import li.cil.ocreloaded.minecraft.common.item.EepromItem;
 import li.cil.ocreloaded.minecraft.common.item.FloppyDiskItem;
+import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
 import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
 import li.cil.ocreloaded.minecraft.common.item.LuaEepromItem;
 import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
+import li.cil.ocreloaded.minecraft.common.menu.ScreenMenu;
 import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
 import li.cil.ocreloaded.minecraft.common.network.power.PowerNetworkHandler;
 import net.minecraft.core.registries.Registries;
@@ -66,6 +69,7 @@ public class CommonRegistered {
     public static final RegistrySupplier<Block> SCREEN_BLOCK_TIER_1 = BLOCKS.register("screen1", () -> new ScreenBlock(DEFAULT_BLOCK_PROPERTIES, 1));
     public static final RegistrySupplier<Block> SCREEN_BLOCK_TIER_2 = BLOCKS.register("screen2", () -> new ScreenBlock(DEFAULT_BLOCK_PROPERTIES, 2));
     public static final RegistrySupplier<Block> SCREEN_BLOCK_TIER_3 = BLOCKS.register("screen3", () -> new ScreenBlock(DEFAULT_BLOCK_PROPERTIES, 3));
+    public static final RegistrySupplier<Block> KEYBOARD_BLOCK = BLOCKS.register("keyboard", () -> new KeyboardBlock(DEFAULT_BLOCK_PROPERTIES.noCollission()));
 
     // Items
     public static final RegistrySupplier<Item> CASE_BLOCK_ITEM_TIER_1 = ITEMS.register("case1", () -> new BlockItem(CASE_BLOCK_TIER_1.value(), DEFAULT_ITEM_PROPERTIES));
@@ -76,6 +80,8 @@ public class CommonRegistered {
     public static final RegistrySupplier<Item> SCREEN_BLOCK_ITEM_TIER_1 = ITEMS.register("screen1", () -> new BlockItem(SCREEN_BLOCK_TIER_1.value(), DEFAULT_ITEM_PROPERTIES));
     public static final RegistrySupplier<Item> SCREEN_BLOCK_ITEM_TIER_2 = ITEMS.register("screen2", () -> new BlockItem(SCREEN_BLOCK_TIER_2.value(), DEFAULT_ITEM_PROPERTIES));
     public static final RegistrySupplier<Item> SCREEN_BLOCK_ITEM_TIER_3 = ITEMS.register("screen3", () -> new BlockItem(SCREEN_BLOCK_TIER_3.value(), DEFAULT_ITEM_PROPERTIES));
+
+    public static final RegistrySupplier<Item> KEYBOARD_BLOCK_ITEM = ITEMS.register("keyboard", () -> new BlockItem(KEYBOARD_BLOCK.value(), DEFAULT_ITEM_PROPERTIES));
 
     public static final RegistrySupplier<Item> CPU_TIER_1 = ITEMS.register("cpu1", () -> new CPUItem(DEFAULT_ITEM_PROPERTIES, 1));
     public static final RegistrySupplier<Item> CPU_TIER_2 = ITEMS.register("cpu2", () -> new CPUItem(DEFAULT_ITEM_PROPERTIES, 2));
@@ -88,9 +94,9 @@ public class CommonRegistered {
     public static final RegistrySupplier<Item> MEMORY_TIER_3 = ITEMS.register("memory3", () -> new MemoryItem(DEFAULT_ITEM_PROPERTIES, 3));
     public static final RegistrySupplier<Item> MEMORY_TIER_3_5 = ITEMS.register("memory3_5", () -> new MemoryItem(DEFAULT_ITEM_PROPERTIES, 3));
 
-    public static final RegistrySupplier<Item> DATACARD_TIER_1 = ITEMS.register("datacard1", () -> new GraphicsCardItem(DEFAULT_ITEM_PROPERTIES, 1));
-    public static final RegistrySupplier<Item> DATACARD_TIER_2 = ITEMS.register("datacard2", () -> new GraphicsCardItem(DEFAULT_ITEM_PROPERTIES, 2));
-    public static final RegistrySupplier<Item> DATACARD_TIER_3 = ITEMS.register("datacard3", () -> new GraphicsCardItem(DEFAULT_ITEM_PROPERTIES, 3));
+    public static final RegistrySupplier<Item> DATACARD_TIER_1 = ITEMS.register("datacard1", () -> new DataCardItem(DEFAULT_ITEM_PROPERTIES, 1));
+    public static final RegistrySupplier<Item> DATACARD_TIER_2 = ITEMS.register("datacard2", () -> new DataCardItem(DEFAULT_ITEM_PROPERTIES, 2));
+    public static final RegistrySupplier<Item> DATACARD_TIER_3 = ITEMS.register("datacard3", () -> new DataCardItem(DEFAULT_ITEM_PROPERTIES, 3));
     public static final RegistrySupplier<Item> GRAPHICSCARD_TIER_1 = ITEMS.register("graphicscard1", () -> new GraphicsCardItem(DEFAULT_ITEM_PROPERTIES, 1));
     public static final RegistrySupplier<Item> GRAPHICSCARD_TIER_2 = ITEMS.register("graphicscard2", () -> new GraphicsCardItem(DEFAULT_ITEM_PROPERTIES, 2));
     public static final RegistrySupplier<Item> GRAPHICSCARD_TIER_3 = ITEMS.register("graphicscard3", () -> new GraphicsCardItem(DEFAULT_ITEM_PROPERTIES, 3));
@@ -107,6 +113,7 @@ public class CommonRegistered {
 
     // Menu types
     public static final RegistrySupplier<MenuType<CaseMenu>> CASE_MENU_TYPE = MENUS.register("case", () -> MenuRegistry.ofExtended(CaseMenu::new));
+    public static final RegistrySupplier<MenuType<ScreenMenu>> SCREEN_MENU_TYPE = MENUS.register("screen", () -> MenuRegistry.ofExtended(ScreenMenu::new));
 
     // Block entities
     public static final RegistrySupplier<BlockEntityType<CaseBlockEntity>> CASE_BLOCK_ENTITY = BLOCK_ENTITIES.register("case", () -> BlockEntityType.Builder

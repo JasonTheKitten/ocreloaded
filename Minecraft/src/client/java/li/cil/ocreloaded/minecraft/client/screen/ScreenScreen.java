@@ -1,0 +1,78 @@
+package li.cil.ocreloaded.minecraft.client.screen;
+
+import li.cil.ocreloaded.core.graphics.TextModeBuffer;
+import li.cil.ocreloaded.minecraft.client.assets.ClientTextures;
+import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
+import li.cil.ocreloaded.minecraft.common.menu.ScreenMenu;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
+
+public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
+
+    private static final int TEXTURE_WIDTH = 16;
+    private static final int TEXTURE_HEIGHT = 16;
+    private static final int MARGIN_OUTER = 7;
+    private static final int CELL_WIDTH = 8; // TODO: Find actual value
+    private static final int CELL_HEIGHT = 16;
+    
+    public ScreenScreen(ScreenMenu screenMenu, Inventory inventory, Component component) {
+        super(screenMenu, inventory, component);
+
+    }
+
+    @Override
+    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
+        ScreenBlockEntity blockEntity = this.menu.getBlockEntity();
+        TextModeBuffer textModeBuffer = blockEntity.getScreenBuffer();
+        int innerWidth = textModeBuffer.getWidth() * CELL_WIDTH;
+        int innerHeight = textModeBuffer.getHeight() * CELL_HEIGHT;
+        int leftStart = -innerWidth / 2 - MARGIN_OUTER;
+        int topStart = -innerHeight / 2 - MARGIN_OUTER;
+        int rightStart = innerWidth / 2;
+        int bottomStart = innerHeight / 2;
+
+        float scale = calculateScale(innerWidth, innerHeight);
+        
+        borderBlit(guiGraphics, scale, leftStart, topStart, 0, 0, MARGIN_OUTER, MARGIN_OUTER);
+        borderBlit(guiGraphics, scale, rightStart, topStart, TEXTURE_WIDTH - MARGIN_OUTER, 0, MARGIN_OUTER, MARGIN_OUTER);
+        borderBlit(guiGraphics, scale, leftStart, bottomStart, 0, TEXTURE_HEIGHT - MARGIN_OUTER, MARGIN_OUTER, MARGIN_OUTER);
+        borderBlit(guiGraphics, scale, rightStart, bottomStart, TEXTURE_WIDTH - MARGIN_OUTER, TEXTURE_HEIGHT - MARGIN_OUTER, MARGIN_OUTER, MARGIN_OUTER);
+
+        stretchBorderBlit(guiGraphics, scale, leftStart + MARGIN_OUTER, topStart, innerWidth, MARGIN_OUTER, MARGIN_OUTER, 0, TEXTURE_WIDTH - MARGIN_OUTER * 2, MARGIN_OUTER);
+        stretchBorderBlit(guiGraphics, scale, leftStart + MARGIN_OUTER, bottomStart, innerWidth, MARGIN_OUTER, MARGIN_OUTER, TEXTURE_HEIGHT - MARGIN_OUTER, TEXTURE_WIDTH - MARGIN_OUTER * 2, MARGIN_OUTER);
+        stretchBorderBlit(guiGraphics, scale, leftStart, topStart + MARGIN_OUTER, MARGIN_OUTER, innerHeight, 0, MARGIN_OUTER, MARGIN_OUTER, TEXTURE_HEIGHT - MARGIN_OUTER * 2);
+        stretchBorderBlit(guiGraphics, scale, rightStart, topStart + MARGIN_OUTER, MARGIN_OUTER, innerHeight, TEXTURE_WIDTH - MARGIN_OUTER, MARGIN_OUTER, MARGIN_OUTER, TEXTURE_HEIGHT - MARGIN_OUTER * 2);
+
+        stretchBorderBlit(guiGraphics, scale, leftStart + MARGIN_OUTER, topStart + MARGIN_OUTER, innerWidth, innerHeight, MARGIN_OUTER, MARGIN_OUTER, TEXTURE_WIDTH - MARGIN_OUTER * 2, TEXTURE_HEIGHT - MARGIN_OUTER * 2);
+    }
+
+    @Override
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
+    }
+
+    private float calculateScale(int innerWidth, int innerHeight) {
+        int maxWidth = this.width - MARGIN_OUTER * 2;
+        int maxHeight = this.height - MARGIN_OUTER * 2;
+        float scaleX = (float) maxWidth / innerWidth;
+        float scaleY = (float) maxHeight / innerHeight;
+        return Math.min(1, Math.min(scaleX, scaleY));
+    }
+
+    private void borderBlit(GuiGraphics guiGraphics, float scale, int destX, int destY, int srcX, int srcY, int width, int height) {
+        stretchBorderBlit(guiGraphics, scale, destX, destY, width, height, srcX, srcY, width, height);
+    }
+
+    private void stretchBorderBlit(GuiGraphics guiGraphics, float scale, int destX, int destY, int destW, int destH, int srcX, int srcY, int srcW, int srcH) {
+        int adjustedDestX = (int) Math.ceil(destX * scale + this.width / 2f);
+        int adjustedDestY = (int) Math.ceil(destY * scale + this.height / 2f);
+        int adjustedDestW = (int) Math.ceil(destW * scale);
+        int adjustedDestH = (int) Math.ceil(destH * scale);
+        guiGraphics.blit(ClientTextures.BORDERS,
+            adjustedDestX, adjustedDestY, adjustedDestW, adjustedDestH,
+            srcX, srcY, srcW, srcH, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+    }
+
+}

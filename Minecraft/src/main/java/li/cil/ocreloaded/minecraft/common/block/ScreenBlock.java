@@ -1,8 +1,15 @@
 package li.cil.ocreloaded.minecraft.common.block;
 
+import dev.architectury.registry.menu.MenuRegistry;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
+import li.cil.ocreloaded.minecraft.common.menu.provider.ScreenMenuProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -18,6 +25,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.phys.BlockHitResult;
 
 public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
 
@@ -41,6 +49,28 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
     @Override
     public int getTier() {
         return tier;
+    }
+
+    @Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        if (!level.isClientSide()) {
+            MenuProvider menuProvider = state.getMenuProvider(level, pos);
+            if (
+                menuProvider != null && menuProvider instanceof ScreenMenuProvider screenMenuProvider
+                && player instanceof ServerPlayer serverPlayer
+                && isKeyboardConnected(level, pos)
+             ) {
+                MenuRegistry.openExtendedMenu(serverPlayer, menuProvider, screenMenuProvider::writeData);
+                return InteractionResult.CONSUME;
+            }
+        }
+
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
+        return new ScreenMenuProvider(pos, tier);
     }
 
     @Override
@@ -166,6 +196,19 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
     public boolean orientationMatches(BlockState blockState, BlockState relativeBlockState) {
         return blockState.getValue(FACING) == relativeBlockState.getValue(FACING)
             && blockState.getValue(ATTACH_FACE) == relativeBlockState.getValue(ATTACH_FACE);
+    }
+
+    private boolean isKeyboardConnected(Level level, BlockPos pos) {
+        for (Direction direction : Direction.values()) {
+            BlockPos otherPos = pos.relative(direction);
+            BlockState otherState = level.getBlockState(otherPos);
+            if (otherState.getBlock() instanceof KeyboardBlock) {
+                // TODO: Which way is the keyboard facing?
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

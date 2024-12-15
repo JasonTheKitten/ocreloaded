@@ -23,7 +23,7 @@ public interface TextModeBuffer {
     }
     
     public static TextModeBuffer create() {
-        return new TextModeBufferImp();
+        return new TextModeBufferImp(50, 16);
     }
 
 }

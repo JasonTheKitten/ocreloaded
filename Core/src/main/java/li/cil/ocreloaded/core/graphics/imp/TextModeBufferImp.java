@@ -10,6 +10,11 @@ public class TextModeBufferImp implements TextModeBuffer {
     int currentForeground = 15, currentBackground = 0;
     int width;
 
+    public TextModeBufferImp(int width, int height) {
+        this.width = width;
+        buffer = new int[width * height * ELEMENTS_PER_CELL];
+    }
+
     @Override
     public void setTextCell(int x, int y, int codepoint) {
         int index = (y * width + x) * ELEMENTS_PER_CELL;
