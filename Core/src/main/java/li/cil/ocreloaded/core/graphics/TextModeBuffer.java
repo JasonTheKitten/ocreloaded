@@ -24,6 +24,7 @@ public interface TextModeBuffer {
     
     public static TextModeBuffer create() {
         TextModeBuffer testBuffer = new TextModeBufferImp(50, 16);
+        testBuffer.writeText(0, 0, "Hello, World!", false);
         return testBuffer;
     }
 

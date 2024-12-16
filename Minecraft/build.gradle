@@ -28,4 +28,9 @@ task copyResources(type: Copy) {
         from "${rootProject.projectDir}/libs/lua53"
         into file('build/resources/main/data/ocreloaded/libs/lua53')
     }
+
+    copy {
+        from "${projectDir}/src/generated/resources/"
+        into file('build/resources/main/')
+    }
 }

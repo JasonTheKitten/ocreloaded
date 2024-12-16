@@ -15,7 +15,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -24,14 +23,15 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
 
-    public static final BooleanProperty[] DIRECTIONS = new BooleanProperty[] {
-        BlockStateProperties.DOWN, BlockStateProperties.UP, BlockStateProperties.NORTH,
-        BlockStateProperties.SOUTH, BlockStateProperties.WEST, BlockStateProperties.EAST
+    public static final BooleanProperty[] SIDES = new BooleanProperty[] {
+        BooleanProperty.create("up"),
+        BooleanProperty.create("down"),
+        BooleanProperty.create("left"),
+        BooleanProperty.create("right"),
     };
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -74,11 +74,6 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
     }
 
     @Override
-    public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.INVISIBLE;
-    }
-
-    @Override
     public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
         return new ScreenBlockEntity(blockPos, blockState);
     }
@@ -87,8 +82,8 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
         builder.add(ATTACH_FACE);
-        for (BooleanProperty direction : DIRECTIONS) {
-            builder.add(direction);
+        for (BooleanProperty side : SIDES) {
+            builder.add(side);
         }
     }
 
@@ -115,16 +110,18 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
         BlockState myState, Direction placementDirection, BlockState otherState,
         LevelAccessor levelAccessor, BlockPos myPos, BlockPos otherPos
     ) {
-        return myState.setValue(
-            getDirectionProperty(placementDirection),
-            checkDirectionConnected(myState, levelAccessor, myPos, placementDirection));
+        Side side = getSideForDirection(myState.getValue(FACING), myState.getValue(ATTACH_FACE), placementDirection);
+        if (side == null) return myState;
+
+        return myState.setValue(side.getSideProperty(), checkDirectionConnected(myState, levelAccessor, myPos, placementDirection));
     }
 
     private BlockState updateShapeAllDirections(BlockState blockState, LevelAccessor levelAccessor, BlockPos blockPos) {
         for (Direction direction : Direction.values()) {
-            blockState = blockState.setValue(
-                getDirectionProperty(direction),
-                checkDirectionConnected(blockState, levelAccessor, blockPos, direction));
+            Side side = getSideForDirection(blockState.getValue(FACING), blockState.getValue(ATTACH_FACE), direction);
+            if (side == null) continue;
+
+            blockState = blockState.setValue(side.getSideProperty(), checkDirectionConnected(blockState, levelAccessor, blockPos, direction));
         }
 
         return blockState;
@@ -134,8 +131,8 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
         BlockState defaultState = this.stateDefinition.any()
             .setValue(FACING, Direction.NORTH)
             .setValue(ATTACH_FACE, AttachFace.WALL);
-        for (BooleanProperty direction : DIRECTIONS) {
-            defaultState = defaultState.setValue(direction, false);
+        for (BooleanProperty side : SIDES) {
+            defaultState = defaultState.setValue(side, false);
         }
 
         return defaultState;
@@ -145,8 +142,8 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
         Direction facingDirection = context.getHorizontalDirection().getOpposite();
         Direction lookingDirection = context.getNearestLookingDirection();
         
-        AttachFace attachFace = lookingDirection == Direction.DOWN ? AttachFace.CEILING
-            : lookingDirection == Direction.UP ? AttachFace.FLOOR
+        AttachFace attachFace = lookingDirection == Direction.DOWN ? AttachFace.FLOOR
+            : lookingDirection == Direction.UP ? AttachFace.CEILING
             : AttachFace.WALL;
         
         return blockState
@@ -189,10 +186,6 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
             && orientationMatches(blockState, otherState);
     }
 
-    public Property<Boolean> getDirectionProperty(Direction direction) {
-        return DIRECTIONS[direction.get3DDataValue()];
-    }
-
     public boolean orientationMatches(BlockState blockState, BlockState relativeBlockState) {
         return blockState.getValue(FACING) == relativeBlockState.getValue(FACING)
             && blockState.getValue(ATTACH_FACE) == relativeBlockState.getValue(ATTACH_FACE);
@@ -209,6 +202,41 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
         }
 
         return false;
+    }
+
+    private Side getSideForDirection(Direction screenDirection, AttachFace attachFace, Direction direction) {
+        Direction left = screenDirection.getClockWise();
+        Direction right = screenDirection.getCounterClockWise();
+        Direction up = attachFace == AttachFace.WALL ?
+            Direction.UP :
+            screenDirection.getOpposite();
+        Direction down = up.getOpposite();
+    
+        if (direction == left) {
+            return Side.LEFT;
+        } else if (direction == right) {
+            return Side.RIGHT;
+        } else if (direction == up) {
+            return Side.UP;
+        } else if (direction == down) {
+            return Side.DOWN;
+        }
+    
+        return null;
+    }
+
+    private enum Side {
+        UP(SIDES[0]), DOWN(SIDES[1]), LEFT(SIDES[2]), RIGHT(SIDES[3]);
+
+        private final BooleanProperty sideProperty;
+
+        Side(BooleanProperty sideProperty) {
+            this.sideProperty = sideProperty;
+        }
+        
+        public BooleanProperty getSideProperty() {
+            return sideProperty;
+        }
     }
 
 }

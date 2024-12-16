@@ -18,20 +18,10 @@ public class ScreenRenderer implements BlockEntityRenderer<ScreenBlockEntity> {
 
     private static final float SCREEN_MARGIN = 2f / 16f;
 
-    private ScreenBorderRenderer borderRenderer = new ScreenBorderRenderer();
-
     public ScreenRenderer(BlockEntityRendererProvider.Context context) {}
 
     @Override
     public void render(
-        ScreenBlockEntity blockEntity, float partialTick, PoseStack poseStack,
-        MultiBufferSource bufferSource, int combinedLight, int combinedOverlay
-    ) {
-        borderRenderer.render(blockEntity, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay);
-        renderScreen(blockEntity, partialTick, poseStack, bufferSource, combinedLight, combinedOverlay);
-    }
-
-    private void renderScreen(
         ScreenBlockEntity blockEntity, float partialTick, PoseStack poseStack,
         MultiBufferSource bufferSource, int combinedLight, int combinedOverlay
     ) {
@@ -78,7 +68,11 @@ public class ScreenRenderer implements BlockEntityRenderer<ScreenBlockEntity> {
         if (attachFace == AttachFace.WALL) {
             poseStack.mulPose(Axis.YP.rotationDegrees(0));
         } else {
-            poseStack.mulPose(Axis.XP.rotationDegrees(attachFace == AttachFace.FLOOR ? 270 : 90));
+            poseStack.mulPose(Axis.XP.rotationDegrees(attachFace == AttachFace.FLOOR ? 90 : 270));
+        }
+
+        if (attachFace == AttachFace.CEILING) {
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180));
         }
 
         // Untranslate

@@ -1,0 +1,11 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "east": "ocreloaded:block/screen/back_top_single",
+    "south": "ocreloaded:block/screen/back_top_left",
+    "north": "ocreloaded:block/screen/front_top_right",
+    "west": "ocreloaded:block/screen/back_top_single",
+    "up": "ocreloaded:block/screen/back_single_left",
+    "down": "ocreloaded:block/screen/back_single_left"
+  }
+}
