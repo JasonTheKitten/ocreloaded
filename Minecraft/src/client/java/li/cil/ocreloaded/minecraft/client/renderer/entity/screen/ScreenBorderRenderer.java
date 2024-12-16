@@ -1,4 +1,4 @@
-package li.cil.ocreloaded.minecraft.client.renderer.entity;
+package li.cil.ocreloaded.minecraft.client.renderer.entity.screen;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 
+import li.cil.ocreloaded.minecraft.client.renderer.entity.RenderUtil;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
 import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;

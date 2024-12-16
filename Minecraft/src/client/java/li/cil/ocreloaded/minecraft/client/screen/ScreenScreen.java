@@ -2,7 +2,8 @@ package li.cil.ocreloaded.minecraft.client.screen;
 
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
 import li.cil.ocreloaded.minecraft.client.assets.ClientTextures;
-import li.cil.ocreloaded.minecraft.client.renderer.entity.ScreenDisplayRenderer;
+import li.cil.ocreloaded.minecraft.client.renderer.entity.screen.GuiGraphicsDrawingContext;
+import li.cil.ocreloaded.minecraft.client.renderer.entity.screen.ScreenDisplayRenderer;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
 import li.cil.ocreloaded.minecraft.common.menu.ScreenMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -57,7 +58,7 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
             this.width / 2 - (int) (textModeBuffer.getWidth() * ScreenDisplayRenderer.CELL_WIDTH / 2 * scale),
             this.height / 2 - (int) (textModeBuffer.getHeight() * ScreenDisplayRenderer.CELL_HEIGHT / 2 * scale),
             scale);
-        ScreenDisplayRenderer.renderDisplay(guiGraphics, positionScale, textModeBuffer);
+        ScreenDisplayRenderer.renderDisplay(new GuiGraphicsDrawingContext(guiGraphics), positionScale, textModeBuffer);
     }
 
     private float calculateScale(TextModeBuffer textModeBuffer) {

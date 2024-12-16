@@ -1,16 +1,13 @@
-package li.cil.ocreloaded.minecraft.client.renderer.entity;
+package li.cil.ocreloaded.minecraft.client.renderer.entity.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
-import li.cil.ocreloaded.minecraft.client.renderer.entity.ScreenDisplayRenderer.PositionScale;
+import li.cil.ocreloaded.minecraft.client.renderer.entity.screen.ScreenDisplayRenderer.PositionScale;
 import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
@@ -48,16 +45,15 @@ public class ScreenRenderer implements BlockEntityRenderer<ScreenBlockEntity> {
         poseStack.pushPose();
         orientForFace(poseStack, blockEntity);
         poseStack.mulPose(Axis.ZP.rotationDegrees(180));
-        poseStack.translate(-1 + translateX, -1 + translateY, -.01);
+        poseStack.translate(-1 + translateX, -1 + translateY, -.002);
         poseStack.scale(scaleValue, scaleValue, 1);
 
         TextModeBuffer textModeBuffer = blockEntity.getScreenBuffer();
-        GuiGraphics guiGraphics = new GuiGraphics(Minecraft.getInstance(), (BufferSource) bufferSource);
-        guiGraphics.pose().last().pose().set(poseStack.last().pose());
+        DrawingContext drawingContext = new MultiBufferSourceDrawingContext(bufferSource, poseStack.last().pose());
         PositionScale positionScale = new PositionScale(0, 0, 1.0f);
         
         // TODO: Improve FPS - GuiGraphics flushes too often, so maybe make alternate interface
-        ScreenDisplayRenderer.renderDisplay(guiGraphics, positionScale, textModeBuffer);
+        ScreenDisplayRenderer.renderDisplay(drawingContext, positionScale, textModeBuffer);
 
         poseStack.popPose();
     }
