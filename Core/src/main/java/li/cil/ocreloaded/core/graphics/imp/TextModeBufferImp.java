@@ -1,32 +1,46 @@
 package li.cil.ocreloaded.core.graphics.imp;
 
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
+import li.cil.ocreloaded.core.graphics.color.ColorMode;
+import li.cil.ocreloaded.core.graphics.color.FourBitColorMode;
 
 public class TextModeBufferImp implements TextModeBuffer {
 
-    private static final int ELEMENTS_PER_CELL = 3;
+    private static final int ELEMENTS_PER_CELL = 2;
 
-    int[] buffer;
-    int currentForeground = 15, currentBackground = 0;
-    int width;
+    private ColorMode colorMode;
+
+    private int[] buffer;
+    private int currentColor;
+    private int width;
 
     public TextModeBufferImp(int width, int height) {
         this.width = width;
         buffer = new int[width * height * ELEMENTS_PER_CELL];
+        setDepth(4);
     }
 
     @Override
     public void setTextCell(int x, int y, int codepoint) {
         int index = (y * width + x) * ELEMENTS_PER_CELL;
         buffer[index] = codepoint;
-        buffer[index + 1] = currentForeground;
-        buffer[index + 2] = currentBackground;
+        buffer[index + 1] = currentColor;
     }
 
     @Override
-    public int getTextCell(int x, int y) {
+    public CellInfo getTextCell(int x, int y) {
         int index = (y * width + x) * ELEMENTS_PER_CELL;
-        return buffer[index];
+        int packedColor = buffer[index + 1];
+        int foregroundIndex = packedColor & 0xFFFF;
+        int backgroundIndex = packedColor >> 16;
+        boolean isForegroundPaletteIndex = colorMode.isPaletteIndex(foregroundIndex);
+        boolean isBackgroundPaletteIndex = colorMode.isPaletteIndex(backgroundIndex);
+        int foreground = colorMode.unpack(foregroundIndex);
+        int background = colorMode.unpack(backgroundIndex);
+        return new CellInfo(
+            buffer[index], foreground, background,
+            isForegroundPaletteIndex ? foregroundIndex : -1,
+            isBackgroundPaletteIndex ? backgroundIndex : -1);
     }
 
     @Override
@@ -60,6 +74,15 @@ public class TextModeBufferImp implements TextModeBuffer {
     @Override
     public int getHeight() {
         return buffer.length / width / ELEMENTS_PER_CELL;
+    }
+
+    public void setDepth(int depth) {
+        colorMode = new FourBitColorMode();
+        currentColor = colorMode.pack(0x000000, false) << 16 | colorMode.pack(0xFFFFFF, false);
+        for (int i = 0; i < buffer.length; i += ELEMENTS_PER_CELL) {
+            buffer[i] = 32;
+            buffer[i + 1] = currentColor;
+        }
     }
     
 }

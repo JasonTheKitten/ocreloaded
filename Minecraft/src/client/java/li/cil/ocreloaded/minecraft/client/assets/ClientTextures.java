@@ -14,4 +14,7 @@ public class ClientTextures {
     // Block textures
     public static final ResourceLocation CASE_FRONT_RUNNING = new ResourceLocation("ocreloaded", "block/overlay/case_front_running");
 
+    // Font textures
+    public static final ResourceLocation FONT = new ResourceLocation("ocreloaded", "textures/font/term_font.png");
+
 }

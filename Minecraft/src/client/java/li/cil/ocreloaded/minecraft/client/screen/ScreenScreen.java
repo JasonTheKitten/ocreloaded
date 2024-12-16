@@ -2,6 +2,7 @@ package li.cil.ocreloaded.minecraft.client.screen;
 
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
 import li.cil.ocreloaded.minecraft.client.assets.ClientTextures;
+import li.cil.ocreloaded.minecraft.client.renderer.entity.ScreenDisplayRenderer;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
 import li.cil.ocreloaded.minecraft.common.menu.ScreenMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,20 +15,17 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
     private static final int TEXTURE_WIDTH = 16;
     private static final int TEXTURE_HEIGHT = 16;
     private static final int MARGIN_OUTER = 7;
-    private static final int CELL_WIDTH = 8; // TODO: Find actual value
-    private static final int CELL_HEIGHT = 16;
     
     public ScreenScreen(ScreenMenu screenMenu, Inventory inventory, Component component) {
         super(screenMenu, inventory, component);
-
     }
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
         ScreenBlockEntity blockEntity = this.menu.getBlockEntity();
         TextModeBuffer textModeBuffer = blockEntity.getScreenBuffer();
-        int innerWidth = textModeBuffer.getWidth() * CELL_WIDTH;
-        int innerHeight = textModeBuffer.getHeight() * CELL_HEIGHT;
+        int innerWidth = textModeBuffer.getWidth() * ScreenDisplayRenderer.CELL_WIDTH;
+        int innerHeight = textModeBuffer.getHeight() * ScreenDisplayRenderer.CELL_HEIGHT;
         int leftStart = -innerWidth / 2 - MARGIN_OUTER;
         int topStart = -innerHeight / 2 - MARGIN_OUTER;
         int rightStart = innerWidth / 2;
@@ -51,6 +49,21 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
+
+        ScreenBlockEntity blockEntity = this.menu.getBlockEntity();
+        TextModeBuffer textModeBuffer = blockEntity.getScreenBuffer();
+        float scale = calculateScale(textModeBuffer);
+        ScreenDisplayRenderer.PositionScale positionScale = new ScreenDisplayRenderer.PositionScale(
+            this.width / 2 - (int) (textModeBuffer.getWidth() * ScreenDisplayRenderer.CELL_WIDTH / 2 * scale),
+            this.height / 2 - (int) (textModeBuffer.getHeight() * ScreenDisplayRenderer.CELL_HEIGHT / 2 * scale),
+            scale);
+        ScreenDisplayRenderer.renderDisplay(guiGraphics, positionScale, textModeBuffer);
+    }
+
+    private float calculateScale(TextModeBuffer textModeBuffer) {
+        int innerWidth = textModeBuffer.getWidth() * ScreenDisplayRenderer.CELL_WIDTH;
+        int innerHeight = textModeBuffer.getHeight() * ScreenDisplayRenderer.CELL_HEIGHT;
+        return calculateScale(innerWidth, innerHeight);
     }
 
     private float calculateScale(int innerWidth, int innerHeight) {

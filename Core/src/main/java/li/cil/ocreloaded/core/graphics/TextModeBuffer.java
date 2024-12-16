@@ -6,7 +6,7 @@ public interface TextModeBuffer {
 
     void setTextCell(int x, int y, int codepoint);
 
-    int getTextCell(int x, int y);
+    CellInfo getTextCell(int x, int y);
 
     void copy(int x, int y, int width, int height, int deltaX, int deltaY);
 
@@ -23,7 +23,10 @@ public interface TextModeBuffer {
     }
     
     public static TextModeBuffer create() {
-        return new TextModeBufferImp(50, 16);
+        TextModeBuffer testBuffer = new TextModeBufferImp(50, 16);
+        return testBuffer;
     }
+
+    public static record CellInfo(int codepoint, int foreground, int background, int foregroundIndex, int backgroundIndex) {}
 
 }
