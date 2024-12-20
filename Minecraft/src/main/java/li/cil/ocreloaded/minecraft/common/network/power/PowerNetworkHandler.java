@@ -37,6 +37,8 @@ public class PowerNetworkHandler implements NetworkHandler<PowerNetworkMessage> 
     @Override
     public void handleClient(PowerNetworkMessage message, ClientNetworkMessageContext context) {
         BlockPos position = message.position();
+
+        if (context.player() == null) return;
         Level level = context.player().level();
         if (!level.isLoaded(position)) return;
         if (level.getBlockEntity(position) instanceof CaseBlockEntity entity) {

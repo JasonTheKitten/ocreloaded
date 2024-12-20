@@ -30,10 +30,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class CaseBlockEntity extends BlockEntity implements ComponentBlockEntity {
+public class CaseBlockEntity extends BlockEntityWithTick implements ComponentBlockEntity {
 
     private static final Logger logger = LoggerFactory.getLogger(CaseBlockEntity.class);
 
@@ -82,6 +81,7 @@ public class CaseBlockEntity extends BlockEntity implements ComponentBlockEntity
         return compoundTag;
     }
 
+    @Override
     public void tick() {
         machine.ifPresent(Machine::runSync);
     }
@@ -118,7 +118,7 @@ public class CaseBlockEntity extends BlockEntity implements ComponentBlockEntity
 
         if (this.oldLevel != this.level) {
             this.oldLevel = this.level;
-            this.level.addBlockEntityTicker(new CaseBlockEntityTicker(this));
+            this.level.addBlockEntityTicker(new BlockEntityTicker(this));
         }
 
         BlockState newBlockState = level.getBlockState(this.worldPosition).setValue(CaseBlock.RUNNING, this.powered);

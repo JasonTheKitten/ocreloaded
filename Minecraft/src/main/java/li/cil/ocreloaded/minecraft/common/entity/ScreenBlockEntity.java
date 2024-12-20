@@ -1,30 +1,31 @@
 package li.cil.ocreloaded.minecraft.common.entity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
+import io.netty.buffer.ByteBuf;
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
 import li.cil.ocreloaded.core.machine.component.Component;
+import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
+import li.cil.ocreloaded.minecraft.common.network.screen.NetworkedTextModeBufferProxy;
+import li.cil.ocreloaded.minecraft.common.network.screen.ScreenNetworkMessage;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import li.cil.ocreloaded.minecraft.server.component.ScreenComponent;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 
-public class ScreenBlockEntity extends BlockEntity implements ComponentBlockEntity {
+public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentBlockEntity {
 
     private UUID id = UUID.randomUUID();
-    private TextModeBuffer screenBuffer = TextModeBuffer.create();
-
-    private Set<ScreenBlockEntity> screens = new HashSet<ScreenBlockEntity>();
+    private TextModeBuffer screenBuffer;
 
     public ScreenBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(CommonRegistered.SCREEN_BLOCK_ENTITY.get(), blockPos, blockState);
-
-        screens.add(this);
     }
 
     @Override
@@ -33,14 +34,35 @@ public class ScreenBlockEntity extends BlockEntity implements ComponentBlockEnti
     }
 
     @Override
-    public void saveAdditional(CompoundTag compoundTag) {
-        super.saveAdditional(compoundTag);
+    public void setLevel(Level level) {
+        super.setLevel(level);
+        if (level == null) return;
+
+        screenBuffer = level.isClientSide() ?
+            TextModeBuffer.create() :
+            new NetworkedTextModeBufferProxy(TextModeBuffer.create());
+        
+        if (!level.isClientSide()) {
+            level.addBlockEntityTicker(new BlockEntityTicker(this));
+        }
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag compoundTag = super.getUpdateTag();
-        return compoundTag;
+    public void tick() {
+        if (level.isClientSide()) return;
+
+        ChunkPos chunkPos = new ChunkPos(worldPosition);
+        List<ServerPlayer> chunkTrackingPlayers = ((ServerLevel) level).getPlayers(
+            player -> player.getChunkTrackingView().contains(chunkPos)
+        );
+
+        NetworkedTextModeBufferProxy proxy = (NetworkedTextModeBufferProxy) screenBuffer;
+        if (!proxy.hasChanges()) return;
+        ByteBuf changeBuffer = proxy.getBuffer();
+        NetworkUtil.getInstance().messageManyClients(
+            new ScreenNetworkMessage(worldPosition, changeBuffer),
+            chunkTrackingPlayers
+        );
     }
 
     public TextModeBuffer getScreenBuffer() {

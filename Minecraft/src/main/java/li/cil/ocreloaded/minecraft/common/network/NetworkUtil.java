@@ -1,6 +1,7 @@
 package li.cil.ocreloaded.minecraft.common.network;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import dev.architectury.networking.NetworkManager;
@@ -19,37 +20,26 @@ public class NetworkUtil {
     
     private NetworkUtil() {}
 
-    @SuppressWarnings("unchecked")
     public void messageClient(NetworkMessage message, Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             ResourceLocation location = new ResourceLocation(OCReloadedCommon.MOD_ID, message.getType());
-            NetworkHandler<NetworkMessage> handler = (NetworkHandler<NetworkMessage>) HANDLERS.get(location.toString());
-            if (handler == null) {
-                throw new IllegalArgumentException("No handler for message type: " + location);
-            }
-
-            FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
-            handler.encode(buffer, message);
-            
-            
+            FriendlyByteBuf buffer = encodeMessage(message);
             NetworkManager.sendToPlayer(serverPlayer, location, buffer);
         } else {
             throw new IllegalArgumentException("Player is not a server player.");
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void messageServer(NetworkMessage message) {
         ResourceLocation location = new ResourceLocation(OCReloadedCommon.MOD_ID, message.getType());
-        NetworkHandler<NetworkMessage> handler = (NetworkHandler<NetworkMessage>) HANDLERS.get(location.toString());
-        if (handler == null) {
-            throw new IllegalArgumentException("No handler for message type: " + location);
-        }
-
-        FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
-        handler.encode(buffer, message);
-
+        FriendlyByteBuf buffer = encodeMessage(message);
         NetworkManager.sendToServer(location, buffer);
+    }
+
+    public void messageManyClients(NetworkMessage message, List<ServerPlayer> players) {
+        ResourceLocation location = new ResourceLocation(OCReloadedCommon.MOD_ID, message.getType());
+        FriendlyByteBuf buffer = encodeMessage(message);
+        NetworkManager.sendToPlayers(players, location, buffer);
     }
 
     @SuppressWarnings("unchecked")
@@ -80,6 +70,20 @@ public class NetworkUtil {
                 messageHandler.handleServer(message, new ServerNetworkMessageContext(context.getPlayer()));
             });
         });
+    }
+
+    @SuppressWarnings("unchecked")
+    private FriendlyByteBuf encodeMessage(NetworkMessage message) {
+        ResourceLocation location = new ResourceLocation(OCReloadedCommon.MOD_ID, message.getType());
+        NetworkHandler<NetworkMessage> handler = (NetworkHandler<NetworkMessage>) HANDLERS.get(location.toString());
+        if (handler == null) {
+            throw new IllegalArgumentException("No handler for message type: " + location);
+        }
+
+        FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
+        handler.encode(buffer, message);
+
+        return buffer;
     }
 
     public static NetworkUtil getInstance() {
