@@ -145,7 +145,7 @@ public class LuaCArchitecture implements Architecture {
             return runnable.get();
         } catch (Exception e) {
             // TODO: More versatile error handling
-            return new MachineResult.Error(e.getMessage());
+            return new MachineResult.Error(e.getMessage(), e);
         }
     }
 

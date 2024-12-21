@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import li.cil.ocreloaded.core.machine.PersistenceHolder;
 import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResult;
@@ -19,8 +18,6 @@ public abstract class AnnotatedComponent implements Component {
 
     private final Map<String, ComponentCall> componentMethods;
     private final String type;
-
-    private UUID id;
 
     protected AnnotatedComponent(String type) {
         Map<String, ComponentCall> methods = new HashMap<>();
@@ -38,16 +35,6 @@ public abstract class AnnotatedComponent implements Component {
         this.type = type;
     }
 
-    protected AnnotatedComponent(String type, UUID id) {
-        this(type);
-        this.id = id;
-    }
-
-    @Override
-    public UUID getId() {
-        return id;
-    }
-
     @Override
     public String getType() {
         return type;
@@ -59,22 +46,10 @@ public abstract class AnnotatedComponent implements Component {
     }
 
     @Override
-    public void loadFromState(PersistenceHolder holder) {
-        if (!(holder.hasKey("INTERNAL_ID1") && holder.hasKey("INTERNAL_ID2"))) {
-            if (id == null) id = UUID.randomUUID();
-        } else {
-            id = new UUID(
-                    holder.loadLong("INTERNAL_ID1"),
-                    holder.loadLong("INTERNAL_ID2")
-            );
-        }
-    };
+    public void loadFromState(PersistenceHolder holder) {}
 
     @Override
-    public void storeIntoState(PersistenceHolder holder) {
-        holder.storeLong("INTERNAL_ID1",id.getMostSignificantBits());
-        holder.storeLong("INTERNAL_ID2",id.getLeastSignificantBits());
-    };
+    public void storeIntoState(PersistenceHolder holder) {}
 
     private ComponentCall createComponentCall(Method m) {
         return new ComponentCall() {

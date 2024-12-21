@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import li.cil.ocreloaded.core.component.EepromComponent;
 import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
 import li.cil.ocreloaded.core.machine.component.Component;
+import li.cil.ocreloaded.core.network.NetworkNode;
+import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
+import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 
 public class LuaEepromItem extends EepromItem {
 
@@ -20,7 +23,11 @@ public class LuaEepromItem extends EepromItem {
     }
 
     @Override
-    public Component initComponent() {
+    public NetworkNode newNetworkNode() {
+        return new ComponentNetworkNode(Optional.of(initComponent()), Visibility.NEIGHBORS);
+    }
+
+    private Component initComponent() {
         Optional<Supplier<Optional<InputStream>>> supplier = MachineCodeRegistry.getDefaultInstance().getBiosCodeSupplier("lua");
         if (!supplier.isPresent()) {
             LOGGER.error("Failed to load Lua BIOS code.");

@@ -1,11 +1,13 @@
 package li.cil.ocreloaded.minecraft.common.entity;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 import io.netty.buffer.ByteBuf;
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
-import li.cil.ocreloaded.core.machine.component.Component;
+import li.cil.ocreloaded.core.network.NetworkNode;
+import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
+import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
 import li.cil.ocreloaded.minecraft.common.network.screen.NetworkedTextModeBufferProxy;
 import li.cil.ocreloaded.minecraft.common.network.screen.ScreenNetworkMessage;
@@ -19,9 +21,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 
-public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentBlockEntity {
+public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentTileEntity {
 
-    private UUID id = UUID.randomUUID();
+    private final NetworkNode networkNode = new ComponentNetworkNode(
+        Optional.of(new ScreenComponent(this::getScreenBuffer)), Visibility.NETWORK
+    );
     private TextModeBuffer screenBuffer;
 
     public ScreenBlockEntity(BlockPos blockPos, BlockState blockState) {
@@ -29,8 +33,8 @@ public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentB
     }
 
     @Override
-    public Component initComponent() {
-        return new ScreenComponent(id, screenBuffer);
+    public NetworkNode networkNode() {
+        return networkNode;
     }
 
     @Override

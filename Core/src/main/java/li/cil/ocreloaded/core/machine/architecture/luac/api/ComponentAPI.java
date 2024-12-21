@@ -2,6 +2,7 @@ package li.cil.ocreloaded.core.machine.architecture.luac.api;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -40,10 +41,12 @@ public final class ComponentAPI {
 
         luaState.newTable();
         Map<UUID, Component> components = ((ArchitectureMachine) machine).getComponents();
-        for (Component component : components.values()) {
-            if (!filterFunction.apply(component.getType())) continue;
-            luaState.pushString(component.getId().toString());
-            luaState.pushString(component.getType());
+        for (Entry<UUID, Component> entry : components.entrySet()) {
+            UUID id = entry.getKey();
+            String type = entry.getValue().getType();
+            if (!filterFunction.apply(type)) continue;
+            luaState.pushString(id.toString());
+            luaState.pushString(type);
             luaState.setTable(-3);
         }
 

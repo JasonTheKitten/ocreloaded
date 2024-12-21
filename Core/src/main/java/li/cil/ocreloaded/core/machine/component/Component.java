@@ -1,7 +1,6 @@
 package li.cil.ocreloaded.core.machine.component;
 
 import java.util.Map;
-import java.util.UUID;
 
 import li.cil.ocreloaded.core.machine.PersistenceHolder;
 
@@ -9,12 +8,6 @@ import li.cil.ocreloaded.core.machine.PersistenceHolder;
  * Base interface for components that can be used with a machine.
  */
 public interface Component {
-    
-    /**
-     * Get the unique identifier of this component.
-     * @return the unique identifier of this component.
-     */
-    UUID getId();
 
     /**
      * Get the type of this component.

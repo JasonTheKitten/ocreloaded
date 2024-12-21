@@ -3,8 +3,8 @@ package li.cil.ocreloaded.minecraft.common.entity;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -19,8 +19,11 @@ import li.cil.ocreloaded.core.machine.MachineParameters;
 import li.cil.ocreloaded.core.machine.MachineRegistry;
 import li.cil.ocreloaded.core.machine.MachineRegistryEntry;
 import li.cil.ocreloaded.core.machine.component.Component;
+import li.cil.ocreloaded.core.network.NetworkNode;
+import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
 import li.cil.ocreloaded.minecraft.common.SettingsConstants;
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
+import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.item.ComponentItem;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
@@ -32,33 +35,33 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class CaseBlockEntity extends BlockEntityWithTick implements ComponentBlockEntity {
+public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTileEntity {
 
     private static final Logger logger = LoggerFactory.getLogger(CaseBlockEntity.class);
 
     private static final String TAG_POWERED = "ocreloaded:powered";
 
     private final NonNullList<ItemStack> items = NonNullList.withSize(10, ItemStack.EMPTY);
+    private final NetworkNode networkNode = new ComponentNetworkNode(Optional.of(new ComputerComponent()), Visibility.NETWORK);
 
-    private UUID id = UUID.randomUUID();
+    private Map<ItemStack, NetworkNode> loadedComponents = new HashMap<>();
     private boolean powered;
     private Optional<Machine> machine = Optional.empty();
     private Level oldLevel;
-
-    private Map<UUID, Component> components = new HashMap<>();
 
     public CaseBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(CommonRegistered.CASE_BLOCK_ENTITY.get(), blockPos, blockState);
     }
 
     @Override
-    public Component initComponent() {
-        return new ComputerComponent(getId());
+    public NetworkNode networkNode() {
+        return this.networkNode;
     }
 
     @Override
     public void load(CompoundTag compoundTag) {
         super.load(compoundTag);
+        networkNode.load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
 
         ContainerHelper.loadAllItems(compoundTag, this.items);
         this.powered = compoundTag.getBoolean(TAG_POWERED);
@@ -68,6 +71,7 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentBlo
     @Override
     public void saveAdditional(CompoundTag compoundTag) {
         super.saveAdditional(compoundTag);
+        networkNode.save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
 
         ContainerHelper.saveAllItems(compoundTag, this.items);
         compoundTag.putBoolean(TAG_POWERED, this.powered);
@@ -104,14 +108,6 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentBlo
         updateBlockState();
     }
 
-    public UUID getId() {
-        return this.id;
-    }
-
-    public Map<UUID, Component> scanComponents() {
-        return components;
-    }
-
     private void updateBlockState() {
         if (this.level == null || level.isClientSide) return;
         if (!(this.level.isLoaded(this.worldPosition) && this.getBlockState().getBlock() instanceof CaseBlock)) return;
@@ -140,21 +136,32 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentBlo
     }
 
     private void loadComponents() {
-        // TODO: Ensure only one instance gets instantiated per item
-        components.clear();
+        Map<ItemStack, NetworkNode> components = new HashMap<>();
         for (ItemStack itemStack : this.items) {
             if (itemStack.isEmpty()) continue;
+            if (!(itemStack.getItem() instanceof ComponentItem componentHolder)) continue;
 
-            if (!(itemStack.getItem() instanceof ComponentItem componentItem)) continue;
+            if (loadedComponents.containsKey(itemStack)) {
+                components.put(itemStack, loadedComponents.remove(itemStack));
+                continue;
+            }
 
-            Component component = componentItem.initComponent();
+            NetworkNode networkNode = componentHolder.newNetworkNode();
+            if (!networkNode.component().isPresent()) continue;
+            Component component = networkNode.component().get();
 
             CompoundTag tag = itemStack.getOrCreateTag();
             component.loadFromState(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
 
-            components.put(component.getId(), component);
+            components.put(itemStack, networkNode);
+            this.networkNode.connect(networkNode);
         }
-        components.put(id, new ComputerComponent(id));
+
+        for (Entry<ItemStack, NetworkNode> entry : loadedComponents.entrySet()) {
+            this.networkNode.disconnect(entry.getValue());
+        }
+
+        this.loadedComponents = components;
     }
 
     private Optional<Machine> createMachine() {
@@ -165,7 +172,7 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentBlo
         if (codeStreamSupplier.isEmpty()) return Optional.empty();
 
         ExecutorService threadService = Executors.newCachedThreadPool(); // TODO: Custom thread pool
-        MachineParameters parameters = new MachineParameters(getId(), codeStreamSupplier.get(), this::scanComponents, threadService);
+        MachineParameters parameters = new MachineParameters(networkNode, codeStreamSupplier.get(), threadService);
 
         return
             MachineRegistry.getDefaultInstance().getEntry(getArchitecture())

@@ -34,7 +34,7 @@ public final class ComputerAPI {
     }
 
     private static int address(LuaState luaState, Machine machine) {
-        luaState.pushString(machine.parameters().id().toString());
+        luaState.pushString(machine.parameters().networkNode().id().toString());
         return 1;
     }
 

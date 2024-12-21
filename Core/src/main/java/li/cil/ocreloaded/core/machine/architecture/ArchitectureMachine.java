@@ -3,6 +3,7 @@ package li.cil.ocreloaded.core.machine.architecture;
 import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -136,7 +137,7 @@ public class ArchitectureMachine implements Machine {
             stop();
             setState(State.STOPPED);
             // TODO: Proper error handling
-            LoggerFactory.getLogger(getClass()).error(error.message());
+            LoggerFactory.getLogger(getClass()).error(error.message(), error.exception());
         }
     }
 
@@ -157,7 +158,11 @@ public class ArchitectureMachine implements Machine {
     }
 
     public Map<UUID, Component> getComponents() {
-        return parameters.componentScanner().get();
+        return parameters.networkNode().reachableNodes().stream()
+            .filter(node -> node.component().isPresent())
+            .collect(() -> new HashMap<>(Map.of(
+                parameters.networkNode().id(), parameters.networkNode().component().get()
+            )), (m, node) -> m.put(node.id(), node.component().get()), Map::putAll);
     }
 
     private static enum State {

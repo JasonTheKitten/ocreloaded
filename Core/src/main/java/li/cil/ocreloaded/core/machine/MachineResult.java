@@ -10,6 +10,10 @@ public sealed interface MachineResult {
 
     public record Stop(boolean restart) implements MachineResult {}
 
-    public record Error(String message) implements MachineResult {}
+    public record Error(String message, Throwable exception) implements MachineResult {
+        public Error(String message) {
+            this(message, null);
+        }
+    }
 
 }
