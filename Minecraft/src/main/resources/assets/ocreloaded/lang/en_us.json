@@ -18,6 +18,7 @@
     "item.ocreloaded.eeprom_lua": "EEPROM (Lua BIOS)",
     "item.ocreloaded.floppy": "Floppy Disk",
     "item.ocreloaded.floppy_openos": "OpenOS (Operating System)",
+    "item.ocreloaded.floppy_plan9k": "Plan9K (Operating System)",
     "item.ocreloaded.graphicscard1": "Graphics Card (Tier 1)",
     "item.ocreloaded.graphicscard2": "Graphics Card (Tier 2)",
     "item.ocreloaded.graphicscard3": "Graphics Card (Tier 3)",

@@ -110,6 +110,7 @@ public class CommonRegistered {
     public static final RegistrySupplier<Item> HARDDISKDRIVE_TIER_3 = ITEMS.register("harddiskdrive3", () -> new HardDiskItem(DEFAULT_ITEM_PROPERTIES, 3));
 
     public static final RegistrySupplier<Item> FLOPPY_OPENOS = ITEMS.register("floppy_openos", () -> new FloppyDiskItem(DEFAULT_ITEM_PROPERTIES, "loot:openos"));
+    public static final RegistrySupplier<Item> FLOPPY_PLAN9K = ITEMS.register("floppy_plan9k", () -> new FloppyDiskItem(DEFAULT_ITEM_PROPERTIES, "loot:plan9k"));
 
     public static final RegistrySupplier<Item> EEPROM_LUA = ITEMS.register("eeprom_lua", () -> new LuaEepromItem(DEFAULT_ITEM_PROPERTIES));
 
