@@ -44,4 +44,23 @@ public class LuaCComponentCallArguments implements ComponentCallArguments {
         return checkInteger(this.index + index);
     }
 
+    @Override
+    public boolean checkBoolean(int index) {
+        return luaState.toBoolean(this.index + index);
+    }
+
+    @Override
+    public boolean optionalBoolean(int index, boolean defaultValue) {
+        if (index >= count || luaState.isNoneOrNil(this.index + index)) {
+            return defaultValue;
+        }
+
+        return checkBoolean(this.index + index);
+    }
+
+    @Override
+    public boolean isNil(int index) {
+        return luaState.isNoneOrNil(this.index + index);
+    }
+
 }

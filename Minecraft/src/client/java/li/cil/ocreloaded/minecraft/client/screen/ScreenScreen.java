@@ -25,8 +25,9 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
     protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
         ScreenBlockEntity blockEntity = this.menu.getBlockEntity();
         TextModeBuffer textModeBuffer = blockEntity.getScreenBuffer();
-        int innerWidth = textModeBuffer.getWidth() * ScreenDisplayRenderer.CELL_WIDTH;
-        int innerHeight = textModeBuffer.getHeight() * ScreenDisplayRenderer.CELL_HEIGHT;
+        int[] resolution = textModeBuffer.viewport();
+        int innerWidth = resolution[0] * ScreenDisplayRenderer.CELL_WIDTH;
+        int innerHeight = resolution[1] * ScreenDisplayRenderer.CELL_HEIGHT;
         int leftStart = -innerWidth / 2 - MARGIN_OUTER;
         int topStart = -innerHeight / 2 - MARGIN_OUTER;
         int rightStart = innerWidth / 2;
@@ -54,16 +55,18 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
         ScreenBlockEntity blockEntity = this.menu.getBlockEntity();
         TextModeBuffer textModeBuffer = blockEntity.getScreenBuffer();
         float scale = calculateScale(textModeBuffer);
+        int[] resolution = textModeBuffer.viewport();
         ScreenDisplayRenderer.PositionScale positionScale = new ScreenDisplayRenderer.PositionScale(
-            this.width / 2 - (int) (textModeBuffer.getWidth() * ScreenDisplayRenderer.CELL_WIDTH / 2 * scale),
-            this.height / 2 - (int) (textModeBuffer.getHeight() * ScreenDisplayRenderer.CELL_HEIGHT / 2 * scale),
+            this.width / 2 - (int) (resolution[0] * ScreenDisplayRenderer.CELL_WIDTH / 2 * scale),
+            this.height / 2 - (int) (resolution[1] * ScreenDisplayRenderer.CELL_HEIGHT / 2 * scale),
             scale);
         ScreenDisplayRenderer.renderDisplay(new GuiGraphicsDrawingContext(guiGraphics), positionScale, textModeBuffer);
     }
 
     private float calculateScale(TextModeBuffer textModeBuffer) {
-        int innerWidth = textModeBuffer.getWidth() * ScreenDisplayRenderer.CELL_WIDTH;
-        int innerHeight = textModeBuffer.getHeight() * ScreenDisplayRenderer.CELL_HEIGHT;
+        int[] resolution = textModeBuffer.viewport();
+        int innerWidth = resolution[0] * ScreenDisplayRenderer.CELL_WIDTH;
+        int innerHeight = resolution[1] * ScreenDisplayRenderer.CELL_HEIGHT;
         return calculateScale(innerWidth, innerHeight);
     }
 

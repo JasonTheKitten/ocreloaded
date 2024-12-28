@@ -21,8 +21,9 @@ public final class ScreenDisplayRenderer {
     }
 
     private static void renderCharacters(DrawingContext drawingContext, PositionScale positionScale, TextModeBuffer textModeBuffer) {
-        int width = textModeBuffer.getWidth();
-        int height = textModeBuffer.getHeight();
+        int[] resolution = textModeBuffer.viewport();
+        int width = resolution[0];
+        int height = resolution[1];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 CellInfo cellInfo = textModeBuffer.getTextCell(x, y);

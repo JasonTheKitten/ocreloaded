@@ -6,22 +6,42 @@ import java.util.List;
 
 import li.cil.ocreloaded.core.machine.PathUtil;
 import li.cil.ocreloaded.core.machine.component.AnnotatedComponent;
+import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResult;
 import li.cil.ocreloaded.core.machine.component.ComponentCallArguments;
 import li.cil.ocreloaded.core.machine.component.ComponentCallContext;
 import li.cil.ocreloaded.core.machine.component.ComponentMethod;
-import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResult;
 import li.cil.ocreloaded.core.machine.fs.FileSystem;
+import li.cil.ocreloaded.core.misc.Label;
 
 public class FilesystemComponent extends AnnotatedComponent {
 
     private final FileSystem filesystem;
+    private final Label label;
 
     private final List<Integer> openFiles = new ArrayList<>();
     
-    public FilesystemComponent(FileSystem filesystem) {
+    public FilesystemComponent(FileSystem filesystem, Label label) {
         super("filesystem");
 
         this.filesystem = filesystem;
+        this.label = label;
+    }
+
+    @ComponentMethod(direct = true, doc = "function():string -- Get the current label of the drive.")
+    public ComponentCallResult getLabel(ComponentCallContext context, ComponentCallArguments arguments) {
+        return ComponentCallResult.success(label == null ? null : label.get());
+    }
+
+    @ComponentMethod(doc = "function(value:string):string -- Sets the label of the drive. Returns the new value, which may be truncated.")
+    public ComponentCallResult setLabel(ComponentCallContext context, ComponentCallArguments arguments) {
+        if (label == null) {
+            return ComponentCallResult.failure("drive does not support labeling");
+        }
+
+        String value = arguments.optionalString(0, null);
+        label.set(value);
+
+        return ComponentCallResult.success(value);
     }
 
     @ComponentMethod(direct = true, doc = "function():boolean -- Returns whether the file system is read-only.")

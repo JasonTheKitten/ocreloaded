@@ -16,6 +16,7 @@ import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.MachineParameters;
 import li.cil.ocreloaded.core.machine.MachineResult;
 import li.cil.ocreloaded.core.machine.component.Component;
+import li.cil.ocreloaded.core.network.NetworkNode;
 
 public class ArchitectureMachine implements Machine {
 
@@ -157,13 +158,16 @@ public class ArchitectureMachine implements Machine {
         }
     }
 
-    public Map<UUID, Component> getComponents() {
-        return parameters.networkNode().reachableNodes().stream()
+    public Map<UUID, NetworkedComponent> getComponents() {
+        NetworkNode computerNetworkNode = parameters.networkNode();
+        return computerNetworkNode.reachableNodes().stream()
             .filter(node -> node.component().isPresent())
             .collect(() -> new HashMap<>(Map.of(
-                parameters.networkNode().id(), parameters.networkNode().component().get()
-            )), (m, node) -> m.put(node.id(), node.component().get()), Map::putAll);
+                computerNetworkNode.id(), new NetworkedComponent(computerNetworkNode.component().get(), computerNetworkNode)
+            )), (m, node) -> m.put(node.id(), new NetworkedComponent(node.component().get(), computerNetworkNode)), Map::putAll);
     }
+
+    public static record NetworkedComponent(Component component, NetworkNode networkNode) {}
 
     private static enum State {
         STOPPED, STARTING, SYNC, ASYNC, WAIT, PAUSED

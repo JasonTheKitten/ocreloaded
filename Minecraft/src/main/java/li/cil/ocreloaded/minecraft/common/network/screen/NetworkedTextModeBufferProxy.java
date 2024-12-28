@@ -15,7 +15,12 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
     private static final int SYNC = 1;
     private static final int SET_TEXT_CELL = 2;
     private static final int COPY = 3;
-    private static final int WRITE_TEXT = 4;
+    private static final int FILL = 4;
+    private static final int WRITE_TEXT = 5;
+    private static final int SET_BACKGROUND = 6;
+    private static final int SET_FOREGROUND = 7;
+    private static final int SET_RESOLUTION = 8;
+    private static final int SET_VIEWPORT = 9;
 
     private final TextModeBuffer targetBuffer;
     private final ByteBuf buffer;
@@ -35,8 +40,18 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
     }
 
     @Override
+    public void rawSetTextCell(int x, int y, int codepoint, int packedColors) {
+        throw new UnsupportedOperationException("Unimplemented method 'rawSetTextCell'");
+    }
+
+    @Override
     public CellInfo getTextCell(int x, int y) {
         return targetBuffer.getTextCell(x, y);
+    }
+
+    @Override
+    public ReducedCellInfo getReducedTextCell(int x, int y) {
+        return targetBuffer.getReducedTextCell(x, y);
     }
 
     @Override
@@ -52,6 +67,17 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
     }
 
     @Override
+    public void fill(int x, int y, int width, int height, int codepoint) {
+        targetBuffer.fill(x, y, width, height, codepoint);
+        buffer.writeInt(FILL);
+        buffer.writeInt(x);
+        buffer.writeInt(y);
+        buffer.writeInt(width);
+        buffer.writeInt(height);
+        buffer.writeInt(codepoint);
+    }
+
+    @Override
     public void writeText(int x, int y, String text, boolean vertical) {
         targetBuffer.writeText(x, y, text, vertical);
         buffer.writeInt(WRITE_TEXT);
@@ -63,13 +89,80 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
     }
 
     @Override
-    public int getWidth() {
-        return targetBuffer.getWidth();
+    public void setBackgroundColor(int color, boolean isPaletteIndex) {
+        targetBuffer.setBackgroundColor(color, isPaletteIndex);
+        buffer.writeInt(SET_BACKGROUND);
+        buffer.writeInt(color);
+        buffer.writeBoolean(isPaletteIndex);
     }
 
     @Override
-    public int getHeight() {
-        return targetBuffer.getHeight();
+    public int getBackgroundColor() {
+        return targetBuffer.getBackgroundColor();
+    }
+
+    @Override
+    public boolean isBackgroundPaletteIndex() {
+        return targetBuffer.isBackgroundPaletteIndex();
+    }
+
+    @Override
+    public void setForegroundColor(int color, boolean isPaletteIndex) {
+        targetBuffer.setForegroundColor(color, isPaletteIndex);
+        buffer.writeInt(SET_FOREGROUND);
+        buffer.writeInt(color);
+        buffer.writeBoolean(isPaletteIndex);
+    }
+
+    @Override
+    public int getForegroundColor() {
+        return targetBuffer.getForegroundColor();
+    }
+
+    @Override
+    public boolean isForegroundPaletteIndex() {
+        return targetBuffer.isForegroundPaletteIndex();
+    }
+
+    @Override
+    public int getPaletteColor(int index) {
+        return targetBuffer.getPaletteColor(index);
+    }
+
+    @Override
+    public int getDepth() {
+        return targetBuffer.getDepth();
+    }
+
+    @Override
+    public int[] resolution() {
+        return targetBuffer.resolution();
+    }
+
+    @Override
+    public int[] viewport() {
+        return targetBuffer.viewport();
+    }
+
+    @Override
+    public int[] maxResolution() {
+        return targetBuffer.maxResolution();
+    }
+
+    @Override
+    public void setResolution(int width, int height) {
+        targetBuffer.setResolution(width, height);
+        buffer.writeInt(SET_RESOLUTION);
+        buffer.writeInt(width);
+        buffer.writeInt(height);
+    }
+
+    @Override
+    public void setViewport(int width, int height) {
+        targetBuffer.setViewport(width, height);
+        buffer.writeInt(SET_VIEWPORT);
+        buffer.writeInt(width);
+        buffer.writeInt(height);
     }
 
     public boolean hasChanges() {
@@ -87,16 +180,23 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
     public ByteBuf sync() {
         ByteBuf syncBuffer = Unpooled.buffer();
         syncBuffer.writeInt(SYNC);  
-        int width = targetBuffer.getWidth();
-        int height = targetBuffer.getHeight();
+        int[] size = targetBuffer.resolution();
+        int width = size[0];
+        int height = size[1];
+        syncBuffer.writeInt(width);
+        syncBuffer.writeInt(height);
+        int[] viewport = targetBuffer.viewport();
+        syncBuffer.writeInt(viewport[0]);
+        syncBuffer.writeInt(viewport[1]);
+        syncBuffer.writeInt(targetBuffer.getBackgroundColor());
+        syncBuffer.writeBoolean(targetBuffer.isBackgroundPaletteIndex());
+        syncBuffer.writeInt(targetBuffer.getForegroundColor());
+        syncBuffer.writeBoolean(targetBuffer.isForegroundPaletteIndex());
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                CellInfo cell = targetBuffer.getTextCell(x, y);
+                ReducedCellInfo cell = targetBuffer.getReducedTextCell(x, y);
                 syncBuffer.writeInt(cell.codepoint());
-                syncBuffer.writeInt(cell.foreground());
-                syncBuffer.writeInt(cell.background());
-                syncBuffer.writeInt(cell.foregroundIndex());
-                syncBuffer.writeInt(cell.backgroundIndex());
+                syncBuffer.writeInt(cell.packedColors());
             }
         }
 
@@ -115,7 +215,14 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
                 case COPY -> buffer.copy(
                     byteBuf.readInt(), byteBuf.readInt(), byteBuf.readInt(),
                     byteBuf.readInt(), byteBuf.readInt(), byteBuf.readInt());
+                case FILL -> buffer.fill(
+                    byteBuf.readInt(), byteBuf.readInt(), byteBuf.readInt(),
+                    byteBuf.readInt(), byteBuf.readInt());
                 case WRITE_TEXT -> handleWriteText(buffer, byteBuf);
+                case SET_BACKGROUND -> buffer.setBackgroundColor(byteBuf.readInt(), byteBuf.readBoolean());
+                case SET_FOREGROUND -> buffer.setForegroundColor(byteBuf.readInt(), byteBuf.readBoolean());
+                case SET_RESOLUTION -> buffer.setResolution(byteBuf.readInt(), byteBuf.readInt());
+                case SET_VIEWPORT -> buffer.setViewport(byteBuf.readInt(), byteBuf.readInt());
                 default -> recognized = false;
             }
 
@@ -127,12 +234,16 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
     }
 
     private static void handleSync(TextModeBuffer buffer, ByteBuf byteBuf) {
-        int width = buffer.getWidth();
-        int height = buffer.getHeight();
+        // TODO: Do we have to bother syncing non-viewport data?
+        int width = byteBuf.readInt();
+        int height = byteBuf.readInt();
+        buffer.setResolution(width, height);
+        buffer.setViewport(byteBuf.readInt(), byteBuf.readInt());
+        buffer.setBackgroundColor(byteBuf.readInt(), byteBuf.readBoolean());
+        buffer.setForegroundColor(byteBuf.readInt(), byteBuf.readBoolean());
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                buffer.setTextCell(x, y, byteBuf.readInt());
-                // TODO
+                buffer.rawSetTextCell(x, y, byteBuf.readInt(), byteBuf.readInt());
             }
         }
     }

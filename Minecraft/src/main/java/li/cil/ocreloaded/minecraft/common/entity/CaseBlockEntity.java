@@ -24,6 +24,7 @@ import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
 import li.cil.ocreloaded.minecraft.common.SettingsConstants;
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
+import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
 import li.cil.ocreloaded.minecraft.common.item.ComponentItem;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
@@ -37,7 +38,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTileEntity {
 
-    private static final Logger logger = LoggerFactory.getLogger(CaseBlockEntity.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CaseBlockEntity.class);
 
     private static final String TAG_POWERED = "ocreloaded:powered";
 
@@ -47,7 +48,6 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
     private Map<ItemStack, NetworkNode> loadedComponents = new HashMap<>();
     private boolean powered;
     private Optional<Machine> machine = Optional.empty();
-    private Level oldLevel;
 
     public CaseBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(CommonRegistered.CASE_BLOCK_ENTITY.get(), blockPos, blockState);
@@ -86,6 +86,16 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
     }
 
     @Override
+    public void setLevel(Level level) {
+        super.setLevel(level);
+        if (level == null) return;
+
+        if (!level.isClientSide()) {
+            this.level.addBlockEntityTicker(new BlockEntityTicker(this));
+        }
+    }
+
+    @Override
     public void tick() {
         machine.ifPresent(Machine::runSync);
     }
@@ -111,11 +121,7 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
     private void updateBlockState() {
         if (this.level == null || level.isClientSide) return;
         if (!(this.level.isLoaded(this.worldPosition) && this.getBlockState().getBlock() instanceof CaseBlock)) return;
-
-        if (this.oldLevel != this.level) {
-            this.oldLevel = this.level;
-            this.level.addBlockEntityTicker(new BlockEntityTicker(this));
-        }
+        ComponentNetworkUtil.connectToNeighbors(level, worldPosition);
 
         BlockState newBlockState = level.getBlockState(this.worldPosition).setValue(CaseBlock.RUNNING, this.powered);
         level.setBlock(this.worldPosition, newBlockState, 3);
@@ -126,7 +132,7 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
             boolean started = this.machine.map(Machine::start).orElse(false);
             if (!started) {
                 this.powered = false;
-                logger.error("Failed to start machine for case at {}.", this.worldPosition);
+                LOGGER.error("Failed to start machine for case at {}.", this.worldPosition);
                 // TODO: Indicate that the machine could not be started.
             }
         } else if (!this.powered && this.machine.isPresent()) {
@@ -152,6 +158,9 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
 
             CompoundTag tag = itemStack.getOrCreateTag();
             component.loadFromState(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
+            // TODO: When should states be stored?
+            component.storeIntoState(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
+            // TODO: Reset component on fresh boot?
 
             components.put(itemStack, networkNode);
             this.networkNode.connect(networkNode);

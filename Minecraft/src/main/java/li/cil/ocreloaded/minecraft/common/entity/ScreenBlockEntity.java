@@ -4,16 +4,19 @@ import java.util.List;
 import java.util.Optional;
 
 import io.netty.buffer.ByteBuf;
+import li.cil.ocreloaded.core.component.ScreenComponent;
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
+import li.cil.ocreloaded.minecraft.common.SettingsConstants;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
 import li.cil.ocreloaded.minecraft.common.network.screen.NetworkedTextModeBufferProxy;
 import li.cil.ocreloaded.minecraft.common.network.screen.ScreenNetworkMessage;
+import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
-import li.cil.ocreloaded.minecraft.server.component.ScreenComponent;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
@@ -42,13 +45,20 @@ public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentT
         super.setLevel(level);
         if (level == null) return;
 
+        int[] maxResolution = new int[] { 50, 16 };
         screenBuffer = level.isClientSide() ?
-            TextModeBuffer.create() :
-            new NetworkedTextModeBufferProxy(TextModeBuffer.create());
+            TextModeBuffer.create(maxResolution) :
+            new NetworkedTextModeBufferProxy(TextModeBuffer.create(maxResolution));
         
         if (!level.isClientSide()) {
             level.addBlockEntityTicker(new BlockEntityTicker(this));
         }
+    }
+
+    @Override
+    public void load(CompoundTag compoundTag) {
+        super.load(compoundTag);
+        networkNode.load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 
     @Override

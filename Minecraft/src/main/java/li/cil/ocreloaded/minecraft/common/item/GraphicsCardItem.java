@@ -24,7 +24,7 @@ public class GraphicsCardItem extends Item implements TieredItem, ComponentItem 
 
     @Override
     public NetworkNode newNetworkNode() {
-        return new ComponentNetworkNode(Optional.of(new GraphicsCardComponent()), Visibility.NEIGHBORS);
+        return new ComponentNetworkNode(Optional.of(new GraphicsCardComponent(new int[] { 50, 16 })), Visibility.NEIGHBORS);
     }
     
 }

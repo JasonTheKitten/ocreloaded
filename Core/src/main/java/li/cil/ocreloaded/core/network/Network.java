@@ -1,5 +1,6 @@
 package li.cil.ocreloaded.core.network;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -14,5 +15,7 @@ public interface Network {
     boolean reachable(NetworkNode source, NetworkNode target);
 
     Set<NetworkNode> reachableNodes(NetworkNode source);
+
+    Optional<NetworkNode> reachableNode(NetworkNode networkNode, UUID nodeId);
 
 }

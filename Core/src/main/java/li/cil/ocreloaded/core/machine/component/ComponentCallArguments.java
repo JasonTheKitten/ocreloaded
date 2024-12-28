@@ -10,4 +10,10 @@ public interface ComponentCallArguments {
 
     int optionalInteger(int index, int defaultValue);
 
+    boolean checkBoolean(int index);
+
+    boolean optionalBoolean(int index, boolean defaultValue);
+
+    boolean isNil(int index);
+
 }

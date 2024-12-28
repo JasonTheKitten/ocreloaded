@@ -54,7 +54,7 @@ public final class ComputerAPI {
 
         String signalName = luaState.checkString(1);
         for (int i = 2; i <= luaState.getTop(); i++) {
-            signalInfo.add(luaState.toJavaObjectRaw(i));
+            signalInfo.add(toSimpleJavaObject(luaState, i));
         }
 
         luaState.pushBoolean(machine.signal(signalName, signalInfo.toArray()));
@@ -66,6 +66,20 @@ public final class ComputerAPI {
         // TODO: Implement tmpAddress
         luaState.pushNil();
         return 0;
+    }
+
+    private static Object toSimpleJavaObject(LuaState luaState, int index) {
+        switch (luaState.type(index)) {
+            case BOOLEAN:
+                return luaState.toBoolean(index);
+            case NUMBER:
+                return luaState.toNumber(index);
+            case STRING:
+                return luaState.toString(index);
+            case NIL:
+            default:
+                return null;
+        }
     }
 
 }

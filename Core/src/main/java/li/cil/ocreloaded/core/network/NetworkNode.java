@@ -39,6 +39,10 @@ public interface NetworkNode {
         return network().reachable(this, otherNode);
     }
 
+    default Optional<NetworkNode> reachableNode(UUID nodeId) {
+        return network().reachableNode(this, nodeId);
+    }
+
     default Set<NetworkNode> reachableNodes() {
         return network().reachableNodes(this);
     }

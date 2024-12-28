@@ -25,8 +25,9 @@ public class ScreenRenderer implements BlockEntityRenderer<ScreenBlockEntity> {
         ScreenBlockEntity blockEntity, float partialTick, PoseStack poseStack,
         MultiBufferSource bufferSource, int combinedLight, int combinedOverlay
     ) {
-        float totalWidth = blockEntity.getScreenBuffer().getWidth() * ScreenDisplayRenderer.CELL_WIDTH;
-        float totalHeight = blockEntity.getScreenBuffer().getHeight() * ScreenDisplayRenderer.CELL_HEIGHT;
+        int[] bufferSize = blockEntity.getScreenBuffer().viewport();
+        float totalWidth = bufferSize[0] * ScreenDisplayRenderer.CELL_WIDTH;
+        float totalHeight = bufferSize[1] * ScreenDisplayRenderer.CELL_HEIGHT;
         float postMarginWidth = 1 - SCREEN_MARGIN * 2;
         float scaleValue = Math.min(postMarginWidth / totalWidth, postMarginWidth / totalHeight);
         float translateX = (1 - totalWidth * scaleValue) / 2;

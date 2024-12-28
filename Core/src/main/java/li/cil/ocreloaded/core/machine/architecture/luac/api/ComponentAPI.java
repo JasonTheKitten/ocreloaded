@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.architecture.ArchitectureMachine;
+import li.cil.ocreloaded.core.machine.architecture.ArchitectureMachine.NetworkedComponent;
 import li.cil.ocreloaded.core.machine.architecture.luac.LuaCComponentCallArguments;
 import li.cil.ocreloaded.core.machine.component.Component;
 import li.cil.ocreloaded.core.machine.component.ComponentCall;
@@ -40,10 +41,10 @@ public final class ComponentAPI {
                 s.contains(filter);
 
         luaState.newTable();
-        Map<UUID, Component> components = ((ArchitectureMachine) machine).getComponents();
-        for (Entry<UUID, Component> entry : components.entrySet()) {
+        Map<UUID, NetworkedComponent> components = ((ArchitectureMachine) machine).getComponents();
+        for (Entry<UUID, NetworkedComponent> entry : components.entrySet()) {
             UUID id = entry.getKey();
-            String type = entry.getValue().getType();
+            String type = entry.getValue().component().getType();
             if (!filterFunction.apply(type)) continue;
             luaState.pushString(id.toString());
             luaState.pushString(type);
@@ -56,8 +57,8 @@ public final class ComponentAPI {
     private static int methods(LuaState luaState, Machine machine) {
         String componentId = luaState.checkString(1);
 
-        Map<UUID, Component> components = ((ArchitectureMachine) machine).getComponents();
-        Component component = components.get(UUID.fromString(componentId));
+        Map<UUID, NetworkedComponent> components = ((ArchitectureMachine) machine).getComponents();
+        Component component = components.get(UUID.fromString(componentId)).component();
         if (component == null) {
             luaState.pushNil();
             luaState.pushString("no such component");
@@ -87,15 +88,15 @@ public final class ComponentAPI {
         String componentId = luaState.checkString(1);
         String methodName = luaState.checkString(2);
 
-        Map<UUID, Component> components = ((ArchitectureMachine) machine).getComponents();
-        Component component = components.get(UUID.fromString(componentId));
+        Map<UUID, NetworkedComponent> components = ((ArchitectureMachine) machine).getComponents();
+        NetworkedComponent component = components.get(UUID.fromString(componentId));
         if (component == null) {
             luaState.pushNil();
             luaState.pushString("no such component");
             return 2;
         }
 
-        ComponentCall call = component.componentCalls().get(methodName);
+        ComponentCall call = component.component().componentCalls().get(methodName);
         if (call == null) {
             luaState.pushNil();
             luaState.pushString("no such method");
@@ -103,7 +104,7 @@ public final class ComponentAPI {
         }
 
         ComponentCall.ComponentCallResult result = call.call(
-            new ComponentCallContext(),
+            new ComponentCallContext(component.networkNode()),
             new LuaCComponentCallArguments(luaState, 3, luaState.getTop() - 2)
         );
 
@@ -124,8 +125,8 @@ public final class ComponentAPI {
     private static int type(LuaState luaState, Machine machine) {
         String componentId = luaState.checkString(1);
 
-        Map<UUID, Component> components = ((ArchitectureMachine) machine).getComponents();
-        Component component = components.get(UUID.fromString(componentId));
+        Map<UUID, NetworkedComponent> components = ((ArchitectureMachine) machine).getComponents();
+        Component component = components.get(UUID.fromString(componentId)).component();
         if (component == null) {
             luaState.pushNil();
             luaState.pushString("no such component");
@@ -139,8 +140,8 @@ public final class ComponentAPI {
     private static int slot(LuaState luaState, Machine machine) {
         String componentId = luaState.checkString(1);
 
-        Map<UUID, Component> components = ((ArchitectureMachine) machine).getComponents();
-        Component component = components.get(UUID.fromString(componentId));
+        Map<UUID, NetworkedComponent> components = ((ArchitectureMachine) machine).getComponents();
+        Component component = components.get(UUID.fromString(componentId)).component();
         if (component == null) {
             luaState.pushNil();
             luaState.pushString("no such component");

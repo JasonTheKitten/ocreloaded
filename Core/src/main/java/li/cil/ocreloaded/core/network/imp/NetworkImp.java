@@ -3,6 +3,7 @@ package li.cil.ocreloaded.core.network.imp;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -63,7 +64,7 @@ public class NetworkImp implements Network {
     public boolean reachable(NetworkNode source, NetworkNode target) {
         if (source == target) return false;
         if (source.network() != this) return false;
-        //if (target.network() != this) return false;
+        if (target.network() != this) return false;
         return switch(target.visibility()) {
             case NONE -> false;
             case NEIGHBORS -> neighbors(source, target);
@@ -72,12 +73,19 @@ public class NetworkImp implements Network {
     }
 
     @Override
+    public Optional<NetworkNode> reachableNode(NetworkNode networkNode, UUID nodeId) {
+        NetworkNode target = connections.getOrDefault(nodeId, Set.of()).stream()
+            .filter(node -> node.id().equals(nodeId)).findFirst().orElse(null);
+        return Optional.ofNullable(target).filter(targetNode -> reachable(networkNode, targetNode));
+    }
+
+    @Override
     public Set<NetworkNode> reachableNodes(NetworkNode node) {
         return allNodes().stream().filter(target -> reachable(node, target)).collect(Collectors.toSet());
     }
 
     private void addNewNode(NetworkNode node) {
-        connections.computeIfAbsent(node.id(), id -> new HashSet<>());
+        connections.computeIfAbsent(node.id(), id -> new HashSet<>()).add(node);
     }
 
     private void addNode(NetworkNode reference, NetworkNode node) {

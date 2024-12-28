@@ -12,7 +12,7 @@ public class FourBitColorMode implements ColorMode {
     @Override
     public int pack(int color, boolean isPaletteIndex) {
         if (isPaletteIndex) {
-            return palette[color];
+            return Math.max(Math.min(color, palette.length - 1), 0);
         } else {
             int closestColor = 0;
             for (int i = 1; i < palette.length; i++) {
@@ -42,6 +42,11 @@ public class FourBitColorMode implements ColorMode {
         int diffGreen = rgbA[1] - rgbB[1];
         int diffBlue = rgbA[2] - rgbB[2];
         return 0.2126 * diffRed * diffRed + 0.7152 * diffGreen * diffGreen + 0.0722 * diffBlue * diffBlue;
+    }
+
+    @Override
+    public int depth() {
+        return 4;
     }
     
 }

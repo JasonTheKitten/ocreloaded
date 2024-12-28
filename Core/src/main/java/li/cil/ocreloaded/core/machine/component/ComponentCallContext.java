@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.core.machine.component;
 
-public record ComponentCallContext() {
+import li.cil.ocreloaded.core.network.NetworkNode;
+
+public record ComponentCallContext(NetworkNode networkNode) {
     
 }
