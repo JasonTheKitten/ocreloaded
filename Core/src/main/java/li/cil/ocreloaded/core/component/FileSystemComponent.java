@@ -10,17 +10,18 @@ import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResul
 import li.cil.ocreloaded.core.machine.component.ComponentCallArguments;
 import li.cil.ocreloaded.core.machine.component.ComponentCallContext;
 import li.cil.ocreloaded.core.machine.component.ComponentMethod;
-import li.cil.ocreloaded.core.machine.fs.FileSystem;
+import li.cil.ocreloaded.core.machine.filesystem.FileSystem;
 import li.cil.ocreloaded.core.misc.Label;
+import li.cil.ocreloaded.core.util.FileUtil;
 
-public class FilesystemComponent extends AnnotatedComponent {
+public class FileSystemComponent extends AnnotatedComponent {
 
     private final FileSystem filesystem;
     private final Label label;
 
     private final List<Integer> openFiles = new ArrayList<>();
     
-    public FilesystemComponent(FileSystem filesystem, Label label) {
+    public FileSystemComponent(FileSystem filesystem, Label label) {
         super("filesystem");
 
         this.filesystem = filesystem;
@@ -65,6 +66,24 @@ public class FilesystemComponent extends AnnotatedComponent {
     public ComponentCallResult list(ComponentCallContext context, ComponentCallArguments arguments) {
         String path = PathUtil.minimizePath(arguments.checkString(0));
         return ComponentCallResult.success(filesystem.list(path));
+    }
+
+    @ComponentMethod(doc = "function(path:string):boolean -- Creates a directory at the specified absolute path in the file system. Creates parent directories, if necessary.")
+    public ComponentCallResult makeDirectory(ComponentCallContext context, ComponentCallArguments arguments) {
+        String path = PathUtil.minimizePath(arguments.checkString(0));
+        List<String> pathParts = FileUtil.splitPath(path);
+        StringBuilder currentPath = new StringBuilder();
+        boolean success = true;
+        for (int i = 1; i <= pathParts.size(); i++) {
+            currentPath.append(pathParts.get(i - 1));
+            String parentPath = currentPath.toString();
+            success = filesystem.exists(parentPath) || filesystem.makeDirectory(parentPath);
+            if (!success) {
+                return ComponentCallResult.success(false);
+            }
+        }
+
+        return ComponentCallResult.success(true);
     }
 
     @ComponentMethod(direct = true, doc = "function(handle:userdata) -- Closes an open file descriptor with the specified handle.")

@@ -24,7 +24,9 @@ public class MachineSetup {
     }
 
     private static void registerArchitectures(MinecraftServer server) {
-        MachineRegistry.getDefaultInstance().register("lua52", new LuaMachineRegistryEntry(server, "lua52"));
+        MachineRegistry registry = MachineRegistry.getDefaultInstance();
+        registry.register("Lua 5.2", new LuaMachineRegistryEntry(server, "lua52"));
+        registry.register("Lua 5.3", new LuaMachineRegistryEntry(server, "lua53"));
     }
 
     private static void registerStartCode(MinecraftServer server) {
@@ -35,7 +37,8 @@ public class MachineSetup {
     private static void registerLuaStartCode(MinecraftServer server) {
         ResourceLocation resourceLocation = new ResourceLocation(OCReloadedCommon.MOD_ID, "lua/machine.lua");
         Supplier<Optional<InputStream>> supplier = createCodeSupplier(server, resourceLocation);
-        MachineCodeRegistry.getDefaultInstance().registerMachineCode("lua52", supplier);
+        MachineCodeRegistry.getDefaultInstance().registerMachineCode("Lua 5.2", supplier);
+        MachineCodeRegistry.getDefaultInstance().registerMachineCode("Lua 5.3", supplier);
     }
 
     private static void registerLuaBiosCode(MinecraftServer server) {

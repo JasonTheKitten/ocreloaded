@@ -101,9 +101,10 @@ local panicPull = kernel._K.computer.pullSignal
 function kernel.panic()
     kernel._println("--------------------------------------------------------")
     pcall(function()
-        for s in string.gmatch(tostring(debug.traceback()), "[^\r\n]+") do
+        error(debug.traceback())
+        --[[for s in string.gmatch(tostring(debug.traceback()), "[^\r\n]+") do
     		kernel._println(s)
-    	end
+    	end]]
     end)
     pcall(function()
         kernel._println("--------------------------------------------------------")

@@ -1,18 +1,20 @@
-package li.cil.ocreloaded.minecraft.server.fs;
+package li.cil.ocreloaded.core.filesystem;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
-import li.cil.ocreloaded.core.machine.fs.FileHandle;
+import li.cil.ocreloaded.core.machine.filesystem.FileHandle;
 
 public class FSStreamHandleTracker {
     
     private Map<Integer, FileHandle> handles = new HashMap<>();
     // TODO: Handle files that are already open
 
-    public int openInput(InputStreamSupplier streamSupplier, int length) throws IOException {
+    public int openInput(InputStreamSupplier streamSupplier, long length) throws IOException {
         int handle = -1;
         do {
             handle = (int) (Math.random() * Integer.MAX_VALUE);
@@ -20,6 +22,18 @@ public class FSStreamHandleTracker {
 
         int finalHandle = handle;
         handles.put(handle, new InputStreamFileHandle(streamSupplier.get(), length, () -> handles.remove(finalHandle)));
+
+        return handle;
+    }
+
+    public int openOutput(OutputStreamSupplier streamSupplier, Supplier<Long> lengthSupplier) throws IOException {
+        int handle = -1;
+        do {
+            handle = (int) (Math.random() * Integer.MAX_VALUE);
+        } while (handles.containsKey(handle));
+
+        int finalHandle = handle;
+        handles.put(handle, new OutputStreamFileHandle(streamSupplier.get(), lengthSupplier, () -> handles.remove(finalHandle)));
 
         return handle;
     }
@@ -37,6 +51,10 @@ public class FSStreamHandleTracker {
 
     public static interface InputStreamSupplier {
         InputStream get() throws IOException;
+    }
+
+    public static interface OutputStreamSupplier {
+        OutputStream get() throws IOException;
     }
     
 }

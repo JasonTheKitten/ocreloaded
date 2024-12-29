@@ -2,10 +2,10 @@ package li.cil.ocreloaded.core.component;
 
 import li.cil.ocreloaded.core.machine.PersistenceHolder;
 import li.cil.ocreloaded.core.machine.component.AnnotatedComponent;
+import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResult;
 import li.cil.ocreloaded.core.machine.component.ComponentCallArguments;
 import li.cil.ocreloaded.core.machine.component.ComponentCallContext;
 import li.cil.ocreloaded.core.machine.component.ComponentMethod;
-import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResult;
 
 public class EepromComponent extends AnnotatedComponent {
 

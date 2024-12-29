@@ -13,12 +13,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import li.cil.ocreloaded.core.component.ComputerComponent;
+import li.cil.ocreloaded.core.component.FileSystemComponent;
+import li.cil.ocreloaded.core.filesystem.InMemoryFileSystem;
 import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
 import li.cil.ocreloaded.core.machine.MachineParameters;
 import li.cil.ocreloaded.core.machine.MachineRegistry;
 import li.cil.ocreloaded.core.machine.MachineRegistryEntry;
 import li.cil.ocreloaded.core.machine.component.Component;
+import li.cil.ocreloaded.core.machine.imp.MachineProcessorImp;
+import li.cil.ocreloaded.core.misc.Label;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
 import li.cil.ocreloaded.minecraft.common.SettingsConstants;
@@ -44,13 +48,16 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
 
     private final NonNullList<ItemStack> items = NonNullList.withSize(10, ItemStack.EMPTY);
     private final NetworkNode networkNode = new ComponentNetworkNode(Optional.of(new ComputerComponent()), Visibility.NETWORK);
+    private final NetworkNode tmpFsNode = new ComponentNetworkNode(Optional.of(new FileSystemComponent(new InMemoryFileSystem(), Label.create())), Visibility.NEIGHBORS);
+    private final MachineProcessorImp processor = new MachineProcessorImp(MachineRegistry.getDefaultInstance());
 
     private Map<ItemStack, NetworkNode> loadedComponents = new HashMap<>();
-    private boolean powered;
     private Optional<Machine> machine = Optional.empty();
+    private boolean powered;
 
     public CaseBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(CommonRegistered.CASE_BLOCK_ENTITY.get(), blockPos, blockState);
+        networkNode.connect(tmpFsNode);
     }
 
     @Override
@@ -98,10 +105,6 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
     @Override
     public void tick() {
         machine.ifPresent(Machine::runSync);
-    }
-
-    public String getArchitecture() {
-        return "lua52";
     }
 
     public NonNullList<ItemStack> getItems() {
@@ -174,17 +177,19 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
     }
 
     private Optional<Machine> createMachine() {
+        String architecture = processor.getArchitecture();
         Optional<Supplier<Optional<InputStream>>> codeStreamSupplier = MachineCodeRegistry
             .getDefaultInstance()
-            .getMachineCodeSupplier(getArchitecture());
+            .getMachineCodeSupplier(architecture);
 
         if (codeStreamSupplier.isEmpty()) return Optional.empty();
 
         ExecutorService threadService = Executors.newCachedThreadPool(); // TODO: Custom thread pool
-        MachineParameters parameters = new MachineParameters(networkNode, codeStreamSupplier.get(), threadService);
+        MachineParameters parameters = new MachineParameters(
+            networkNode, tmpFsNode, codeStreamSupplier.get(), threadService, processor);
 
         return
-            MachineRegistry.getDefaultInstance().getEntry(getArchitecture())
+            MachineRegistry.getDefaultInstance().getEntry(architecture)
                 .filter(MachineRegistryEntry::isSupported)
                 .flatMap(entry -> entry.createMachine(parameters));
     }

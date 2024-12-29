@@ -5,6 +5,7 @@ package li.cil.ocreloaded.minecraft.server.machine.lua;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -12,20 +13,32 @@ import org.slf4j.LoggerFactory;
 
 import li.cil.ocreloaded.core.machine.architecture.luac.LuaCStateFactory;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
+import li.cil.repack.com.naef.jnlua.LuaState;
+import li.cil.repack.com.naef.jnlua.LuaState.Library;
+import li.cil.repack.com.naef.jnlua.LuaStateFiveThree;
+import li.cil.repack.com.naef.jnlua.NativeSupport;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.Resource;
 
-public class LuaCChooser {
+public class LuaCFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LuaCChooser.class);
+    private static final List<Library> LIBRARIES_52 = List.of(
+        Library.BASE, Library.BIT32, Library.COROUTINE, Library.DEBUG, Library.ERIS, Library.MATH, Library.STRING, Library.TABLE
+    );
+
+    private static final List<Library> LIBRARIES_53 = List.of(
+        Library.BASE, Library.COROUTINE, Library.DEBUG, Library.ERIS, Library.MATH, Library.STRING, Library.TABLE
+    );
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LuaCFactory.class);
 
     private final MinecraftServer server;
 
     private final String executableName;
     private final String tempDir;
     
-    public LuaCChooser(MinecraftServer server) {
+    public LuaCFactory(MinecraftServer server) {
         this.executableName = determineExecutableName();
         this.tempDir = System.getProperty("java.io.tmpdir");
         this.server = server;
@@ -50,7 +63,21 @@ public class LuaCChooser {
     public Optional<LuaCStateFactory> createFactory(String architecture) {
         if (!isAvailable(architecture)) return Optional.empty();
         if (!ensureResourceCopied(architecture)) return Optional.empty();
-        return Optional.of(new LuaCStateFactoryImp(getTempName(architecture)));
+        switch (architecture) {
+            case "lua52":
+                NativeSupport.getInstance().setLoader(() -> System.load(getTempName(architecture)));
+                return loaded(() -> new LuaState(), LIBRARIES_52);
+            case "lua53":
+                // Lua53 still needs Lua52 libs
+                if (createFactory("lua52").isEmpty()) return Optional.empty();
+                NativeSupport.getInstance().setLoader(() -> {
+                    System.load(getTempName("lua52"));
+                    System.load(getTempName(architecture));
+                });
+                return loaded(() -> new LuaStateFiveThree(), LIBRARIES_53);
+            default:
+                return Optional.empty();
+        }
     }
 
     private Optional<Resource> getResource(String architecture) {
@@ -60,6 +87,17 @@ public class LuaCChooser {
 
     private String getTempName(String architecture) {
         return tempDir + "/OpenComputersReloaded-" + architecture + "-" + executableName;
+    }
+
+    private Optional<LuaCStateFactory> loaded(LuaCStateFactory factory, List<Library> libraries) {
+        LuaCStateFactory luaCStateFactory = () -> {
+            LuaState luaState = factory.create();
+            libraries.forEach(luaState::openLib);
+            luaState.pop(libraries.size());
+            return luaState;
+         };
+
+        return Optional.of(luaCStateFactory);
     }
 
     private String determineExecutableName() {

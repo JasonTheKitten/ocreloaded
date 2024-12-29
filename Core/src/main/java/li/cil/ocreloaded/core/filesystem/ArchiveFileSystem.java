@@ -1,4 +1,4 @@
-package li.cil.ocreloaded.minecraft.server.fs;
+package li.cil.ocreloaded.core.filesystem;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import li.cil.ocreloaded.core.filesystem.FSStreamHandleTracker.InputStreamSupplier;
 import li.cil.ocreloaded.core.machine.PathUtil;
-import li.cil.ocreloaded.core.machine.fs.FileHandle;
-import li.cil.ocreloaded.core.machine.fs.FileSystem;
-import li.cil.ocreloaded.minecraft.server.fs.FSStreamHandleTracker.InputStreamSupplier;
+import li.cil.ocreloaded.core.machine.filesystem.FileHandle;
+import li.cil.ocreloaded.core.machine.filesystem.FileSystem;
 
 public class ArchiveFileSystem implements FileSystem {
 
@@ -55,6 +55,11 @@ public class ArchiveFileSystem implements FileSystem {
             .map(entry -> entry.split("/")[0])
             .distinct()
             .toList();
+    }
+
+    @Override
+    public boolean makeDirectory(String parentPath) {
+        return false;
     }
 
     @Override

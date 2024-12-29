@@ -9,8 +9,10 @@ import li.cil.ocreloaded.core.network.NetworkNode;
 
 public record MachineParameters(
     NetworkNode networkNode,
+    NetworkNode tmpFsNode,
     Supplier<Optional<InputStream>> codeStreamSupplier,
-    ExecutorService threadService
+    ExecutorService threadService,
+    MachineProcessor processor
 ) {
     
 }

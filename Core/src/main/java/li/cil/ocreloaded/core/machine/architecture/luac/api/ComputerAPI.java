@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.LoggerFactory;
+
 import li.cil.ocreloaded.core.machine.Machine;
+import li.cil.ocreloaded.core.machine.MachineProcessor;
 import li.cil.repack.com.naef.jnlua.LuaState;
 
 public final class ComputerAPI {
@@ -19,7 +22,9 @@ public final class ComputerAPI {
             "freeMemory", ComputerAPI::freeMemory,
             "totalMemory", ComputerAPI::totalMemory,
             "pushSignal", ComputerAPI::pushSignal,
-            "tmpAddress", ComputerAPI::tmpAddress
+            "tmpAddress", ComputerAPI::tmpAddress,
+            "setArchitecture", ComputerAPI::setArchitecture,
+            "getArchitecture", ComputerAPI::getArchitecture
         ));
     }
 
@@ -63,9 +68,27 @@ public final class ComputerAPI {
     }
 
     private static int tmpAddress(LuaState luaState, Machine machine) {
-        // TODO: Implement tmpAddress
-        luaState.pushNil();
-        return 0;
+        luaState.pushString(machine.parameters().tmpFsNode().id().toString());
+        return 1;
+    }
+
+    private static int setArchitecture(LuaState luaState, Machine machine) {
+        MachineProcessor processor = machine.parameters().processor();
+        String oldArchitecture = processor.getArchitecture();
+        String newArchitecture = luaState.checkString(1);
+        if (processor.setArchitecture(newArchitecture)) {
+            luaState.pushBoolean(!oldArchitecture.equals(newArchitecture));
+            return 1;
+        } else {
+            luaState.pushNil();
+            luaState.pushString("unknown architecture");
+            return 2;
+        }
+    }
+
+    private static int getArchitecture(LuaState luaState, Machine machine) {
+        luaState.pushString(machine.parameters().processor().getArchitecture());
+        return 1;
     }
 
     private static Object toSimpleJavaObject(LuaState luaState, int index) {

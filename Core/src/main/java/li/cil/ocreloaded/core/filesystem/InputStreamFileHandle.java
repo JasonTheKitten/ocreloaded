@@ -1,9 +1,9 @@
-package li.cil.ocreloaded.minecraft.server.fs;
+package li.cil.ocreloaded.core.filesystem;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import li.cil.ocreloaded.core.machine.fs.FileHandle;
+import li.cil.ocreloaded.core.machine.filesystem.FileHandle;
 
 public class InputStreamFileHandle implements FileHandle {
     

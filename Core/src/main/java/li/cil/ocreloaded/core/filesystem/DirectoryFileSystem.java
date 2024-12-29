@@ -1,9 +1,9 @@
-package li.cil.ocreloaded.minecraft.server.fs;
+package li.cil.ocreloaded.core.filesystem;
 
 import java.util.List;
 
-import li.cil.ocreloaded.core.machine.fs.FileHandle;
-import li.cil.ocreloaded.core.machine.fs.FileSystem;
+import li.cil.ocreloaded.core.machine.filesystem.FileHandle;
+import li.cil.ocreloaded.core.machine.filesystem.FileSystem;
 
 public class DirectoryFileSystem implements FileSystem {
 
@@ -33,6 +33,12 @@ public class DirectoryFileSystem implements FileSystem {
     public List<String> list(String path) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'list'");
+    }
+    
+    @Override
+    public boolean makeDirectory(String parentPath) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'makeDirectory'");
     }
 
     @Override

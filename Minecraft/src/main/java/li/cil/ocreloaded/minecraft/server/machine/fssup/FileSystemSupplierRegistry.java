@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import li.cil.ocreloaded.core.machine.fs.FileSystem;
+import li.cil.ocreloaded.core.machine.filesystem.FileSystem;
 
 public class FileSystemSupplierRegistry {
     

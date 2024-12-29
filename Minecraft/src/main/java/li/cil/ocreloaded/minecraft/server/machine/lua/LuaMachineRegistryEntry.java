@@ -24,7 +24,7 @@ public class LuaMachineRegistryEntry implements MachineRegistryEntry {
 
     @Override
     public Optional<Machine> createMachine(MachineParameters parameters) {
-        Optional<LuaCStateFactory> luaCStateFactory = new LuaCChooser(minecraftServer).createFactory(architecture);
+        Optional<LuaCStateFactory> luaCStateFactory = new LuaCFactory(minecraftServer).createFactory(architecture);
         if (luaCStateFactory.isEmpty()) return Optional.empty();
 
         Function<Machine, Architecture> architectureFactory = machine -> new LuaCArchitecture(luaCStateFactory.get(), machine);
@@ -33,7 +33,7 @@ public class LuaMachineRegistryEntry implements MachineRegistryEntry {
 
     @Override
     public boolean isSupported() {
-        return new LuaCChooser(minecraftServer).isAvailable(architecture);
+        return new LuaCFactory(minecraftServer).isAvailable(architecture);
     }
     
 }

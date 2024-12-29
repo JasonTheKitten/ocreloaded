@@ -1,4 +1,4 @@
-package li.cil.ocreloaded.core.machine.fs;
+package li.cil.ocreloaded.core.machine.filesystem;
 
 import java.io.IOException;
 

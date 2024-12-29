@@ -20,7 +20,6 @@ import li.cil.ocreloaded.core.machine.architecture.luac.api.OSAPI;
 import li.cil.ocreloaded.core.machine.architecture.luac.api.SystemAPI;
 import li.cil.ocreloaded.core.machine.architecture.luac.api.UnicodeAPI;
 import li.cil.repack.com.naef.jnlua.LuaState;
-import li.cil.repack.com.naef.jnlua.LuaState.Library;
 import li.cil.repack.com.naef.jnlua.LuaType;
 
 public class LuaCArchitecture implements Architecture {
@@ -29,10 +28,6 @@ public class LuaCArchitecture implements Architecture {
 
     private static final List<BiConsumer<LuaState, Machine>> API_REGISTRATIONS = List.of(
         ComputerAPI::register, OSAPI::register, ComponentAPI::register, SystemAPI::register, UnicodeAPI::register
-    );
-
-    private static final List<Library> LIBRARIES = List.of(
-        Library.BASE, Library.BIT32, Library.COROUTINE, Library.DEBUG, Library.ERIS, Library.MATH, Library.STRING, Library.TABLE
     );
 
     private final LuaCStateFactory factory;
@@ -54,9 +49,6 @@ public class LuaCArchitecture implements Architecture {
 
         LuaState luaState = factory.create();
         this.luaState = Optional.of(luaState);
-
-        LIBRARIES.forEach(luaState::openLib);
-        luaState.pop(LIBRARIES.size());
 
         API_REGISTRATIONS.forEach(consumer -> consumer.accept(luaState, machine));
 

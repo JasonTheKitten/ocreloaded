@@ -1,4 +1,4 @@
-package li.cil.ocreloaded.core.machine.fs;
+package li.cil.ocreloaded.core.machine.filesystem;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,6 +12,8 @@ public interface FileSystem {
     boolean isDirectory(String path);
 
     List<String> list(String path);
+
+    boolean makeDirectory(String path);
     
     int open(String path, Mode mode) throws IOException;
 
