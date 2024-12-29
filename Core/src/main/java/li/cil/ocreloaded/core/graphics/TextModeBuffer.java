@@ -1,5 +1,6 @@
 package li.cil.ocreloaded.core.graphics;
 
+import li.cil.ocreloaded.core.graphics.color.ColorMode.ColorData;
 import li.cil.ocreloaded.core.graphics.imp.TextModeBufferImp;
 
 public interface TextModeBuffer {
@@ -18,15 +19,11 @@ public interface TextModeBuffer {
 
     void setBackgroundColor(int color, boolean isPaletteIndex);
 
-    int getBackgroundColor();
-
-    boolean isBackgroundPaletteIndex();
+    ColorData getBackgroundColor();
 
     void setForegroundColor(int color, boolean isPaletteIndex);
 
-    int getForegroundColor();
-
-    boolean isForegroundPaletteIndex();
+    ColorData getForegroundColor();
 
     int getPaletteColor(int index);
 

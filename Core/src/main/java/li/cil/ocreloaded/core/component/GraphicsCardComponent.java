@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
+import li.cil.ocreloaded.core.graphics.color.ColorMode.ColorData;
 import li.cil.ocreloaded.core.machine.component.AnnotatedComponent;
 import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResult;
 import li.cil.ocreloaded.core.machine.component.ComponentCallArguments;
@@ -56,7 +57,7 @@ public class GraphicsCardComponent extends AnnotatedComponent {
 
     @ComponentMethod(direct = true, doc = "function():number, boolean -- Get the current background color and whether it's from the palette or not.")
     public ComponentCallResult getBackground(ComponentCallContext context, ComponentCallArguments arguments) {
-        return withBuffer(context, buffer -> ComponentCallResult.success(buffer.getBackgroundColor(), buffer.isBackgroundPaletteIndex()));
+        return withBuffer(context, buffer -> ComponentCallResult.success(buffer.getBackgroundColor().color(), buffer.getBackgroundColor().isPaletteIndex()));
     }
 
     @ComponentMethod(direct = true, doc = "function(value:number[, palette:boolean]):number, number or nil -- Sets the background color to the specified value." +
@@ -65,20 +66,19 @@ public class GraphicsCardComponent extends AnnotatedComponent {
         int color = arguments.checkInteger(0);
         boolean isPaletteIndex = arguments.optionalBoolean(1, false);
         return withBuffer(context, buffer -> {
-            int oldColor = buffer.getBackgroundColor();
-            boolean oldIsPaletteIndex = buffer.isBackgroundPaletteIndex();
+            ColorData oldColor = buffer.getBackgroundColor();
             buffer.setBackgroundColor(color, isPaletteIndex);
-            if (oldIsPaletteIndex) {
-                return ComponentCallResult.success(buffer.getPaletteColor(oldColor), oldColor);
+            if (oldColor.isPaletteIndex()) {
+                return ComponentCallResult.success(buffer.getPaletteColor(oldColor.color()), oldColor.color());
             } else {
-                return ComponentCallResult.success(oldColor, null);
+                return ComponentCallResult.success(oldColor.color(), null);
             }
         });
     }
 
     @ComponentMethod(direct = true, doc = "function():number, boolean -- Get the current foreground color and whether it's from the palette or not.")
     public ComponentCallResult getForeground(ComponentCallContext context, ComponentCallArguments arguments) {
-        return withBuffer(context, buffer -> ComponentCallResult.success(buffer.getForegroundColor(), buffer.isForegroundPaletteIndex()));
+        return withBuffer(context, buffer -> ComponentCallResult.success(buffer.getForegroundColor().color(), buffer.getForegroundColor().isPaletteIndex()));
     }
 
     @ComponentMethod(direct = true, doc = "function(value:number[, palette:boolean]):number, number or nil -- Sets the foreground color to the specified value." +
@@ -87,13 +87,12 @@ public class GraphicsCardComponent extends AnnotatedComponent {
         int color = arguments.checkInteger(0);
         boolean isPaletteIndex = arguments.optionalBoolean(1, false);
         return withBuffer(context, buffer -> {
-            int oldColor = buffer.getForegroundColor();
-            boolean oldIsPaletteIndex = buffer.isForegroundPaletteIndex();
+            ColorData oldColor = buffer.getForegroundColor();
             buffer.setForegroundColor(color, isPaletteIndex);
-            if (oldIsPaletteIndex) {
-                return ComponentCallResult.success(buffer.getPaletteColor(oldColor), oldColor);
+            if (oldColor.isPaletteIndex()) {
+                return ComponentCallResult.success(buffer.getPaletteColor(oldColor.color()), oldColor.color());
             } else {
-                return ComponentCallResult.success(oldColor, null);
+                return ComponentCallResult.success(oldColor.color(), null);
             }
         });
     }

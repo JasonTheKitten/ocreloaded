@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import li.cil.ocreloaded.core.filesystem.ArchiveFileSystem;
@@ -42,8 +43,11 @@ public final class LootFileSystemSupplier {
     
     private static Map<String, String> getRemappings(ResourceManager resourceManager, ResourceLocation resourceLocation, String data) {
         String remapPath = resourceLocation.getPath() + "/" + data + ".remap";
-        Resource remapResource = resourceManager.getResource(new ResourceLocation(resourceLocation.getNamespace(), remapPath)).get();
-        try (BufferedReader reader = remapResource.openAsReader()) {
+        Optional<Resource> remapResource = resourceManager.getResource(new ResourceLocation(resourceLocation.getNamespace(), remapPath));
+        if (remapResource.isEmpty()) {
+            return Map.of();
+        }
+        try (BufferedReader reader = remapResource.get().openAsReader()) {
             return reader.lines()
                 .map(line -> line.split(":", 2))
                 .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1]));

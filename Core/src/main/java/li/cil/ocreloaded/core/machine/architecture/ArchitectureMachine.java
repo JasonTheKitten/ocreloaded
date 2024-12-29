@@ -1,7 +1,6 @@
 package li.cil.ocreloaded.core.machine.architecture;
 
 import java.io.InputStream;
-import java.nio.file.FileSystem;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;

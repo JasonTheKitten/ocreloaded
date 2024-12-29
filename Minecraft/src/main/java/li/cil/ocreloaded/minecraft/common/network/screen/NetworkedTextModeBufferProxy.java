@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
+import li.cil.ocreloaded.core.graphics.color.ColorMode.ColorData;
 
 public class NetworkedTextModeBufferProxy implements TextModeBuffer {
 
@@ -97,13 +98,8 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
     }
 
     @Override
-    public int getBackgroundColor() {
+    public ColorData getBackgroundColor() {
         return targetBuffer.getBackgroundColor();
-    }
-
-    @Override
-    public boolean isBackgroundPaletteIndex() {
-        return targetBuffer.isBackgroundPaletteIndex();
     }
 
     @Override
@@ -115,13 +111,8 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
     }
 
     @Override
-    public int getForegroundColor() {
+    public ColorData getForegroundColor() {
         return targetBuffer.getForegroundColor();
-    }
-
-    @Override
-    public boolean isForegroundPaletteIndex() {
-        return targetBuffer.isForegroundPaletteIndex();
     }
 
     @Override
@@ -188,10 +179,12 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
         int[] viewport = targetBuffer.viewport();
         syncBuffer.writeInt(viewport[0]);
         syncBuffer.writeInt(viewport[1]);
-        syncBuffer.writeInt(targetBuffer.getBackgroundColor());
-        syncBuffer.writeBoolean(targetBuffer.isBackgroundPaletteIndex());
-        syncBuffer.writeInt(targetBuffer.getForegroundColor());
-        syncBuffer.writeBoolean(targetBuffer.isForegroundPaletteIndex());
+        ColorData backgroundColor = targetBuffer.getBackgroundColor();
+        syncBuffer.writeInt(backgroundColor.color());
+        syncBuffer.writeBoolean(backgroundColor.isPaletteIndex());
+        ColorData foregroundColor = targetBuffer.getForegroundColor();
+        syncBuffer.writeInt(foregroundColor.color());
+        syncBuffer.writeBoolean(foregroundColor.isPaletteIndex());
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 ReducedCellInfo cell = targetBuffer.getReducedTextCell(x, y);

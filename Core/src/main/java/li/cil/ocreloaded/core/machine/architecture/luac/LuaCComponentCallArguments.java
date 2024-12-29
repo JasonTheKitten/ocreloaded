@@ -41,7 +41,7 @@ public class LuaCComponentCallArguments implements ComponentCallArguments {
             return defaultValue;
         }
 
-        return checkInteger(this.index + index);
+        return checkInteger(index);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class LuaCComponentCallArguments implements ComponentCallArguments {
             return defaultValue;
         }
 
-        return checkBoolean(this.index + index);
+        return checkBoolean(index);
     }
 
     @Override

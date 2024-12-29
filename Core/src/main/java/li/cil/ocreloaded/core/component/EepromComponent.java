@@ -12,7 +12,7 @@ public class EepromComponent extends AnnotatedComponent {
     private final String defaultCode;
 
     private String code;
-    private String data;
+    private String data = "";
     
     public EepromComponent(String defaultCode) {
         super("eeprom");
@@ -32,15 +32,12 @@ public class EepromComponent extends AnnotatedComponent {
 
     @ComponentMethod(direct = true, doc = "function():string -- Get the currently stored byte array.")
     public ComponentCallResult getData(ComponentCallContext context, ComponentCallArguments arguments) {
-        if (data.isEmpty()) {
-            return ComponentCallResult.success();
-        }
         return ComponentCallResult.success(data);
     }
 
-    @ComponentMethod(direct = true, doc = "function(data:string) -- Overwrite the currently stored byte array.")
+    @ComponentMethod(doc = "function(data:string) -- Overwrite the currently stored byte array.")
     public ComponentCallResult setData(ComponentCallContext context, ComponentCallArguments arguments) {
-        this.data = arguments.optionalString(0, null);
+        this.data = arguments.optionalString(0, "");
         return ComponentCallResult.success();
     }
 

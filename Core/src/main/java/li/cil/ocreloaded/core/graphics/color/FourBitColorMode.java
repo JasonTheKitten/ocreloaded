@@ -10,13 +10,13 @@ public class FourBitColorMode implements ColorMode {
     };
 
     @Override
-    public int pack(int color, boolean isPaletteIndex) {
-        if (isPaletteIndex) {
-            return Math.max(Math.min(color, palette.length - 1), 0);
+    public int pack(ColorData colorData) {
+        if (colorData.isPaletteIndex()) {
+            return Math.max(Math.min(colorData.color(), palette.length - 1), 0);
         } else {
             int closestColor = 0;
             for (int i = 1; i < palette.length; i++) {
-                if (delta(color, palette[i]) < delta(color, palette[closestColor])) {
+                if (delta(colorData.color(), palette[i]) < delta(colorData.color(), palette[closestColor])) {
                     closestColor = i;
                 }
             }

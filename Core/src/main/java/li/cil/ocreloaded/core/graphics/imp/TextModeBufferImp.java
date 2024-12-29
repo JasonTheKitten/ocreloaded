@@ -2,6 +2,7 @@ package li.cil.ocreloaded.core.graphics.imp;
 
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
 import li.cil.ocreloaded.core.graphics.color.ColorMode;
+import li.cil.ocreloaded.core.graphics.color.ColorMode.ColorData;
 import li.cil.ocreloaded.core.graphics.color.FourBitColorMode;
 
 public class TextModeBufferImp implements TextModeBuffer {
@@ -13,9 +14,8 @@ public class TextModeBufferImp implements TextModeBuffer {
     private int[] maxResolution;
     private int[] viewport;
     private int[] buffer;
-    private boolean isBackgroundPaletteIndex = true;
-    private boolean isForegroundPaletteIndex = true;
-    private int currentColor = 0x000F0000;
+    private ColorData currentForeground;
+    private ColorData currentBackground;
     private int width;
 
     public TextModeBufferImp(int[] maxResolution) {
@@ -33,7 +33,7 @@ public class TextModeBufferImp implements TextModeBuffer {
             return;
         }
         buffer[index] = codepoint;
-        buffer[index + 1] = currentColor;
+        buffer[index + 1] = colorMode.pack(currentBackground) << 16 | colorMode.pack(currentForeground);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class TextModeBufferImp implements TextModeBuffer {
 
     @Override
     public void fill(int x, int y, int width, int height, int codepoint) {
-        int packedColors = currentColor;
+        int packedColors = packColors();
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 rawSetTextCell(x + j, y + i, codepoint, packedColors);
@@ -101,43 +101,26 @@ public class TextModeBufferImp implements TextModeBuffer {
 
     @Override
     public void setBackgroundColor(int color, boolean isPaletteIndex) {
-        int foregroundColor = currentColor & 0xFFFF;
-        int backgroundColor = colorMode.pack(color, isPaletteIndex) << 16 | foregroundColor;
-        currentColor = backgroundColor;
-        this.isBackgroundPaletteIndex = isPaletteIndex;
+        currentBackground = new ColorData(color, isPaletteIndex);
     }
 
     @Override
-    public int getBackgroundColor() {
-        return currentColor >> 16;
-    }
-
-    @Override
-    public boolean isBackgroundPaletteIndex() {
-        return isBackgroundPaletteIndex;
+    public ColorData getBackgroundColor() {
+        return currentBackground;
     }
 
     @Override
     public void setForegroundColor(int color, boolean isPaletteIndex) {
-        int backgroundColor = currentColor >> 16;
-        int foregroundColor = colorMode.pack(color, isPaletteIndex) & 0xFFFF;
-        currentColor = backgroundColor << 16 | foregroundColor;
-        this.isForegroundPaletteIndex = isPaletteIndex;
+        currentForeground = new ColorData(color, isPaletteIndex);
     }
 
     @Override
-    public int getForegroundColor() {
-        return currentColor & 0xFFFF;
-    }
-
-    @Override
-    public boolean isForegroundPaletteIndex() {
-        return isForegroundPaletteIndex;
+    public ColorData getForegroundColor() {
+        return currentForeground;
     }
 
     @Override
     public int getPaletteColor(int index) {
-        // TODOL Should only work if is actual palette
         return colorMode.unpack(index);
     }
 
@@ -187,11 +170,16 @@ public class TextModeBufferImp implements TextModeBuffer {
 
     public void setDepth(int depth) {
         colorMode = new FourBitColorMode();
-        currentColor = colorMode.pack(0x000000, false) << 16 | colorMode.pack(0xFFFFFF, false);
+        currentForeground = new ColorData(0xFFFFFF, false);
+        currentBackground = new ColorData(0x000000, false);
         for (int i = 0; i < buffer.length; i += ELEMENTS_PER_CELL) {
             buffer[i] = 32;
-            buffer[i + 1] = currentColor;
+            buffer[i + 1] = packColors();
         }
+    }
+
+    private int packColors() {
+        return colorMode.pack(currentBackground) << 16 | colorMode.pack(currentForeground);
     }
     
 }
