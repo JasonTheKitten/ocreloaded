@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.LoggerFactory;
-
 import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.MachineProcessor;
 import li.cil.repack.com.naef.jnlua.LuaState;

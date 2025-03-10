@@ -13,16 +13,16 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkedTextModeBufferProxy.class);
 
-    private static final int RESET = 0;
-    private static final int SYNC = 1;
-    private static final int SET_TEXT_CELL = 2;
-    private static final int COPY = 3;
-    private static final int FILL = 4;
-    private static final int WRITE_TEXT = 5;
-    private static final int SET_BACKGROUND = 6;
-    private static final int SET_FOREGROUND = 7;
-    private static final int SET_RESOLUTION = 8;
-    private static final int SET_VIEWPORT = 9;
+    private static final int RESET = 1;
+    private static final int SYNC = 2;
+    private static final int SET_TEXT_CELL = 3;
+    private static final int COPY = 4;
+    private static final int FILL = 5;
+    private static final int WRITE_TEXT = 6;
+    private static final int SET_BACKGROUND = 7;
+    private static final int SET_FOREGROUND = 8;
+    private static final int SET_RESOLUTION = 9;
+    private static final int SET_VIEWPORT = 10;
 
     private final TextModeBuffer targetBuffer;
     private final ByteBuf buffer;
@@ -87,12 +87,13 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
 
     @Override
     public void writeText(int x, int y, String text, boolean vertical) {
+        byte[] textBytes = text.getBytes();
         targetBuffer.writeText(x, y, text, vertical);
         buffer.writeInt(WRITE_TEXT);
         buffer.writeInt(x);
         buffer.writeInt(y);
-        buffer.writeInt(text.length());
-        buffer.writeBytes(text.getBytes());
+        buffer.writeInt(textBytes.length);
+        buffer.writeBytes(textBytes);
         buffer.writeBoolean(vertical);
     }
 

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -24,7 +25,7 @@ public class ArchitectureMachine implements Machine {
     private final MachineParameters parameters;
 
     private final Deque<State> state = new ArrayDeque<>(List.of(State.STOPPED));
-    private final Deque<Signal> signals = new ArrayDeque<>();
+    private final Queue<Signal> signals = new ArrayDeque<>();
 
     private int waitTicks = 0;
     private long startTime = 0;
@@ -67,7 +68,7 @@ public class ArchitectureMachine implements Machine {
         if (state.peek() == State.WAIT) {
             waitTicks--;
             // TODO: Event queue
-            if (waitTicks <= 0) {
+            if (waitTicks <= 0 || !signals.isEmpty()) {
                 state.pop();
                 setState(State.ASYNC);
             }
@@ -88,7 +89,7 @@ public class ArchitectureMachine implements Machine {
 
     @Override
     public boolean signal(String name, Object... args) {
-        signals.push(new Signal(name, args));
+        signals.add(new Signal(name, args));
 
         return true;
     }
