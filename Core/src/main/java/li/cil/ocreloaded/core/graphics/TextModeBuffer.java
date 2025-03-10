@@ -5,6 +5,8 @@ import li.cil.ocreloaded.core.graphics.imp.TextModeBufferImp;
 
 public interface TextModeBuffer {
 
+    void reset();
+
     void setTextCell(int x, int y, int codepoint);
 
     void rawSetTextCell(int x, int y, int codepoint, int packedColors);

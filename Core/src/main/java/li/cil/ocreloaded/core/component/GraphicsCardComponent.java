@@ -44,7 +44,14 @@ public class GraphicsCardComponent extends AnnotatedComponent {
 
         return withBuffer(context, RESERVED_SCREEN_INDEX, buffer -> {
             if (reset) {
-                // TODO: Implement reset
+                int[] bufferMaxResolution = buffer.maxResolution();
+                buffer.setResolution(
+                    Math.min(maxResolution[0], bufferMaxResolution[0]),
+                    Math.min(maxResolution[1], bufferMaxResolution[1]));
+                buffer.setForegroundColor(0xFFFFFFFF, false);
+                buffer.setBackgroundColor(0x00000000, false);
+                buffer.reset();
+                // TODO: Set color depth
             }
             return ComponentCallResult.success(true);
         });

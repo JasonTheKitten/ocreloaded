@@ -10,6 +10,8 @@ public interface Network {
 
     void disconnect(NetworkNode nodeA, NetworkNode nodeB);
 
+    void remove(NetworkNode node);
+
     void rename(UUID oldName, UUID newName);
 
     boolean reachable(NetworkNode source, NetworkNode target);

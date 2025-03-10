@@ -35,6 +35,10 @@ public interface NetworkNode {
         network().disconnect(this, otherNode);
     }
 
+    default void remove() {
+        network().remove(this);
+    }
+
     default boolean canReach(NetworkNode otherNode) {
         return network().reachable(this, otherNode);
     }

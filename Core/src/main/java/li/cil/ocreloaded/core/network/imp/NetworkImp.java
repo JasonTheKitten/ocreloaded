@@ -1,7 +1,9 @@
 package li.cil.ocreloaded.core.network.imp;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -50,7 +52,26 @@ public class NetworkImp implements Network {
         if (!connections.containsKey(nodeA.id())) throw new IllegalArgumentException("Node A is not in this network.");
         if (!connections.containsKey(nodeB.id())) throw new IllegalArgumentException("Node B is not in this network.");
 
-        // TODO
+        Set<NetworkNode> nodeAConnections = connections.get(nodeA.id());
+        Set<NetworkNode> nodeBConnections = connections.get(nodeB.id());
+
+        if (nodeAConnections.remove(nodeB) && nodeBConnections.remove(nodeA)) {
+            handleSplit();
+            if (nodeA.visibility() == Visibility.NEIGHBORS) {
+                nodeB.onDisconnect(nodeA);
+            }
+            if (nodeB.visibility() == Visibility.NEIGHBORS) {
+                nodeA.onDisconnect(nodeB);
+            }
+        }
+    }
+
+    @Override
+    public void remove(NetworkNode node) {
+        if (!connections.containsKey(node.id())) throw new IllegalArgumentException("Node is not in this network.");
+        
+        connections.remove(node.id());
+        handleSplit();
     }
 
     @Override
@@ -123,6 +144,54 @@ public class NetworkImp implements Network {
 
     private boolean neighbors(NetworkNode nodeA, NetworkNode nodeB) {
         return connections.getOrDefault(nodeA.id(), Set.of()).contains(nodeB);
+    }
+
+    private void handleSplit() {
+        List<Set<NetworkNode>> subGraphs = new ArrayList<>();
+        Set<NetworkNode> visited = new HashSet<>();
+
+        for (NetworkNode node : allNodes()) {
+            if (!visited.contains(node)) {
+                Set<NetworkNode> group = new HashSet<>();
+                exploreGroup(node, group, visited);
+                subGraphs.add(group);
+            }
+        }
+
+        if (subGraphs.size() > 1) {
+            createSubgraphNetworks(subGraphs);
+        }
+    }
+
+    private void createSubgraphNetworks(List<Set<NetworkNode>> subGraphs) {
+        List<Set<NetworkNode>> visibleNodes = subGraphs.stream()
+            .map(group -> group.stream()
+                .filter(n -> n.visibility() == Visibility.NETWORK)
+                .collect(Collectors.toSet()))
+            .toList();
+
+        for (Set<NetworkNode> subgraph : subGraphs) {
+            NetworkImp newNetwork = new NetworkImp(subgraph.iterator().next());
+            subgraph.forEach(newNetwork::addNewNode);
+        };
+
+        for (int i = 0; i < subGraphs.size(); i++) {
+            Set<NetworkNode> nodesA = subGraphs.get(i);
+            Set<NetworkNode> visibleA = visibleNodes.get(i);
+            for (int j = i + 1; j < subGraphs.size(); j++) {
+                Set<NetworkNode> nodesB = subGraphs.get(j);
+                Set<NetworkNode> visibleB = visibleNodes.get(j);
+                visibleA.forEach(node -> nodesB.forEach(n -> n.onDisconnect(node)));
+                visibleB.forEach(node -> nodesA.forEach(n -> n.onDisconnect(node)));
+            }
+        }
+    }
+
+    private void exploreGroup(NetworkNode node, Set<NetworkNode> group, Set<NetworkNode> visited) {
+        if (visited.add(node)) {
+            group.add(node);
+            connections.getOrDefault(node.id(), Set.of()).forEach(neighbor -> exploreGroup(neighbor, group, visited));
+        }
     }
     
 }

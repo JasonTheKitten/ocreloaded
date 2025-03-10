@@ -27,6 +27,14 @@ public class TextModeBufferImp implements TextModeBuffer {
     }
 
     @Override
+    public void reset() {
+        for (int i = 0; i < buffer.length; i += ELEMENTS_PER_CELL) {
+            buffer[i] = 32;
+            buffer[i + 1] = packColors();
+        }
+    }
+
+    @Override
     public void setTextCell(int x, int y, int codepoint) {
         int index = (y * width + x) * ELEMENTS_PER_CELL;
         if (index < 0 || index >= buffer.length || x < 0 || x >= width) {
@@ -173,6 +181,7 @@ public class TextModeBufferImp implements TextModeBuffer {
         currentForeground = new ColorData(0xFFFFFF, false);
         currentBackground = new ColorData(0x000000, false);
         for (int i = 0; i < buffer.length; i += ELEMENTS_PER_CELL) {
+            // TODO: setDepth does not clear the buffer
             buffer[i] = 32;
             buffer[i + 1] = packColors();
         }

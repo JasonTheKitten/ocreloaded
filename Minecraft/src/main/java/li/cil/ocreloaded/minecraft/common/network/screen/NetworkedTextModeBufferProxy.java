@@ -13,6 +13,7 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkedTextModeBufferProxy.class);
 
+    private static final int RESET = 0;
     private static final int SYNC = 1;
     private static final int SET_TEXT_CELL = 2;
     private static final int COPY = 3;
@@ -29,6 +30,12 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
     public NetworkedTextModeBufferProxy(TextModeBuffer innerBuffer) {
         this.targetBuffer = innerBuffer;
         this.buffer = Unpooled.buffer();
+    }
+
+    @Override
+    public void reset() {
+        targetBuffer.reset();
+        buffer.writeInt(RESET);
     }
 
     @Override
@@ -203,6 +210,7 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
             
             boolean recognized = true;
             switch (command) {
+                case RESET -> buffer.reset();
                 case SYNC -> handleSync(buffer, byteBuf);
                 case SET_TEXT_CELL -> buffer.setTextCell(byteBuf.readInt(), byteBuf.readInt(), byteBuf.readInt());
                 case COPY -> buffer.copy(
