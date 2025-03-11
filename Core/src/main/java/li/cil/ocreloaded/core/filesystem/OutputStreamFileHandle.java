@@ -2,26 +2,25 @@ package li.cil.ocreloaded.core.filesystem;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.function.Supplier;
 
 import li.cil.ocreloaded.core.machine.filesystem.FileHandle;
 
 public class OutputStreamFileHandle implements FileHandle {
     
     private final OutputStream stream;
-    private final Supplier<Long> lengthSupplier;
+    private final LengthSupplier lengthSupplier;
     private final Runnable onClose;
 
     private long position;
         
-    public OutputStreamFileHandle(OutputStream stream, Supplier<Long> lengthSupplier, Runnable onClose) {
+    public OutputStreamFileHandle(OutputStream stream, LengthSupplier lengthSupplier, Runnable onClose) {
         this.stream = stream;
         this.lengthSupplier = lengthSupplier;
         this.onClose = onClose;
     }
 
     @Override
-    public long length() {
+    public long length() throws IOException {
         return lengthSupplier.get();
     }
 
@@ -50,6 +49,10 @@ public class OutputStreamFileHandle implements FileHandle {
     public void write(byte[] buffer) throws IOException {
         stream.write(buffer);
         position += buffer.length;
+    }
+
+    public static interface LengthSupplier {
+        long get() throws IOException;
     }
 
 }

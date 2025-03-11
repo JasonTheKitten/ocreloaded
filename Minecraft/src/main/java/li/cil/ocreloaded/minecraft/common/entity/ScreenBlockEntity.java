@@ -10,8 +10,10 @@ import li.cil.ocreloaded.core.network.NetworkMessage;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
 import li.cil.ocreloaded.minecraft.common.SettingsConstants;
+import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
+import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
 import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
 import li.cil.ocreloaded.minecraft.common.network.screen.NetworkedTextModeBufferProxy;
 import li.cil.ocreloaded.minecraft.common.network.screen.ScreenNetworkMessage;
@@ -48,7 +50,8 @@ public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentT
         super.setLevel(level);
         if (level == null) return;
 
-        int[] maxResolution = new int[] { 50, 16 };
+        ScreenBlock block = (ScreenBlock) getBlockState().getBlock();
+        int[] maxResolution = GraphicsCardItem.TIER_RESOLUTIONS[block.getTier() - 1];
         screenBuffer = level.isClientSide() ?
             TextModeBuffer.create(maxResolution) :
             new NetworkedTextModeBufferProxy(TextModeBuffer.create(maxResolution));

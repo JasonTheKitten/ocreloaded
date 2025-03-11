@@ -10,6 +10,13 @@ import net.minecraft.world.item.Item;
 
 public class GraphicsCardItem extends Item implements TieredItem, ComponentItem {
 
+    //TODO: Move this to a conifg
+    public static int[][] TIER_RESOLUTIONS = new int[][] {
+        new int[] { 50, 16 },
+        new int[] { 80, 25 },
+        new int[] { 160, 50 },
+    };
+
     private final int tier;
 
     public GraphicsCardItem(Properties properties, int tier) {
@@ -24,7 +31,7 @@ public class GraphicsCardItem extends Item implements TieredItem, ComponentItem 
 
     @Override
     public NetworkNode newNetworkNode() {
-        return new ComponentNetworkNode(Optional.of(new GraphicsCardComponent(new int[] { 50, 16 })), Visibility.NEIGHBORS);
+        return new ComponentNetworkNode(Optional.of(new GraphicsCardComponent(TIER_RESOLUTIONS[tier - 1])), Visibility.NEIGHBORS);
     }
     
 }

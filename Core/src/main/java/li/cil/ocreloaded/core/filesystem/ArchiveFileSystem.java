@@ -84,6 +84,7 @@ public class ArchiveFileSystem implements FileSystem {
             return -1;
         }
 
+        // TODO: Properly handle mode
         return streamHandleTracker.openInput(entry.contents(), (int) entry.size());
     }
 

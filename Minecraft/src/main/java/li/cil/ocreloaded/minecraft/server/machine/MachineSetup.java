@@ -10,6 +10,7 @@ import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
 import li.cil.ocreloaded.core.machine.MachineRegistry;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
 import li.cil.ocreloaded.minecraft.server.machine.fssup.FileSystemSupplierRegistry;
+import li.cil.ocreloaded.minecraft.server.machine.fssup.LocalFileSystemSupplier;
 import li.cil.ocreloaded.minecraft.server.machine.fssup.LootFileSystemSupplier;
 import li.cil.ocreloaded.minecraft.server.machine.lua.LuaMachineRegistryEntry;
 import net.minecraft.resources.ResourceLocation;
@@ -50,6 +51,7 @@ public class MachineSetup {
     private static void registerFilesystemSuppliers(MinecraftServer server) {
         ResourceLocation resourceLocation = new ResourceLocation(OCReloadedCommon.MOD_ID, "loot");
         FileSystemSupplierRegistry.getDefaultInstance().register("loot", (uuid, data) -> LootFileSystemSupplier.createLootFS(server, resourceLocation, data));
+        FileSystemSupplierRegistry.getDefaultInstance().register("localfs", (uuid, data) -> LocalFileSystemSupplier.createLocalFS(server, uuid));
     }
 
     private static Supplier<Optional<InputStream>> createCodeSupplier(MinecraftServer server, ResourceLocation resourceLocation) {

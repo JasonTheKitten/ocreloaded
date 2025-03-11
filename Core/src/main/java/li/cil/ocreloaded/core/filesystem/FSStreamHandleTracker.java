@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
+import li.cil.ocreloaded.core.filesystem.OutputStreamFileHandle.LengthSupplier;
 import li.cil.ocreloaded.core.machine.filesystem.FileHandle;
 
 public class FSStreamHandleTracker {
@@ -26,7 +26,7 @@ public class FSStreamHandleTracker {
         return handle;
     }
 
-    public int openOutput(OutputStreamSupplier streamSupplier, Supplier<Long> lengthSupplier) throws IOException {
+    public int openOutput(OutputStreamSupplier streamSupplier, LengthSupplier lengthSupplier) throws IOException {
         int handle = -1;
         do {
             handle = (int) (Math.random() * Integer.MAX_VALUE);

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public interface FileHandle {
     
-    long length();
+    long length() throws IOException;
 
     long position();
 

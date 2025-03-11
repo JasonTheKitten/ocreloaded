@@ -88,6 +88,7 @@ public class FileSystemComponent extends AnnotatedComponent {
         boolean success = true;
         for (int i = 1; i <= pathParts.size(); i++) {
             currentPath.append(pathParts.get(i - 1));
+            currentPath.append("/");
             String parentPath = currentPath.toString();
             success = filesystem.exists(parentPath) || filesystem.makeDirectory(parentPath);
             if (!success) {
@@ -120,7 +121,7 @@ public class FileSystemComponent extends AnnotatedComponent {
         try {
             handle = filesystem.open(path, parseMode(mode));
         } catch (IOException e) {
-            return ComponentCallResult.failure(e.getMessage());
+            return ComponentCallResult.failure("could not open file");
         }
 
         openFiles.add(handle);
@@ -145,6 +146,20 @@ public class FileSystemComponent extends AnnotatedComponent {
         } catch (IOException e) {
             return ComponentCallResult.failure(e.getMessage());
         }
+    }
+
+    @ComponentMethod(direct = true, doc = "function(handle:userdata, value:string):boolean -- Writes the specified data to an open file descriptor with the specified handle.")
+    public ComponentCallResult write(ComponentCallContext context, ComponentCallArguments arguments) {
+        int handle = arguments.checkInteger(0);
+        String value = arguments.checkString(1);
+        
+        try {
+            filesystem.getHandle(handle).write(value.getBytes());
+        } catch (IOException e) {
+            return ComponentCallResult.failure(e.getMessage());
+        }
+
+        return ComponentCallResult.success(true);
     }
 
     @Override

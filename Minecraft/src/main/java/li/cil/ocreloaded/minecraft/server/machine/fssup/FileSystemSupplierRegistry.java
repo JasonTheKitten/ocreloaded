@@ -3,7 +3,6 @@ package li.cil.ocreloaded.minecraft.server.machine.fssup;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import li.cil.ocreloaded.core.machine.filesystem.FileSystem;
 
@@ -19,7 +18,7 @@ public class FileSystemSupplierRegistry {
         suppliers.put(name, supplier);
     }
 
-    public FileSystem createFileSystem(String fullTag, Supplier<UUID> uuidSupplier) {
+    public FileSystem createFileSystem(String fullTag, UUID uuid) {
         String[] parts = fullTag.split(":", 2);
         String name = parts[0];
         String tag = parts.length == 2 ? parts[1] : "";
@@ -29,7 +28,7 @@ public class FileSystemSupplierRegistry {
             throw new IllegalArgumentException("No file system supplier registered for '" + name + "'.");
         }
 
-        return supplier.createFileSystem(uuidSupplier, tag);
+        return supplier.createFileSystem(uuid, tag);
     }
 
     public static FileSystemSupplierRegistry getDefaultInstance() {
@@ -38,7 +37,7 @@ public class FileSystemSupplierRegistry {
 
     public static interface FileSystemSupplier {
         
-        FileSystem createFileSystem(Supplier<UUID> uuidSupplier, String tag);
+        FileSystem createFileSystem(UUID uuid, String tag);
 
     }
 
