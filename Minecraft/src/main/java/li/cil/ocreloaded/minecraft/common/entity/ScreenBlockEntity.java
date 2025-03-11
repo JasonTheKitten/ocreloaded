@@ -10,6 +10,7 @@ import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
 import li.cil.ocreloaded.minecraft.common.SettingsConstants;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
+import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
 import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
 import li.cil.ocreloaded.minecraft.common.network.screen.NetworkedTextModeBufferProxy;
 import li.cil.ocreloaded.minecraft.common.network.screen.ScreenNetworkMessage;
@@ -59,6 +60,9 @@ public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentT
     public void load(CompoundTag compoundTag) {
         super.load(compoundTag);
         networkNode.load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
+
+        if (this.level == null || level.isClientSide) return;
+        ComponentNetworkUtil.connectToNeighbors(level, worldPosition);
     }
 
     @Override

@@ -103,6 +103,13 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
     }
 
     @Override
+    public void setRemoved() {
+        super.setRemoved();
+        this.machine.ifPresent(Machine::stop);
+        networkNode.remove();
+    }
+
+    @Override
     public void tick() {
         machine.ifPresent(Machine::runSync);
     }
