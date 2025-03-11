@@ -76,6 +76,11 @@ public class ArchiveFileSystem implements FileSystem {
     }
 
     @Override
+    public boolean remove(String path) throws IOException {
+        return false;
+    }
+
+    @Override
     public int open(String path, Mode mode) throws IOException {
         String fixedPath = PathUtil.minimizePath(archive.prefix + "/" + path);
 

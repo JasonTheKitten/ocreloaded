@@ -62,6 +62,12 @@ public class DirectoryFileSystem implements FileSystem {
     }
 
     @Override
+    public boolean remove(String path) throws IOException {
+        Path resolved = root.resolve(path);
+        return Files.deleteIfExists(resolved);
+    }
+
+    @Override
     public int open(String path, Mode mode) throws IOException {
         Path resolved = root.resolve(path);
         if (Files.notExists(resolved) && mode == Mode.APPEND) {

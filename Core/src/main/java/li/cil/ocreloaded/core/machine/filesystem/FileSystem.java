@@ -18,6 +18,8 @@ public interface FileSystem {
     List<String> list(String path);
 
     boolean makeDirectory(String path);
+
+    boolean remove(String path) throws IOException;
     
     int open(String path, Mode mode) throws IOException;
 

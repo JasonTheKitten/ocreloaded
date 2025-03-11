@@ -14,7 +14,7 @@ public class InMemoryFile implements InMemoryNode {
     }
 
     public InputStream openInput() {
-        data.rewind();
+        data.flip();
         
         return new InputStream() {
             @Override
@@ -27,6 +27,9 @@ public class InMemoryFile implements InMemoryNode {
 
             @Override
             public int read(byte[] b, int off, int len) {
+                if (!data.hasRemaining()) {
+                    return -1;
+                }
                 len = Math.min(len, data.remaining());
                 data.get(b, off, len);
                 return len;

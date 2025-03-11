@@ -99,6 +99,16 @@ public class FileSystemComponent extends AnnotatedComponent {
         return ComponentCallResult.success(true);
     }
 
+    @ComponentMethod(doc = "function(path:string):boolean -- Removes the object at the specified absolute path in the file system.")
+    public ComponentCallResult remove(ComponentCallContext context, ComponentCallArguments arguments) {
+        String path = PathUtil.minimizePath(arguments.checkString(0));
+        try {
+            return ComponentCallResult.success(filesystem.remove(path));
+        } catch (IOException e) {
+            return ComponentCallResult.failure("error while attempting to remove file");
+        }
+    }
+
     @ComponentMethod(direct = true, doc = "function(handle:userdata) -- Closes an open file descriptor with the specified handle.")
     public ComponentCallResult close(ComponentCallContext context, ComponentCallArguments arguments) {
         int handle = arguments.checkInteger(0);

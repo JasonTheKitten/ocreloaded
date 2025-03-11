@@ -18,8 +18,23 @@ public class InMemoryDirectory implements InMemoryNode {
             .toList();
     }
 
-    public void makeDirectory(String string) {
-        children.put(string, new InMemoryDirectory());
+    public InMemoryDirectory makeDirectory(String string) {
+        if (children.containsKey(string)) {
+            return (InMemoryDirectory) children.get(string);
+        }
+        InMemoryDirectory directory = new InMemoryDirectory();
+        children.put(string, directory);
+        return directory;
+    }
+
+    public InMemoryNode makeFile(String string) {
+        InMemoryFile file = new InMemoryFile();
+        children.put(string, file);
+        return file;
+    }
+
+    public boolean remove(InMemoryNode node) {
+        return children.values().remove(node);
     }
 
 }

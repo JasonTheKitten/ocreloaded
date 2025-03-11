@@ -12,6 +12,7 @@ import li.cil.ocreloaded.minecraft.client.renderer.entity.screen.ScreenDisplayRe
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
 import li.cil.ocreloaded.minecraft.common.menu.ScreenMenu;
 import li.cil.ocreloaded.minecraft.common.util.KeyMappings;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -27,6 +28,9 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
     
     public ScreenScreen(ScreenMenu screenMenu, Inventory inventory, Component component) {
         super(screenMenu, inventory, component);
+
+        // TODO: This is here because char events are not fired when control is pressed. Find a better way to handle this.
+        GLFW.glfwSetInputMode(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_LOCK_KEY_MODS, GLFW.GLFW_TRUE);
     }
 
     @Override
@@ -82,7 +86,10 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
         if (key != null && key.getType() == InputConstants.Type.KEYSYM) {
             String keyName = GLFW.glfwGetKeyName(keyCode, scanCode);
             int translatedValue = KeyMappings.translateKeyCode(key.getValue());
-            if ((keyName != null && keyName.length() == 1) || key.getValue() == InputConstants.KEY_SPACE) {
+            if (
+                ((keyName != null && keyName.length() == 1) || key.getValue() == InputConstants.KEY_SPACE)
+                && (modifiers & InputConstants.MOD_CONTROL) == 0 // If control is pressed, there's no follow up char event
+            ) {
                 // TODO: Better way to handle characters
                 lastKeyCode = translatedValue;
             } else if (key.getValue() == InputConstants.KEY_BACKSPACE) {
@@ -90,6 +97,7 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
             } else if (key.getValue() == InputConstants.KEY_TAB) {
                 menu.onKeyPressed(9, translatedValue);
             } else {
+                // TODO: Properly determine charCode when CTRL is pressed
                 menu.onKeyPressed(0, translatedValue);
             }
             return true;

@@ -74,10 +74,27 @@ public class InMemoryFileSystem implements FileSystem {
     }
 
     @Override
+    public boolean remove(String path) {
+        InMemoryNode node = nodeByPath(path);
+        InMemoryDirectory parent = parentByPath(path);
+        if (parent == null || node == null) {
+            return false;
+        }
+        return parent.remove(node);
+    }
+
+    @Override
     public int open(String path, Mode mode) throws IOException {
         InMemoryNode node = nodeByPath(path);
         if (node == null) {
-            throw new FileNotFoundException(path);
+            if (mode == Mode.READ) {
+                throw new FileNotFoundException(path);
+            }
+            InMemoryDirectory parent = parentByPath(path);
+            if (parent == null) {
+                throw new FileNotFoundException(path);
+            }
+            node = parent.makeFile(FileUtil.splitPath(path).get(FileUtil.splitPath(path).size() - 1));
         }
         if (!(node instanceof InMemoryFile file)) {
             throw new FileNotFoundException("Cannot open directory for reading.");
