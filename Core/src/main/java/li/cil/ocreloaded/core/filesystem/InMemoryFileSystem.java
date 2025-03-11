@@ -28,8 +28,28 @@ public class InMemoryFileSystem implements FileSystem {
     }
 
     @Override
+    public long size(String path) {
+        InMemoryNode node = nodeByPath(path);
+        if (node instanceof InMemoryFile file) {
+            return file.length();
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
     public boolean isDirectory(String path) {
         return nodeByPath(path) instanceof InMemoryDirectory;
+    }
+
+    @Override
+    public long lastModified(String path) {
+        InMemoryNode node = nodeByPath(path);
+        if (node instanceof InMemoryFile file) {
+            return file.lastModified();
+        } else {
+            return 0;
+        }
     }
 
     @Override

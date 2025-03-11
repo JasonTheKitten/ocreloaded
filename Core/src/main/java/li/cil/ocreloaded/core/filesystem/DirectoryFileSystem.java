@@ -7,9 +7,7 @@ import li.cil.ocreloaded.core.machine.filesystem.FileSystem;
 
 public class DirectoryFileSystem implements FileSystem {
 
-    public DirectoryFileSystem() {
-
-    }
+    public DirectoryFileSystem() {}
 
     @Override
     public boolean isReadOnly() {
@@ -24,9 +22,21 @@ public class DirectoryFileSystem implements FileSystem {
     }
 
     @Override
+    public long size(String path) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'size'");
+    }
+
+    @Override
     public boolean isDirectory(String path) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'isDirectory'");
+    }
+
+    @Override
+    public long lastModified(String path) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'lastModified'");
     }
 
     @Override

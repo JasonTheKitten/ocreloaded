@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 
 public class InMemoryFile implements InMemoryNode {
 
+    private long lastModified = System.currentTimeMillis();
     private ByteBuffer data = ByteBuffer.allocate(16);
 
     public long length() {
@@ -34,6 +35,7 @@ public class InMemoryFile implements InMemoryNode {
     }
 
     public OutputStream openOutput(boolean preserveOld) {
+        lastModified = System.currentTimeMillis();
         if (!preserveOld) {
             data = ByteBuffer.allocate(16);
         }
@@ -43,12 +45,14 @@ public class InMemoryFile implements InMemoryNode {
             public void write(int b) {
                 reserve(1);
                 data.put((byte) b);
+                lastModified = System.currentTimeMillis();
             }
 
             @Override
             public void write(byte[] b, int off, int len) {
                 reserve(len);
                 data.put(b, off, len);
+                lastModified = System.currentTimeMillis();
             }
 
             private void reserve(int len) {
@@ -64,6 +68,10 @@ public class InMemoryFile implements InMemoryNode {
                 }
             }
         };
+    }
+
+    public long lastModified() {
+        return lastModified;
     }
     
 }

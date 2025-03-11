@@ -35,7 +35,6 @@ public final class ScreenNetworkInputMessages {
 
     public static void handleInput(ScreenBlockEntity entity, ByteBuf changeBuffer, Player player) {
         int type = changeBuffer.readInt();
-        LoggerFactory.getLogger(ScreenNetworkInputMessages.class).info("Received input type: {}", type);
         switch (type) {
             case KEY_PRESSED -> entity.onKeyPressed(changeBuffer.readInt(), changeBuffer.readInt(), player);
             case KEY_RELEASED -> entity.onKeyReleased(changeBuffer.readInt(), player);

@@ -9,7 +9,11 @@ public interface FileSystem {
 
     boolean exists(String path);
 
+    long size(String path);
+
     boolean isDirectory(String path);
+
+    long lastModified(String path);
 
     List<String> list(String path);
 

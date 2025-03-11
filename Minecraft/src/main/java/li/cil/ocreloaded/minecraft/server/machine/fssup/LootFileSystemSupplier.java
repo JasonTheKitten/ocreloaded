@@ -2,6 +2,7 @@ package li.cil.ocreloaded.minecraft.server.machine.fssup;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -31,10 +32,21 @@ public final class LootFileSystemSupplier {
         for (Map.Entry<ResourceLocation, Resource> entry : resources.entrySet()) {
             ResourceLocation location = entry.getKey();
             Resource resource = entry.getValue();
+
+            // TODO: Better way to get size of resource?
+            long resourceSize = 0;
+            try (InputStream stream = resource.open()) {
+                int lastRead = 0;
+                while (lastRead != -1) {
+                    lastRead = stream.read(new byte[4096]);
+                    resourceSize += Math.max(lastRead, 0);
+                }
+            } catch (IOException e) {}
+
             if (remappings.containsKey(location.getPath())) {
-                entries.put(remappings.get(location.getPath()), new ArchiveEntry(remappings.get(location.getPath()), (long) 0, () -> resource.open()));
+                entries.put(remappings.get(location.getPath()), new ArchiveEntry(remappings.get(location.getPath()), resourceSize, () -> resource.open()));
             } else {
-                entries.put(location.getPath(), new ArchiveEntry(location.getPath(), (long) 0, () -> resource.open()));
+                entries.put(location.getPath(), new ArchiveEntry(location.getPath(), resourceSize, () -> resource.open()));
             }
         }
         

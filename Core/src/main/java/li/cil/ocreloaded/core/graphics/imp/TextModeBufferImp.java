@@ -47,6 +47,9 @@ public class TextModeBufferImp implements TextModeBuffer {
     @Override
     public void rawSetTextCell(int x, int y, int codepoint, int packedColors) {
         int index = (y * width + x) * ELEMENTS_PER_CELL;
+        if (index < 0 || index >= buffer.length || x < 0 || x >= width) {
+            return;
+        }
         buffer[index] = codepoint;
         buffer[index + 1] = packedColors;
     }
@@ -81,9 +84,12 @@ public class TextModeBufferImp implements TextModeBuffer {
         // Make sure we don't overwrite ourselves
         boolean doReverseCopy = destStart > sourceStart;
         if (doReverseCopy) {
+            sourceStart += (height - 1) * this.width * ELEMENTS_PER_CELL;
+            destStart += (height - 1) * this.width * ELEMENTS_PER_CELL;
             for (int i = height - 1; i >= 0; i--) {
                 for (int j = width - 1; j >= 0; j--) {
-                    System.arraycopy(buffer, sourceStart + j * ELEMENTS_PER_CELL, buffer, destStart + j * ELEMENTS_PER_CELL, ELEMENTS_PER_CELL);
+                    int offset = j * ELEMENTS_PER_CELL;
+                    System.arraycopy(buffer, sourceStart + offset, buffer, destStart + offset, ELEMENTS_PER_CELL);
                 }
                 sourceStart -= this.width * ELEMENTS_PER_CELL;
                 destStart -= this.width * ELEMENTS_PER_CELL;

@@ -38,11 +38,24 @@ public class ArchiveFileSystem implements FileSystem {
     }
 
     @Override
+    public long size(String path) {
+        String fixedPath = PathUtil.minimizePath(archive.prefix + "/" + path);
+
+        ArchiveEntry entry = archive.entries.get(fixedPath);
+        return entry == null ? 0 : entry.size();
+    }
+
+    @Override
     public boolean isDirectory(String path) {
         // TODO: A bit of a hack, may not detect empty directories correctly
         String fixedPath = PathUtil.minimizePath(archive.prefix + "/" + path) + "/";
         return archive.entries.keySet().stream()
             .anyMatch(entry -> entry.startsWith(fixedPath) && entry.length() > fixedPath.length());
+    }
+
+    @Override
+    public long lastModified(String path) {
+        return 0;
     }
 
     @Override

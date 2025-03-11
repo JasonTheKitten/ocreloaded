@@ -56,10 +56,22 @@ public class FileSystemComponent extends AnnotatedComponent {
         return ComponentCallResult.success(filesystem.exists(path));
     }
 
+    @ComponentMethod(direct = true, doc = "function(path:string):number -- Returns the size of the object at the specified absolute path in the file system.")
+    public ComponentCallResult size(ComponentCallContext context, ComponentCallArguments arguments) {
+        String path = PathUtil.minimizePath(arguments.checkString(0));
+        return ComponentCallResult.success(filesystem.size(path));
+    }
+
     @ComponentMethod(direct = true, doc = "function(path:string):boolean -- Returns whether the object at the specified absolute path in the file system is a directory.")
     public ComponentCallResult isDirectory(ComponentCallContext context, ComponentCallArguments arguments) {
         String path = PathUtil.minimizePath(arguments.checkString(0));
         return ComponentCallResult.success(filesystem.isDirectory(path));
+    }
+
+    @ComponentMethod(direct = true, doc = "function(path:string):number -- Returns the (real world) timestamp of when the object at the specified absolute path in the file system was modified.")
+    public ComponentCallResult lastModified(ComponentCallContext context, ComponentCallArguments arguments) {
+        String path = PathUtil.minimizePath(arguments.checkString(0));
+        return ComponentCallResult.success(filesystem.lastModified(path));
     }
 
     @ComponentMethod(direct = true, doc = "function(path:string):table -- Returns a list of names of objects in the directory at the specified absolute path in the file system.")
