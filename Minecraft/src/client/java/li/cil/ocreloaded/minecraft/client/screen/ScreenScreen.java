@@ -1,11 +1,17 @@
 package li.cil.ocreloaded.minecraft.client.screen;
 
+import org.lwjgl.glfw.GLFW;
+
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.InputConstants.Key;
+
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
 import li.cil.ocreloaded.minecraft.client.assets.ClientTextures;
 import li.cil.ocreloaded.minecraft.client.renderer.entity.screen.GuiGraphicsDrawingContext;
 import li.cil.ocreloaded.minecraft.client.renderer.entity.screen.ScreenDisplayRenderer;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
 import li.cil.ocreloaded.minecraft.common.menu.ScreenMenu;
+import li.cil.ocreloaded.minecraft.common.util.KeyMappings;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -16,6 +22,8 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
     private static final int TEXTURE_WIDTH = 16;
     private static final int TEXTURE_HEIGHT = 16;
     private static final int MARGIN_OUTER = 7;
+
+    private int lastKeyCode;
     
     public ScreenScreen(ScreenMenu screenMenu, Inventory inventory, Component component) {
         super(screenMenu, inventory, component);
@@ -61,6 +69,54 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
             this.height / 2 - (int) (resolution[1] * ScreenDisplayRenderer.CELL_HEIGHT / 2 * scale),
             scale);
         ScreenDisplayRenderer.renderDisplay(new GuiGraphicsDrawingContext(guiGraphics), positionScale, textModeBuffer);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == InputConstants.KEY_ESCAPE) {
+            this.onClose();
+            return true;
+        }
+
+        Key key = InputConstants.getKey(keyCode, scanCode);
+        if (key != null && key.getType() == InputConstants.Type.KEYSYM) {
+            String keyName = GLFW.glfwGetKeyName(keyCode, scanCode);
+            int translatedValue = KeyMappings.translateKeyCode(key.getValue());
+            if ((keyName != null && keyName.length() == 1) || key.getValue() == InputConstants.KEY_SPACE) {
+                // TODO: Better way to handle characters
+                lastKeyCode = translatedValue;
+            } else if (key.getValue() == InputConstants.KEY_BACKSPACE) {
+                menu.onKeyPressed(8, translatedValue);
+            } else if (key.getValue() == InputConstants.KEY_TAB) {
+                menu.onKeyPressed(9, translatedValue);
+            } else {
+                menu.onKeyPressed(0, translatedValue);
+            }
+            return true;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        Key key = InputConstants.getKey(keyCode, scanCode);
+        if (key != null && key.getType() == InputConstants.Type.KEYSYM) {
+            int translatedValue = KeyMappings.translateKeyCode(key.getValue());
+            menu.onKeyReleased(translatedValue);
+            return true;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean charTyped(char charTyped, int modifiers) {
+        if (lastKeyCode != 0) {
+            menu.onKeyPressed(charTyped, lastKeyCode);
+        }
+        lastKeyCode = 0;
+        return true;
     }
 
     private float calculateScale(TextModeBuffer textModeBuffer) {

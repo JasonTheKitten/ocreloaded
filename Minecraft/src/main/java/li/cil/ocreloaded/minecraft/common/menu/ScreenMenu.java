@@ -1,6 +1,8 @@
 package li.cil.ocreloaded.minecraft.common.menu;
 
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
+import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
+import li.cil.ocreloaded.minecraft.common.network.screen.ScreenNetworkInputMessages;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -32,6 +34,16 @@ public class ScreenMenu extends AbstractContainerMenu {
 
     public ScreenBlockEntity getBlockEntity() {
         return blockEntity;
+    }
+
+    public void onKeyPressed(int charCode, int keyCode) {
+        NetworkUtil.getInstance().messageServer(
+            ScreenNetworkInputMessages.createKeyPressedMessage(blockEntity.getBlockPos(), charCode, keyCode));
+    }
+    
+    public void onKeyReleased(int keyCode) {
+        NetworkUtil.getInstance().messageServer(
+            ScreenNetworkInputMessages.createKeyReleasedMessage(blockEntity.getBlockPos(), keyCode));
     }
     
 }

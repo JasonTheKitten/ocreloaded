@@ -20,4 +20,8 @@ public interface Network {
 
     Optional<NetworkNode> reachableNode(NetworkNode networkNode, UUID nodeId);
 
+    void sendToReachable(NetworkNode networkNode, NetworkMessage networkMessage);
+
+    void sendToNeighbors(NetworkNode source, NetworkMessage message);
+
 }

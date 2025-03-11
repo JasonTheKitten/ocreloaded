@@ -9,6 +9,7 @@ import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
 import li.cil.ocreloaded.minecraft.common.block.KeyboardBlock;
 import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
+import li.cil.ocreloaded.minecraft.common.entity.KeyboardBlockEntity;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
 import li.cil.ocreloaded.minecraft.common.item.CPUItem;
 import li.cil.ocreloaded.minecraft.common.item.DataCardItem;
@@ -123,5 +124,7 @@ public class CommonRegistered {
         .of(CaseBlockEntity::new, CASE_BLOCK_TIER_1.get(), CASE_BLOCK_TIER_2.get(), CASE_BLOCK_TIER_3.get(), CASE_BLOCK_CREATIVE.get()).build(null));
     public static final RegistrySupplier<BlockEntityType<ScreenBlockEntity>> SCREEN_BLOCK_ENTITY = BLOCK_ENTITIES.register("screen", () -> BlockEntityType.Builder
         .of(ScreenBlockEntity::new, SCREEN_BLOCK_TIER_1.get(), SCREEN_BLOCK_TIER_2.get(), SCREEN_BLOCK_TIER_3.get()).build(null));
+    public static final RegistrySupplier<BlockEntityType<KeyboardBlockEntity>> KEYBOARD_BLOCK_ENTITY = BLOCK_ENTITIES.register("keyboard", () -> BlockEntityType.Builder
+        .of(KeyboardBlockEntity::new, KEYBOARD_BLOCK.get()).build(null));
 
 }

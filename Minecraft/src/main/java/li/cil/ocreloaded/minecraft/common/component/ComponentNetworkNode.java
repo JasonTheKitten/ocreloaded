@@ -2,6 +2,7 @@ package li.cil.ocreloaded.minecraft.common.component;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
 import li.cil.ocreloaded.core.machine.PersistenceHolder;
 import li.cil.ocreloaded.core.machine.component.Component;
@@ -18,6 +19,12 @@ public class ComponentNetworkNode implements NetworkNode {
 
     public ComponentNetworkNode(Optional<Component> component, Visibility visibility) {
         this.component = component;
+        this.visibility = visibility;
+        this.network = new NetworkImp(this);
+    }
+
+    public ComponentNetworkNode(Function<NetworkNode, Component> componentFactory, Visibility visibility) {
+        this.component = Optional.ofNullable(componentFactory.apply(this));
         this.visibility = visibility;
         this.network = new NetworkImp(this);
     }

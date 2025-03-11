@@ -51,6 +51,14 @@ public interface NetworkNode {
         return network().reachableNodes(this);
     }
 
+    default void sendToReachable(NetworkMessage networkMessage) {
+        network().sendToReachable(this, networkMessage);
+    }
+
+    default void sendToNeighbors(NetworkMessage message) {
+        network().sendToNeighbors(this, message);
+    }
+    
     public static enum Visibility {
         NONE, NEIGHBORS, NETWORK
     }

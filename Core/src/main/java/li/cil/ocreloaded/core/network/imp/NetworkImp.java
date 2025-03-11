@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import li.cil.ocreloaded.core.network.Network;
+import li.cil.ocreloaded.core.network.NetworkMessage;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
 
@@ -103,6 +104,16 @@ public class NetworkImp implements Network {
     @Override
     public Set<NetworkNode> reachableNodes(NetworkNode node) {
         return allNodes().stream().filter(target -> reachable(node, target)).collect(Collectors.toSet());
+    }
+
+    @Override
+    public void sendToReachable(NetworkNode source, NetworkMessage message) {
+        reachableNodes(source).forEach(target -> target.component().ifPresent(c -> c.onMessage(message, source)));
+    }
+
+    @Override
+    public void sendToNeighbors(NetworkNode source, NetworkMessage message) {
+        connections.getOrDefault(source.id(), Set.of()).forEach(neighbor -> neighbor.component().ifPresent(c -> c.onMessage(message, source)));
     }
 
     private void addNewNode(NetworkNode node) {

@@ -6,6 +6,7 @@ import java.util.Optional;
 import io.netty.buffer.ByteBuf;
 import li.cil.ocreloaded.core.component.ScreenComponent;
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
+import li.cil.ocreloaded.core.network.NetworkMessage;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
 import li.cil.ocreloaded.minecraft.common.SettingsConstants;
@@ -20,6 +21,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -66,6 +68,12 @@ public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentT
     }
 
     @Override
+    public void saveAdditional(CompoundTag compoundTag) {
+        super.saveAdditional(compoundTag);
+        networkNode.save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
+    }
+
+    @Override
     public void tick() {
         if (level.isClientSide()) return;
 
@@ -78,9 +86,17 @@ public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentT
         if (!proxy.hasChanges()) return;
         ByteBuf changeBuffer = proxy.getBuffer();
         NetworkUtil.getInstance().messageManyClients(
-            new ScreenNetworkMessage(worldPosition, changeBuffer),
+            new ScreenNetworkMessage(worldPosition, changeBuffer, ScreenNetworkMessage.TEXT_MODE_BUFFER_CHANNEL),
             chunkTrackingPlayers
         );
+    }
+
+    public void onKeyPressed(int charCode, int keyCode, Player player) {
+        networkNode.sendToNeighbors(new NetworkMessage("keyboard.keyDown", player.getName(), charCode, keyCode));
+    }
+
+    public void onKeyReleased(int keyCode, Player player) {
+        networkNode.sendToNeighbors(new NetworkMessage("keyboard.keyUp", player.getName(), keyCode));
     }
 
     public TextModeBuffer getScreenBuffer() {

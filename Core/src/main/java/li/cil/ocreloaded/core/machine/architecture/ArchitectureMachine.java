@@ -11,6 +11,7 @@ import java.util.Queue;
 import java.util.UUID;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import li.cil.ocreloaded.core.machine.Machine;
@@ -20,6 +21,8 @@ import li.cil.ocreloaded.core.machine.component.Component;
 import li.cil.ocreloaded.core.network.NetworkNode;
 
 public class ArchitectureMachine implements Machine {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArchitectureMachine.class);
 
     private final Architecture architecture;
     private final MachineParameters parameters;
@@ -139,7 +142,7 @@ public class ArchitectureMachine implements Machine {
             stop();
             setState(State.STOPPED);
             // TODO: Proper error handling
-            LoggerFactory.getLogger(getClass()).error(error.message(), error.exception());
+            LOGGER.error(error.message(), error.exception());
         }
     }
 

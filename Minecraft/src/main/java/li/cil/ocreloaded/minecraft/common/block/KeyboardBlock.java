@@ -1,10 +1,13 @@
 package li.cil.ocreloaded.minecraft.common.block;
 
+import li.cil.ocreloaded.minecraft.common.entity.KeyboardBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.AttachFace;
@@ -14,7 +17,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class KeyboardBlock extends Block {
+public class KeyboardBlock extends Block implements EntityBlock {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<AttachFace> ATTACH_FACE = BlockStateProperties.ATTACH_FACE;
@@ -64,6 +67,11 @@ public class KeyboardBlock extends Block {
         return blockState
             .setValue(FACING, facingDirection)
             .setValue(ATTACH_FACE, attachFace);
+    }
+
+    @Override
+    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+        return new KeyboardBlockEntity(blockPos, blockState);
     }
 
     private BlockState createDefaultState() {

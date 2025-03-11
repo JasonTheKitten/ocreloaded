@@ -45,14 +45,14 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
     private static final Logger LOGGER = LoggerFactory.getLogger(CaseBlockEntity.class);
 
     private static final String TAG_POWERED = "ocreloaded:powered";
+    private Optional<Machine> machine = Optional.empty();
 
     private final NonNullList<ItemStack> items = NonNullList.withSize(10, ItemStack.EMPTY);
-    private final NetworkNode networkNode = new ComponentNetworkNode(Optional.of(new ComputerComponent()), Visibility.NETWORK);
+    private final NetworkNode networkNode = new ComponentNetworkNode(Optional.of(new ComputerComponent(() -> machine)), Visibility.NETWORK);
     private final NetworkNode tmpFsNode = new ComponentNetworkNode(Optional.of(new FileSystemComponent(new InMemoryFileSystem(), Label.create())), Visibility.NEIGHBORS);
     private final MachineProcessorImp processor = new MachineProcessorImp(MachineRegistry.getDefaultInstance());
 
     private Map<ItemStack, NetworkNode> loadedComponents = new HashMap<>();
-    private Optional<Machine> machine = Optional.empty();
     private boolean powered;
 
     public CaseBlockEntity(BlockPos blockPos, BlockState blockState) {
