@@ -20,36 +20,38 @@ public final class ColorHandlers {
     private ColorHandlers() {}
 
     public static void setup() {
-        registerBlockColorHandler("case1", CommonRegistered.CASE_BLOCK_TIER_1.get());
-        registerBlockColorHandler("case2", CommonRegistered.CASE_BLOCK_TIER_2.get());
-        registerBlockColorHandler("case3", CommonRegistered.CASE_BLOCK_TIER_3.get());
-        registerBlockColorHandler("casecreative", CommonRegistered.CASE_BLOCK_CREATIVE.get());
+        registerBlockColorHandlers(
+            CommonRegistered.CASE_BLOCK_TIER_1.get(),
+            CommonRegistered.CASE_BLOCK_TIER_2.get(),
+            CommonRegistered.CASE_BLOCK_TIER_3.get(),
+            CommonRegistered.CASE_BLOCK_CREATIVE.get(),
+            CommonRegistered.SCREEN_BLOCK_TIER_1.get(),
+            CommonRegistered.SCREEN_BLOCK_TIER_2.get(),
+            CommonRegistered.SCREEN_BLOCK_TIER_3.get()
+        );
 
-        registerItemColorHandler("case1", CommonRegistered.CASE_BLOCK_ITEM_TIER_1.get());
-        registerItemColorHandler("case2", CommonRegistered.CASE_BLOCK_ITEM_TIER_2.get());
-        registerItemColorHandler("case3", CommonRegistered.CASE_BLOCK_ITEM_TIER_3.get());
-        registerItemColorHandler("casecreative", CommonRegistered.CASE_BLOCK_ITEM_CREATIVE.get());
-
-        registerBlockColorHandler("screen1", CommonRegistered.SCREEN_BLOCK_TIER_1.get());
-        registerBlockColorHandler("screen2", CommonRegistered.SCREEN_BLOCK_TIER_2.get());
-        registerBlockColorHandler("screen3", CommonRegistered.SCREEN_BLOCK_TIER_3.get());
-
-        registerItemColorHandler("screen1", CommonRegistered.SCREEN_BLOCK_ITEM_TIER_1.get());
-        registerItemColorHandler("screen2", CommonRegistered.SCREEN_BLOCK_ITEM_TIER_2.get());
-        registerItemColorHandler("screen3", CommonRegistered.SCREEN_BLOCK_ITEM_TIER_3.get());
+        registerItemColorHandlers(
+            CommonRegistered.CASE_BLOCK_ITEM_TIER_1.get(),
+            CommonRegistered.CASE_BLOCK_ITEM_TIER_2.get(),
+            CommonRegistered.CASE_BLOCK_ITEM_TIER_3.get(),
+            CommonRegistered.CASE_BLOCK_ITEM_CREATIVE.get(),
+            CommonRegistered.SCREEN_BLOCK_ITEM_TIER_1.get(),
+            CommonRegistered.SCREEN_BLOCK_ITEM_TIER_2.get(),
+            CommonRegistered.SCREEN_BLOCK_ITEM_TIER_3.get()
+        );
     }
 
-    private static void registerBlockColorHandler(String string, Block block) {
+    private static void registerBlockColorHandlers(Block... blocks) {
         ColorHandlerRegistry.registerBlockColors((blockState, blockAndTintGetter, blockPos, tintIndex) -> {
             if (blockState.getBlock() instanceof TieredBlock tieredBlock && tieredBlock.getTier() <= TIER_COLORS.length) {
                 return TIER_COLORS[tieredBlock.getTier() - 1];
             }
             
             return Colors.WHITE;
-        }, block);
+        }, blocks);
     }
 
-    private static void registerItemColorHandler(String string, Item item) {
+    private static void registerItemColorHandlers(Item... items) {
         ColorHandlerRegistry.registerItemColors((stack, tintIndex) -> {
             if (stack.getItem() instanceof TieredBlock tieredBlock && tieredBlock.getTier() <= TIER_COLORS.length) {
                 return TIER_COLORS[tieredBlock.getTier() - 1];
@@ -59,7 +61,7 @@ public final class ColorHandlers {
             }
             
             return Colors.WHITE;
-        }, item);
+        }, items);
     }
 
 }
