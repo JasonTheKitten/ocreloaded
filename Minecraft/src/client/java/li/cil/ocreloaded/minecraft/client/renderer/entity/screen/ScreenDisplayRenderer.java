@@ -55,9 +55,13 @@ public final class ScreenDisplayRenderer {
     }
 
     private static void fillCell(DrawingContext drawingContext, PositionScale positionScale, int x, int y, int background) {
-        int adjustedX = (int) Math.ceil(x * positionScale.scale() + positionScale.x());
-        int adjustedY = (int) Math.ceil(y * positionScale.scale() + positionScale.y());
-        drawingContext.fill(adjustedX, adjustedY, adjustedX + CELL_WIDTH, adjustedY + CELL_HEIGHT, background | (0xFF << 24));
+        float scale = positionScale.scale();
+        float adjustedX = (float) Math.ceil(x * scale + positionScale.x());
+        float adjustedY = (float) Math.ceil(y * scale + positionScale.y());
+        drawingContext.fill(
+            (int) adjustedX, (int) adjustedY, 
+            (int) (adjustedX + CELL_WIDTH * scale), (int) (adjustedY + CELL_HEIGHT * scale),
+            background | (0xFF << 24));
     }
 
     private static void copyTexture(DrawingContext drawingContext, PositionScale positionScale, int destX, int destY, int srcX, int srcY, int width, int height) {
