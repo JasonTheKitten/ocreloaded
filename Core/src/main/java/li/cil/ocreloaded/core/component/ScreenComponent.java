@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
 import li.cil.ocreloaded.core.machine.component.AnnotatedComponent;
 import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResult;
+import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.machine.component.ComponentCallArguments;
 import li.cil.ocreloaded.core.machine.component.ComponentCallContext;
 import li.cil.ocreloaded.core.machine.component.ComponentMethod;
@@ -15,8 +16,8 @@ public class ScreenComponent extends AnnotatedComponent implements GraphicsBinda
 
     private final Supplier<TextModeBuffer> screenBufferSupplier;
     
-    public ScreenComponent(Supplier<TextModeBuffer> screenBufferSupplier) {
-        super("screen");
+    public ScreenComponent(NetworkNode node, Supplier<TextModeBuffer> screenBufferSupplier) {
+        super("screen", node);
         this.screenBufferSupplier = screenBufferSupplier;
     }
 

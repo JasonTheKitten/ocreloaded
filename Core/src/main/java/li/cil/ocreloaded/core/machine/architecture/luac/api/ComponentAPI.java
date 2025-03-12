@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import li.cil.ocreloaded.core.machine.Machine;
+import li.cil.ocreloaded.core.machine.Value;
 import li.cil.ocreloaded.core.machine.architecture.ArchitectureMachine;
 import li.cil.ocreloaded.core.machine.architecture.ArchitectureMachine.NetworkedComponent;
 import li.cil.ocreloaded.core.machine.architecture.luac.LuaCComponentCallArguments;
@@ -168,6 +169,8 @@ public final class ComponentAPI {
             }
         } else if (o instanceof byte[] bytes) {
             luaState.pushByteArray(bytes);
+        } else if (o instanceof Value value) {
+            luaState.pushJavaObject(value);
         } else {
             luaState.pushNil();
         }

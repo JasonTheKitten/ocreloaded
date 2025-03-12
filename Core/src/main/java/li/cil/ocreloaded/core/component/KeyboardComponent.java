@@ -12,15 +12,14 @@ import net.minecraft.world.entity.player.Player;
 public class KeyboardComponent extends AnnotatedComponent {
 
     private final Map<Integer, Character> pressedKeys = new HashMap<>();
-    private final NetworkNode node;
 
     public KeyboardComponent(NetworkNode node) {
-        super("keyboard");
-        this.node = node;
+        super("keyboard", node);
     }
 
     @Override
     public void onMessage(NetworkMessage message, NetworkNode sender) {
+        NetworkNode node = getNetworkNode();
         switch (message.name()) {
             // TODO: Fix player name
             case "keyboard.keyDown": {

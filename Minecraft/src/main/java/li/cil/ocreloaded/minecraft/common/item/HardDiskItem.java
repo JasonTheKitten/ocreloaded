@@ -1,8 +1,5 @@
 package li.cil.ocreloaded.minecraft.common.item;
 
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
-
 import li.cil.ocreloaded.core.component.FileSystemComponent;
 import li.cil.ocreloaded.core.misc.Label;
 import li.cil.ocreloaded.core.network.NetworkNode;
@@ -29,11 +26,10 @@ public class HardDiskItem extends Item implements TieredItem, ComponentItem {
 
     @Override
     public NetworkNode newNetworkNode() {
-        AtomicReference<UUID> nodeID = new AtomicReference<>();
         NetworkNode node = new ComponentNetworkNode(node_ -> new FileSystemComponent(
-            fileSystemFactory.createFileSystem("localfs", node_.id()),
+            node_,
+            () -> fileSystemFactory.createFileSystem("localfs", node_.id()),
             Label.create()), Visibility.NEIGHBORS);
-        nodeID.set(node.id());
 
         return node;
     }

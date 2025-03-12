@@ -6,6 +6,7 @@ import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResul
 import li.cil.ocreloaded.core.machine.component.ComponentCallArguments;
 import li.cil.ocreloaded.core.machine.component.ComponentCallContext;
 import li.cil.ocreloaded.core.machine.component.ComponentMethod;
+import li.cil.ocreloaded.core.network.NetworkNode;
 
 public class EepromComponent extends AnnotatedComponent {
 
@@ -14,8 +15,8 @@ public class EepromComponent extends AnnotatedComponent {
     private String code;
     private String data = "";
     
-    public EepromComponent(String defaultCode) {
-        super("eeprom");
+    public EepromComponent(NetworkNode networkNode, String defaultCode) {
+        super("eeprom", networkNode);
         this.defaultCode = defaultCode;
     }
     
@@ -42,8 +43,8 @@ public class EepromComponent extends AnnotatedComponent {
     }
 
     @Override
-    public void loadFromState(PersistenceHolder holder) {
-        super.loadFromState(holder);
+    public void load(PersistenceHolder holder) {
+        super.load(holder);
 
         code = holder.hasKey("eeprom") ?
             holder.loadString("eeprom") :
@@ -52,8 +53,8 @@ public class EepromComponent extends AnnotatedComponent {
     }
 
     @Override
-    public void storeIntoState(PersistenceHolder holder) {
-        super.storeIntoState(holder);
+    public void save(PersistenceHolder holder) {
+        super.save(holder);
 
         holder.storeString("eeprom", code);
         holder.storeString("userdata", data);

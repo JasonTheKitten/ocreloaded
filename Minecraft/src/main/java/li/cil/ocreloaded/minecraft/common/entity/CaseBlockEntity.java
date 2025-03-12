@@ -48,8 +48,8 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
     private Optional<Machine> machine = Optional.empty();
 
     private final NonNullList<ItemStack> items = NonNullList.withSize(10, ItemStack.EMPTY);
-    private final NetworkNode networkNode = new ComponentNetworkNode(Optional.of(new ComputerComponent(() -> machine)), Visibility.NETWORK);
-    private final NetworkNode tmpFsNode = new ComponentNetworkNode(Optional.of(new FileSystemComponent(new InMemoryFileSystem(), Label.create())), Visibility.NEIGHBORS);
+    private final NetworkNode networkNode = new ComponentNetworkNode(node -> new ComputerComponent(node, () -> machine), Visibility.NETWORK);
+    private final NetworkNode tmpFsNode = new ComponentNetworkNode(node -> new FileSystemComponent(node, () -> new InMemoryFileSystem(), Label.create()), Visibility.NEIGHBORS);
     private final MachineProcessorImp processor = new MachineProcessorImp(MachineRegistry.getDefaultInstance());
 
     private Map<ItemStack, NetworkNode> loadedComponents = new HashMap<>();
@@ -167,9 +167,9 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
             Component component = networkNode.component().get();
 
             CompoundTag tag = itemStack.getOrCreateTag();
-            component.loadFromState(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
+            component.load(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
             // TODO: When should states be stored?
-            component.storeIntoState(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
+            component.save(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
             // TODO: Reset component on fresh boot?
 
             components.put(itemStack, networkNode);

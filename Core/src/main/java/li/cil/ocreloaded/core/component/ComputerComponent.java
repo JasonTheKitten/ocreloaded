@@ -17,8 +17,8 @@ public class ComputerComponent extends AnnotatedComponent {
     
     private final Supplier<Optional<Machine>> machineSupplier;
 
-    public ComputerComponent(Supplier<Optional<Machine>> machineSupplier) {
-        super("computer");
+    public ComputerComponent(NetworkNode networkNode, Supplier<Optional<Machine>> machineSupplier) {
+        super("computer", networkNode);
         this.machineSupplier = machineSupplier;
     }
 

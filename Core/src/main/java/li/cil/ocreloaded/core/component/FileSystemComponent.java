@@ -4,8 +4,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import li.cil.ocreloaded.core.machine.PathUtil;
+import li.cil.ocreloaded.core.machine.PersistenceHolder;
 import li.cil.ocreloaded.core.machine.component.AnnotatedComponent;
 import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResult;
 import li.cil.ocreloaded.core.machine.component.ComponentCallArguments;
@@ -14,19 +16,22 @@ import li.cil.ocreloaded.core.machine.component.ComponentMethod;
 import li.cil.ocreloaded.core.machine.filesystem.FileHandle;
 import li.cil.ocreloaded.core.machine.filesystem.FileSystem;
 import li.cil.ocreloaded.core.misc.Label;
+import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.util.FileUtil;
 
 public class FileSystemComponent extends AnnotatedComponent {
 
-    private final FileSystem filesystem;
+    private final Supplier<FileSystem> filesystemSupplier;
     private final Label label;
 
     private final List<Integer> openFiles = new ArrayList<>();
+    private FileSystem filesystem;
     
-    public FileSystemComponent(FileSystem filesystem, Label label) {
-        super("filesystem");
+    public FileSystemComponent(NetworkNode networkNode, Supplier<FileSystem> filesystemSupplier, Label label) {
+        super("filesystem", networkNode);
 
-        this.filesystem = filesystem;
+        this.filesystemSupplier = filesystemSupplier;
+        this.filesystem = filesystemSupplier.get();
         this.label = label;
     }
 
@@ -211,6 +216,12 @@ public class FileSystemComponent extends AnnotatedComponent {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void load(PersistenceHolder holder) {
+        super.load(holder);
+        filesystem = filesystemSupplier.get();
     }
 
     private FileSystem.Mode parseMode(final String mode) {

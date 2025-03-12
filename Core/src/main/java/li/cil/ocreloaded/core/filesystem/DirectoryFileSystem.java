@@ -80,7 +80,7 @@ public class DirectoryFileSystem implements FileSystem {
 
     @Override
     public int open(String path, Mode mode) throws IOException {
-        Path resolved = resolveExistant(path);
+        Path resolved = mode == Mode.READ ? resolveExistant(path) : root.resolve(path);
         if (Files.notExists(resolved) && mode == Mode.APPEND) {
             resolved.toFile().createNewFile();
         }
