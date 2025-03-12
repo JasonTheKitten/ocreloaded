@@ -10,7 +10,6 @@ import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResul
 import li.cil.ocreloaded.core.machine.component.ComponentCallArguments;
 import li.cil.ocreloaded.core.machine.component.ComponentCallContext;
 import li.cil.ocreloaded.core.machine.component.ComponentMethod;
-import org.slf4j.LoggerFactory;
 
 public class ScreenComponent extends AnnotatedComponent implements GraphicsBindableComponent {
 
@@ -26,8 +25,7 @@ public class ScreenComponent extends AnnotatedComponent implements GraphicsBinda
         return screenBufferSupplier.get();
     }
 
-
-    @ComponentMethod(doc = "function():table -- The list of keybo   ards attached to the screen.")
+    @ComponentMethod(doc = "function():table -- The list of keyboards attached to the screen.")
     public ComponentCallResult getKeyboards(ComponentCallContext context, ComponentCallArguments arguments) {
         List<String> keyboards = new ArrayList<>();
         context.networkNode().reachableNodes().forEach(node -> {
