@@ -4,7 +4,7 @@
     "version": "${version}",
     "name": "${name}",
     "description": "Bring programmable computers to Minecraft! This mod is a complete rewrite of OpenComputers, but with extra goodies.",
-    "authors": ["EveryOS, 6TELOIV, Walksanator - OC Rewrite", "Sangar, payonel, Vexatos, and others - Original OC authors"],
+    "authors": ["EveryOS, 6TELOIV, Walksanator, timuzkas - OC Rewrite", "Sangar, payonel, Vexatos, and others - Original OC authors"],
     "license": "See LICENSE.txt file",
     "icon": "assets/ocreloaded/textures/gui/logo.png",
     "environment": "*",
