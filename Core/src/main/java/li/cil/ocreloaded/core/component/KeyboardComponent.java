@@ -47,8 +47,4 @@ public class KeyboardComponent extends AnnotatedComponent {
         }
     }
 
-    public UUID uuid() {
-        return node.id();
-    }
-
 }

@@ -30,7 +30,7 @@ public class ScreenComponent extends AnnotatedComponent implements GraphicsBinda
         List<String> keyboards = new ArrayList<>();
         context.networkNode().reachableNodes().forEach(node -> {
             if (node.component().isPresent() && node.component().get() instanceof KeyboardComponent keyboardComponent) {
-                keyboards.add(keyboardComponent.uuid().toString());
+                keyboards.add(node.id().toString());
             }
         });
         return ComponentCallResult.success(keyboards);
