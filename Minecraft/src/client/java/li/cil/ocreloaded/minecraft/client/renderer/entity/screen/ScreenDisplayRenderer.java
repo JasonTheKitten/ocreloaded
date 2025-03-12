@@ -60,7 +60,7 @@ public final class ScreenDisplayRenderer {
         float adjustedY = (float) Math.ceil(y * scale + positionScale.y());
         drawingContext.fill(
             (int) adjustedX, (int) adjustedY, 
-            (int) (adjustedX + CELL_WIDTH * scale), (int) (adjustedY + CELL_HEIGHT * scale),
+            (int) Math.ceil(adjustedX + CELL_WIDTH * scale), (int) Math.ceil(adjustedY + CELL_HEIGHT * scale),
             background | (0xFF << 24));
     }
 
