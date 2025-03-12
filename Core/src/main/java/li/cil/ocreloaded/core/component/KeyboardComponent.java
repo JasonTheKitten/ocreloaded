@@ -2,6 +2,7 @@ package li.cil.ocreloaded.core.component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import li.cil.ocreloaded.core.machine.component.AnnotatedComponent;
 import li.cil.ocreloaded.core.network.NetworkMessage;

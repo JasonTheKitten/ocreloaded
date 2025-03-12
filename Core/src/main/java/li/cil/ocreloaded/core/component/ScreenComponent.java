@@ -1,5 +1,6 @@
 package li.cil.ocreloaded.core.component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -26,8 +27,13 @@ public class ScreenComponent extends AnnotatedComponent implements GraphicsBinda
 
     @ComponentMethod(doc = "function():table -- The list of keyboards attached to the screen.")
     public ComponentCallResult getKeyboards(ComponentCallContext context, ComponentCallArguments arguments) {
-        // Just push an empty table for now.
-        return ComponentCallResult.success(List.of());
+        List<String> keyboards = new ArrayList<>();
+        context.networkNode().reachableNodes().forEach(node -> {
+            if (node.component().isPresent() && node.component().get() instanceof KeyboardComponent keyboardComponent) {
+                keyboards.add(node.id().toString());
+            }
+        });
+        return ComponentCallResult.success(keyboards);
     }
 
 }
