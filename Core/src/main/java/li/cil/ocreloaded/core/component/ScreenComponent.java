@@ -1,5 +1,6 @@
 package li.cil.ocreloaded.core.component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -9,6 +10,7 @@ import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResul
 import li.cil.ocreloaded.core.machine.component.ComponentCallArguments;
 import li.cil.ocreloaded.core.machine.component.ComponentCallContext;
 import li.cil.ocreloaded.core.machine.component.ComponentMethod;
+import org.slf4j.LoggerFactory;
 
 public class ScreenComponent extends AnnotatedComponent implements GraphicsBindableComponent {
 
@@ -24,10 +26,16 @@ public class ScreenComponent extends AnnotatedComponent implements GraphicsBinda
         return screenBufferSupplier.get();
     }
 
-    @ComponentMethod(doc = "function():table -- The list of keyboards attached to the screen.")
+
+    @ComponentMethod(doc = "function():table -- The list of keybo   ards attached to the screen.")
     public ComponentCallResult getKeyboards(ComponentCallContext context, ComponentCallArguments arguments) {
-        // Just push an empty table for now.
-        return ComponentCallResult.success(List.of());
+        List<String> keyboards = new ArrayList<>();
+        context.networkNode().reachableNodes().forEach(node -> {
+            if (node.component().isPresent() && node.component().get() instanceof KeyboardComponent keyboardComponent) {
+                keyboards.add(keyboardComponent.uuid().toString());
+            }
+        });
+        return ComponentCallResult.success(keyboards);
     }
 
 }
