@@ -1,7 +1,5 @@
 package li.cil.ocreloaded.minecraft.common.item;
 
-import java.util.Optional;
-
 import li.cil.ocreloaded.core.component.DataCardComponent;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
@@ -24,7 +22,7 @@ public class DataCardItem extends Item implements TieredItem, ComponentItem {
 
     @Override
     public NetworkNode newNetworkNode() {
-        return new ComponentNetworkNode(Optional.of(new DataCardComponent()), Visibility.NEIGHBORS);
+        return new ComponentNetworkNode(DataCardComponent::new, Visibility.NEIGHBORS);
     }
     
 }

@@ -24,14 +24,14 @@ public class LuaEepromItem extends EepromItem {
 
     @Override
     public NetworkNode newNetworkNode() {
-        return new ComponentNetworkNode(Optional.of(initComponent()), Visibility.NEIGHBORS);
+        return new ComponentNetworkNode(this::initComponent, Visibility.NEIGHBORS);
     }
 
-    private Component initComponent() {
+    private Component initComponent(NetworkNode node) {
         Optional<Supplier<Optional<InputStream>>> supplier = MachineCodeRegistry.getDefaultInstance().getBiosCodeSupplier("lua");
         if (!supplier.isPresent()) {
             LOGGER.error("Failed to load Lua BIOS code.");
-            return new EepromComponent("");
+            return new EepromComponent(node, "");
         }
 
         String code = supplier.get().get().map(inputStream -> {
@@ -46,7 +46,7 @@ public class LuaEepromItem extends EepromItem {
             LOGGER.error("Failed to load Lua BIOS code.");
         }
 
-        return new EepromComponent(code);
+        return new EepromComponent(node, code);
     }
     
 }

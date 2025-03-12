@@ -6,10 +6,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import li.cil.ocreloaded.core.machine.PersistenceHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResult;
+import li.cil.ocreloaded.core.network.NetworkNode;
 
 public abstract class AnnotatedComponent implements Component {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotatedComponent.class);
     
     private static final Class<?>[] componentMethodArgs = new Class<?>[] {
         ComponentCallContext.class,
@@ -17,22 +22,29 @@ public abstract class AnnotatedComponent implements Component {
     };
 
     private final Map<String, ComponentCall> componentMethods;
+    private final NetworkNode networkNode;
     private final String type;
 
-    protected AnnotatedComponent(String type) {
+    protected AnnotatedComponent(String type, NetworkNode networkNode) {
         Map<String, ComponentCall> methods = new HashMap<>();
         for (Method m :this.getClass().getDeclaredMethods()) {
             if (m.isAnnotationPresent(ComponentMethod.class)) {
                 if (Arrays.equals(m.getParameterTypes(), componentMethodArgs)) {
                     methods.put(m.getName(), createComponentCall(m));
                 } else {
-                    System.err.printf("WARN method \"%s\" on %s does not match method args", m.getName(),this.getClass().getCanonicalName());
+                    LOGGER.warn("method \"{}\" on {} does not match method args", m.getName(), this.getClass().getCanonicalName());
                 }
             }
         }
 
         this.componentMethods = Collections.unmodifiableMap(methods);
+        this.networkNode = networkNode;
         this.type = type;
+    }
+
+    @Override
+    public NetworkNode getNetworkNode() {
+        return networkNode;
     }
 
     @Override
@@ -44,12 +56,6 @@ public abstract class AnnotatedComponent implements Component {
     public final Map<String, ComponentCall> componentCalls() {
         return componentMethods;
     }
-
-    @Override
-    public void loadFromState(PersistenceHolder holder) {}
-
-    @Override
-    public void storeIntoState(PersistenceHolder holder) {}
 
     private ComponentCall createComponentCall(Method m) {
         return new ComponentCall() {

@@ -2,6 +2,7 @@ package li.cil.ocreloaded.core.machine.component;
 
 import java.util.Map;
 
+import li.cil.ocreloaded.core.machine.Persistable;
 import li.cil.ocreloaded.core.machine.PersistenceHolder;
 import li.cil.ocreloaded.core.network.NetworkMessage;
 import li.cil.ocreloaded.core.network.NetworkNode;
@@ -9,7 +10,13 @@ import li.cil.ocreloaded.core.network.NetworkNode;
 /**
  * Base interface for components that can be used with a machine.
  */
-public interface Component {
+public interface Component extends Persistable {
+
+    /**
+     * Get the network node associated with this component.
+     * @return the network node associated with this component.
+     */
+    NetworkNode getNetworkNode();
 
     /**
      * Get the type of this component.
@@ -29,18 +36,24 @@ public interface Component {
      * @param sender The sender of the message.
      */
     default void onMessage(NetworkMessage message, NetworkNode sender) {};
-    
+
     /**
      * Load component data from a persistent data store.
      * @param holder The persistence holder to store persistent data.
      */
-    void loadFromState(PersistenceHolder holder);
+    @Override
+    default void load(PersistenceHolder holder) {
+        getNetworkNode().load(holder);
+    };
 
     /**
      * Store component data into a persistent data store.
      * @param holder The persistence holder to store persistent data.
      */
-    void storeIntoState(PersistenceHolder holder);
+    @Override
+    default void save(PersistenceHolder holder) {
+        getNetworkNode().save(holder);
+    };
 
     default void dispose() {}
 

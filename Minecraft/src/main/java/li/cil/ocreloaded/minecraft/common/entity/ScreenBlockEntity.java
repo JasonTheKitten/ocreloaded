@@ -1,7 +1,6 @@
 package li.cil.ocreloaded.minecraft.common.entity;
 
 import java.util.List;
-import java.util.Optional;
 
 import io.netty.buffer.ByteBuf;
 import li.cil.ocreloaded.core.component.ScreenComponent;
@@ -32,7 +31,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentTileEntity {
 
     private final NetworkNode networkNode = new ComponentNetworkNode(
-        Optional.of(new ScreenComponent(this::getScreenBuffer)), Visibility.NETWORK
+        node -> new ScreenComponent(node, this::getScreenBuffer), Visibility.NETWORK
     );
     private TextModeBuffer screenBuffer;
 

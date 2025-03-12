@@ -6,12 +6,12 @@ import li.cil.ocreloaded.core.network.NetworkNode;
 public class InternetComponent extends AnnotatedComponent {
     private boolean TcpEnabled = true;
     private boolean HttpEnabled = true;
-    public InternetComponent() {
-        super("internet");
+    public InternetComponent(NetworkNode networkNode) {
+        super("internet", networkNode);
     }
 
-    public InternetComponent(boolean tcpEnabled, boolean httpEnabled) {
-        super("internet");
+    public InternetComponent(NetworkNode networkNode, boolean tcpEnabled, boolean httpEnabled) {
+        super("internet", networkNode);
         this.TcpEnabled = tcpEnabled;
         this.HttpEnabled = httpEnabled;
     }

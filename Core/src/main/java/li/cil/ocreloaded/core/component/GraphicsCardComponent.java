@@ -23,8 +23,8 @@ public class GraphicsCardComponent extends AnnotatedComponent {
     private UUID screenId;
     private int currentScreenBuffer = RESERVED_SCREEN_INDEX;
     
-    public GraphicsCardComponent(int[] maxResolution) {
-        super("gpu");
+    public GraphicsCardComponent(NetworkNode networkNode, int[] maxResolution) {
+        super("gpu", networkNode);
         this.maxResolution = maxResolution;
     }
 

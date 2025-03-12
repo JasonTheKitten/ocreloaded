@@ -30,7 +30,8 @@ public class FloppyDiskItem extends Item implements ComponentItem {
     public NetworkNode newNetworkNode() {
         AtomicReference<UUID> nodeID = new AtomicReference<>();
         NetworkNode node = new ComponentNetworkNode(node_ -> new FileSystemComponent(
-            fileSystemFactory.createFileSystem(tag, node_.id()),
+            node_,
+            () -> fileSystemFactory.createFileSystem(tag, node_.id()),
             Label.create()), Visibility.NEIGHBORS);
         nodeID.set(node.id());
 

@@ -1,7 +1,5 @@
 package li.cil.ocreloaded.minecraft.common.item;
 
-import java.util.Optional;
-
 import li.cil.ocreloaded.core.component.EepromComponent;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
@@ -16,7 +14,7 @@ public class EepromItem extends Item implements ComponentItem {
 
     @Override
     public NetworkNode newNetworkNode() {
-        return new ComponentNetworkNode(Optional.of(new EepromComponent("")), Visibility.NEIGHBORS);
+        return new ComponentNetworkNode(node -> new EepromComponent(node, ""), Visibility.NEIGHBORS);
     }
     
 }

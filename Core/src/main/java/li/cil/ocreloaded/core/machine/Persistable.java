@@ -1,7 +1,17 @@
 package li.cil.ocreloaded.core.machine;
 
-//TODO: hook this in and set this up.
 public interface Persistable {
-    void load(PersistenceHolder holder);
-    void save(PersistenceHolder holder);
+
+    /**
+     * Load component data from a persistent data store.
+     * @param holder The persistence holder to store persistent data.
+     */
+    default void load(PersistenceHolder holder) {};
+
+    /**
+     * Store component data into a persistent data store.
+     * @param holder The persistence holder to store persistent data.
+     */
+    default void save(PersistenceHolder holder) {};
+
 }

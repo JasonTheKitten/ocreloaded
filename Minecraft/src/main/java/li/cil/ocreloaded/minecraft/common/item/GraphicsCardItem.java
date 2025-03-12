@@ -1,7 +1,5 @@
 package li.cil.ocreloaded.minecraft.common.item;
 
-import java.util.Optional;
-
 import li.cil.ocreloaded.core.component.GraphicsCardComponent;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
@@ -31,7 +29,7 @@ public class GraphicsCardItem extends Item implements TieredItem, ComponentItem 
 
     @Override
     public NetworkNode newNetworkNode() {
-        return new ComponentNetworkNode(Optional.of(new GraphicsCardComponent(TIER_RESOLUTIONS[tier - 1])), Visibility.NEIGHBORS);
+        return new ComponentNetworkNode(node -> new GraphicsCardComponent(node, TIER_RESOLUTIONS[tier - 1]), Visibility.NEIGHBORS);
     }
     
 }
