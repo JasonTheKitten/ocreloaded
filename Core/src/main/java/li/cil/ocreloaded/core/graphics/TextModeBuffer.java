@@ -29,7 +29,11 @@ public interface TextModeBuffer {
 
     int getPaletteColor(int index);
 
+    void setDepth(int depth);
+
     int getDepth();
+
+    int maxDepth();
 
     int[] resolution();
 
@@ -49,8 +53,8 @@ public interface TextModeBuffer {
         }
     }
     
-    public static TextModeBuffer create(int[] maxResolution) {
-        return new TextModeBufferImp(maxResolution);
+    public static TextModeBuffer create(int[] maxResolution, int maxDepth) {
+        return new TextModeBufferImp(maxResolution, maxDepth);
     }
 
     public static record CellInfo(int codepoint, int foreground, int background, int foregroundIndex, int backgroundIndex) {}

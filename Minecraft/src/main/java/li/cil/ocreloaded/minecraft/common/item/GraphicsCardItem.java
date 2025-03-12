@@ -15,6 +15,8 @@ public class GraphicsCardItem extends Item implements TieredItem, ComponentItem 
         new int[] { 160, 50 },
     };
 
+    public static int[] TIER_DEPTHS = new int[] { 1, 4, 8 };
+
     private final int tier;
 
     public GraphicsCardItem(Properties properties, int tier) {
@@ -29,7 +31,9 @@ public class GraphicsCardItem extends Item implements TieredItem, ComponentItem 
 
     @Override
     public NetworkNode newNetworkNode() {
-        return new ComponentNetworkNode(node -> new GraphicsCardComponent(node, TIER_RESOLUTIONS[tier - 1]), Visibility.NEIGHBORS);
+        return new ComponentNetworkNode(
+            node -> new GraphicsCardComponent(node, TIER_RESOLUTIONS[tier - 1], TIER_DEPTHS[tier - 1]),
+            Visibility.NEIGHBORS);
     }
     
 }
