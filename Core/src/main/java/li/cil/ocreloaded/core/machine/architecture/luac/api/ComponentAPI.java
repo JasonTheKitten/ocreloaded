@@ -166,6 +166,8 @@ public final class ComponentAPI {
                 pushValue(luaState, oList.get(i));
                 luaState.setTable(-3);
             }
+        } else if (o instanceof byte[] bytes) {
+            luaState.pushByteArray(bytes);
         } else {
             luaState.pushNil();
         }

@@ -1,8 +1,10 @@
 package li.cil.ocreloaded.core.filesystem;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import li.cil.ocreloaded.core.machine.filesystem.FileHandle;
@@ -49,16 +51,25 @@ public class DirectoryFileSystem implements FileSystem {
     }
 
     @Override
-    public List<String> list(String path) {
-        Path resolved = root.resolve(path);
-        List<String> files = List.of(resolved.toFile().list());
+    public List<String> list(String path) throws IOException {
+        Path resolved = resolveExistant(path);
+        String[] rawFiles = resolved.toFile().list();
+        List<String> files = new ArrayList<>(rawFiles.length);
+        for (String file : rawFiles) {
+            if (resolved.resolve(file).toFile().isDirectory() && !file.endsWith("/")) {
+                files.add(file + "/");
+            } else {
+                files.add(file);
+            }
+        }
+        
         return files;
     }
     
     @Override
     public boolean makeDirectory(String parentPath) {
         Path resolved = root.resolve(parentPath);
-        return resolved.toFile().mkdir();
+        return resolved.toFile().mkdirs();
     }
 
     @Override
@@ -69,7 +80,7 @@ public class DirectoryFileSystem implements FileSystem {
 
     @Override
     public int open(String path, Mode mode) throws IOException {
-        Path resolved = root.resolve(path);
+        Path resolved = resolveExistant(path);
         if (Files.notExists(resolved) && mode == Mode.APPEND) {
             resolved.toFile().createNewFile();
         }
@@ -88,6 +99,14 @@ public class DirectoryFileSystem implements FileSystem {
     @Override
     public void close() throws IOException {
         handles.close();
+    }
+
+    private Path resolveExistant(String path) throws FileNotFoundException {
+        Path resolved = root.resolve(path);
+        if (Files.notExists(resolved)) {
+            throw new FileNotFoundException("file does not exist");
+        }
+        return resolved;
     }
     
 }

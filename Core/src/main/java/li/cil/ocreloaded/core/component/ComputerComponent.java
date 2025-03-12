@@ -1,5 +1,6 @@
 package li.cil.ocreloaded.core.component;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -25,6 +26,12 @@ public class ComputerComponent extends AnnotatedComponent {
     public ComponentCallResult beep(ComponentCallContext context, ComponentCallArguments arguments) {
         // TODO: Implement
         return ComponentCallResult.success();
+    }
+
+    @ComponentMethod(doc = "function():table -- Returns a map of program name to disk label for known programs.")
+    public ComponentCallResult getProgramLocations(ComponentCallContext context, ComponentCallArguments arguments) {
+        // TODO: Implement
+        return ComponentCallResult.success(List.of());
     }
 
     @Override

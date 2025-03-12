@@ -1,11 +1,14 @@
 package li.cil.ocreloaded.core.machine.architecture.luac.api;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.MachineProcessor;
+import li.cil.ocreloaded.core.machine.architecture.luac.api.APIRegistrationUtil.APIFunction;
 import li.cil.repack.com.naef.jnlua.LuaState;
 
 public final class ComputerAPI {
@@ -13,16 +16,18 @@ public final class ComputerAPI {
     private ComputerAPI() {}
     
     public static void register(LuaState luaState, Machine machine) {
-        APIRegistrationUtil.register(luaState, machine, "computer", Map.of(
-            "realTime", ComputerAPI::realTime,
-            "uptime", ComputerAPI::uptime,
-            "address", ComputerAPI::address,
-            "freeMemory", ComputerAPI::freeMemory,
-            "totalMemory", ComputerAPI::totalMemory,
-            "pushSignal", ComputerAPI::pushSignal,
-            "tmpAddress", ComputerAPI::tmpAddress,
-            "setArchitecture", ComputerAPI::setArchitecture,
-            "getArchitecture", ComputerAPI::getArchitecture
+        APIRegistrationUtil.register(luaState, machine, "computer", Map.ofEntries(
+            entry("realTime", ComputerAPI::realTime),
+            entry("uptime", ComputerAPI::uptime),
+            entry("address", ComputerAPI::address),
+            entry("freeMemory", ComputerAPI::freeMemory),
+            entry("totalMemory", ComputerAPI::totalMemory),
+            entry("pushSignal", ComputerAPI::pushSignal),
+            entry("tmpAddress", ComputerAPI::tmpAddress),
+            entry("energy", ComputerAPI::energy),
+            entry("maxEnergy", ComputerAPI::maxEnergy),
+            entry("getArchitecture", ComputerAPI::getArchitecture),
+            entry("setArchitecture", ComputerAPI::setArchitecture)
         ));
     }
 
@@ -70,6 +75,23 @@ public final class ComputerAPI {
         return 1;
     }
 
+    private static int energy(LuaState luaState, Machine machine) {
+        // TODO: Use proper energy amount
+        luaState.pushNumber(Double.POSITIVE_INFINITY);
+        return 1;
+    }
+
+    private static int maxEnergy(LuaState luaState, Machine machine) {
+        // TODO: Use proper energy amount
+        luaState.pushNumber(60);
+        return 1;
+    }
+
+    private static int getArchitecture(LuaState luaState, Machine machine) {
+        luaState.pushString(machine.parameters().processor().getArchitecture());
+        return 1;
+    }
+
     private static int setArchitecture(LuaState luaState, Machine machine) {
         MachineProcessor processor = machine.parameters().processor();
         String oldArchitecture = processor.getArchitecture();
@@ -84,11 +106,6 @@ public final class ComputerAPI {
         }
     }
 
-    private static int getArchitecture(LuaState luaState, Machine machine) {
-        luaState.pushString(machine.parameters().processor().getArchitecture());
-        return 1;
-    }
-
     private static Object toSimpleJavaObject(LuaState luaState, int index) {
         switch (luaState.type(index)) {
             case BOOLEAN:
@@ -101,6 +118,10 @@ public final class ComputerAPI {
             default:
                 return null;
         }
+    }
+
+    private static Entry<String, APIFunction> entry(String name, APIFunction function) {
+        return new SimpleEntry<>(name, function);
     }
 
 }

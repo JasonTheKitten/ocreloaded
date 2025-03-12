@@ -15,7 +15,7 @@ public interface FileSystem {
 
     long lastModified(String path);
 
-    List<String> list(String path);
+    List<String> list(String path) throws IOException;
 
     boolean makeDirectory(String path);
 

@@ -1,5 +1,6 @@
 package li.cil.ocreloaded.core.component;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResul
 import li.cil.ocreloaded.core.machine.component.ComponentCallArguments;
 import li.cil.ocreloaded.core.machine.component.ComponentCallContext;
 import li.cil.ocreloaded.core.machine.component.ComponentMethod;
+import li.cil.ocreloaded.core.machine.filesystem.FileHandle;
 import li.cil.ocreloaded.core.machine.filesystem.FileSystem;
 import li.cil.ocreloaded.core.misc.Label;
 import li.cil.ocreloaded.core.util.FileUtil;
@@ -77,7 +79,13 @@ public class FileSystemComponent extends AnnotatedComponent {
     @ComponentMethod(direct = true, doc = "function(path:string):table -- Returns a list of names of objects in the directory at the specified absolute path in the file system.")
     public ComponentCallResult list(ComponentCallContext context, ComponentCallArguments arguments) {
         String path = PathUtil.minimizePath(arguments.checkString(0));
-        return ComponentCallResult.success(filesystem.list(path));
+        try {
+            return ComponentCallResult.success(filesystem.list(path));
+        } catch (FileNotFoundException e) {
+            return ComponentCallResult.failure("no such file or directory: " + path);
+        } catch (IOException e) {
+            return ComponentCallResult.failure("error while listing directory");
+        }
     }
 
     @ComponentMethod(doc = "function(path:string):boolean -- Creates a directory at the specified absolute path in the file system. Creates parent directories, if necessary.")
@@ -151,8 +159,29 @@ public class FileSystemComponent extends AnnotatedComponent {
             if (read == -1) {
                 return ComponentCallResult.success((Object) null);
             }
+            byte[] trimmedData = new byte[read];
+            System.arraycopy(data, 0, trimmedData, 0, read);
             
-            return ComponentCallResult.success(new String(data, 0, read));
+            return ComponentCallResult.success(trimmedData);
+        } catch (IOException e) {
+            return ComponentCallResult.failure(e.getMessage());
+        }
+    }
+
+    @ComponentMethod(direct = true, doc = "function(handle:userdata, whence:string, offset:number):number -- Seeks in an open file descriptor with the specified handle. Returns the new pointer position.")
+    public ComponentCallResult seek(ComponentCallContext context, ComponentCallArguments arguments) {
+        int handle = arguments.checkInteger(0);
+        String whence = arguments.checkString(1);
+        long offset = arguments.checkInteger(2);
+        
+        try {
+            FileHandle fileHandle = filesystem.getHandle(handle);
+            return switch (whence) {
+                case "set" -> ComponentCallResult.success(fileHandle.seek(offset));
+                case "cur" -> ComponentCallResult.success(fileHandle.seek(fileHandle.position() + offset));
+                case "end" -> ComponentCallResult.success(fileHandle.seek(fileHandle.length() + offset));
+                default -> ComponentCallResult.failure("invalid whence");
+            };
         } catch (IOException e) {
             return ComponentCallResult.failure(e.getMessage());
         }
