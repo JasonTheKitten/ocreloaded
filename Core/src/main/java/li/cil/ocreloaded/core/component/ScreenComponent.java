@@ -10,7 +10,6 @@ import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResul
 import li.cil.ocreloaded.core.machine.component.ComponentCallArguments;
 import li.cil.ocreloaded.core.machine.component.ComponentCallContext;
 import li.cil.ocreloaded.core.machine.component.ComponentMethod;
-import org.slf4j.LoggerFactory;
 
 public class ScreenComponent extends AnnotatedComponent implements GraphicsBindableComponent {
 
