@@ -19,13 +19,15 @@ public class GraphicsCardComponent extends AnnotatedComponent {
     private static final int RESERVED_SCREEN_INDEX = 0;
 
     private final int[] maxResolution;
+    private final int maxDepth;
 
     private UUID screenId;
     private int currentScreenBuffer = RESERVED_SCREEN_INDEX;
     
-    public GraphicsCardComponent(NetworkNode networkNode, int[] maxResolution) {
+    public GraphicsCardComponent(NetworkNode networkNode, int[] maxResolution, int maxDepth) {
         super("gpu", networkNode);
         this.maxResolution = maxResolution;
+        this.maxDepth = maxDepth;
     }
 
     @ComponentMethod(doc = "function(address:string[, reset:boolean=true]):boolean -- Binds the GPU to the screen with the specified address and resets screen settings if `reset` is true.")
@@ -48,10 +50,10 @@ public class GraphicsCardComponent extends AnnotatedComponent {
                 buffer.setResolution(
                     Math.min(maxResolution[0], bufferMaxResolution[0]),
                     Math.min(maxResolution[1], bufferMaxResolution[1]));
+                buffer.setDepth(Math.min(maxDepth, buffer.maxDepth()));
                 buffer.setForegroundColor(0xFFFFFFFF, false);
                 buffer.setBackgroundColor(0x00000000, false);
                 buffer.reset();
-                // TODO: Set color depth
             }
             return ComponentCallResult.success(true);
         });
@@ -111,10 +113,25 @@ public class GraphicsCardComponent extends AnnotatedComponent {
 
     @ComponentMethod(doc = "function(depth:number):number -- Set the color depth. Returns the previous value.")
     public ComponentCallResult setDepth(ComponentCallContext context, ComponentCallArguments arguments) {
-        // TODO: Implement setDepth
         return withBuffer(context, buffer -> {
             int oldDepth = buffer.getDepth();
+            int newDepth = arguments.checkInteger(0);
+            if (
+                (newDepth > maxDepth || newDepth > buffer.maxDepth())
+                || (newDepth != 1 && newDepth != 4 && newDepth != 8)
+            ) {
+                return ComponentCallResult.failure("unsupported depth");
+            }
+            buffer.setDepth(newDepth);
             return ComponentCallResult.success(oldDepth);
+        });
+    }
+
+    @ComponentMethod(direct = true, doc = "function():number -- Get the maximum supported color depth.")
+    public ComponentCallResult maxDepth(ComponentCallContext context, ComponentCallArguments arguments) {
+        return withBuffer(context, buffer -> {
+            int maxDepth = Math.min(this.maxDepth, buffer.maxDepth());
+            return ComponentCallResult.success(maxDepth);
         });
     }
 

@@ -51,9 +51,10 @@ public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentT
 
         ScreenBlock block = (ScreenBlock) getBlockState().getBlock();
         int[] maxResolution = GraphicsCardItem.TIER_RESOLUTIONS[block.getTier() - 1];
+        int maxDepth = GraphicsCardItem.TIER_DEPTHS[block.getTier() - 1];
         screenBuffer = level.isClientSide() ?
-            TextModeBuffer.create(maxResolution) :
-            new NetworkedTextModeBufferProxy(TextModeBuffer.create(maxResolution));
+            TextModeBuffer.create(maxResolution, maxDepth) :
+            new NetworkedTextModeBufferProxy(TextModeBuffer.create(maxResolution, maxDepth));
         
         if (!level.isClientSide()) {
             level.addBlockEntityTicker(new BlockEntityTicker(this));

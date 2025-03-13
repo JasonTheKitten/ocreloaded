@@ -21,8 +21,9 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
     private static final int WRITE_TEXT = 6;
     private static final int SET_BACKGROUND = 7;
     private static final int SET_FOREGROUND = 8;
-    private static final int SET_RESOLUTION = 9;
-    private static final int SET_VIEWPORT = 10;
+    private static final int SET_DEPTH = 9;
+    private static final int SET_RESOLUTION = 10;
+    private static final int SET_VIEWPORT = 11;
 
     private final TextModeBuffer targetBuffer;
     private final ByteBuf buffer;
@@ -129,8 +130,20 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
     }
 
     @Override
+    public void setDepth(int depth) {
+        targetBuffer.setDepth(depth);
+        buffer.writeInt(SET_DEPTH);
+        buffer.writeInt(depth);
+    }
+
+    @Override
     public int getDepth() {
         return targetBuffer.getDepth();
+    }
+
+    @Override
+    public int maxDepth() {
+        return targetBuffer.maxDepth();
     }
 
     @Override
@@ -187,6 +200,8 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
         int[] viewport = targetBuffer.viewport();
         syncBuffer.writeInt(viewport[0]);
         syncBuffer.writeInt(viewport[1]);
+        int colorDepth = targetBuffer.getDepth();
+        syncBuffer.writeInt(colorDepth);
         ColorData backgroundColor = targetBuffer.getBackgroundColor();
         syncBuffer.writeInt(backgroundColor.color());
         syncBuffer.writeBoolean(backgroundColor.isPaletteIndex());
@@ -223,6 +238,7 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
                 case WRITE_TEXT -> handleWriteText(buffer, byteBuf);
                 case SET_BACKGROUND -> buffer.setBackgroundColor(byteBuf.readInt(), byteBuf.readBoolean());
                 case SET_FOREGROUND -> buffer.setForegroundColor(byteBuf.readInt(), byteBuf.readBoolean());
+                case SET_DEPTH -> buffer.setDepth(byteBuf.readInt());
                 case SET_RESOLUTION -> buffer.setResolution(byteBuf.readInt(), byteBuf.readInt());
                 case SET_VIEWPORT -> buffer.setViewport(byteBuf.readInt(), byteBuf.readInt());
                 default -> recognized = false;
@@ -241,6 +257,7 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
         int height = byteBuf.readInt();
         buffer.setResolution(width, height);
         buffer.setViewport(byteBuf.readInt(), byteBuf.readInt());
+        buffer.setDepth(byteBuf.readInt());
         buffer.setBackgroundColor(byteBuf.readInt(), byteBuf.readBoolean());
         buffer.setForegroundColor(byteBuf.readInt(), byteBuf.readBoolean());
         for (int y = 0; y < height; y++) {

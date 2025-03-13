@@ -3,7 +3,9 @@ package li.cil.ocreloaded.core.graphics.imp;
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
 import li.cil.ocreloaded.core.graphics.color.ColorMode;
 import li.cil.ocreloaded.core.graphics.color.ColorMode.ColorData;
+import li.cil.ocreloaded.core.graphics.color.EightBitColorMode;
 import li.cil.ocreloaded.core.graphics.color.FourBitColorMode;
+import li.cil.ocreloaded.core.graphics.color.OneBitColorMode;
 
 public class TextModeBufferImp implements TextModeBuffer {
 
@@ -11,15 +13,18 @@ public class TextModeBufferImp implements TextModeBuffer {
 
     private ColorMode colorMode;
 
-    private int[] maxResolution;
+    private final int[] maxResolution;
+    private final int maxDepth;
+
     private int[] viewport;
     private int[] buffer;
     private ColorData currentForeground;
     private ColorData currentBackground;
     private int width;
 
-    public TextModeBufferImp(int[] maxResolution) {
+    public TextModeBufferImp(int[] maxResolution, int maxDepth) {
         this.maxResolution = maxResolution;
+        this.maxDepth = maxDepth;
         this.viewport = new int[] { maxResolution[0], maxResolution[1] };
         this.width = maxResolution[0];
         buffer = new int[width * maxResolution[1] * ELEMENTS_PER_CELL];
@@ -139,8 +144,40 @@ public class TextModeBufferImp implements TextModeBuffer {
     }
 
     @Override
+    public void setDepth(int depth) {
+        ColorMode oldColorMode = colorMode;
+        ColorMode newColorMode =
+            depth == 1 ? new OneBitColorMode() :
+            depth == 4 ? new FourBitColorMode() :
+            depth == 8 ? new EightBitColorMode() :
+            null;
+        if (newColorMode == null) {
+            throw new IllegalArgumentException("unsupported depth");
+        }
+        colorMode = newColorMode;
+
+        currentForeground = new ColorData(0xFFFFFF, false);
+        currentBackground = new ColorData(0x000000, false);
+        for (int i = 0; i < buffer.length; i += ELEMENTS_PER_CELL) {
+            if (oldColorMode == null) {
+                buffer[i + 1] = packColors();
+            } else {
+                int backgroundShifted = buffer[i + 1] >> 16;
+                int foregroundShifted = buffer[i + 1] & 0xFFFF;
+                buffer[i + 1] = colorMode.pack(new ColorData(oldColorMode.unpack(backgroundShifted), false)) << 16 |
+                    colorMode.pack(new ColorData(oldColorMode.unpack(foregroundShifted), false));
+            }
+        }
+    }
+
+    @Override
     public int getDepth() {
         return colorMode.depth();
+    }
+
+    @Override
+    public int maxDepth() {
+        return maxDepth;
     }
 
     @Override
@@ -164,7 +201,6 @@ public class TextModeBufferImp implements TextModeBuffer {
             throw new IllegalArgumentException("unsupported resolution");
         }
 
-        // TODO: Is old data preserved?
         int[] newBuffer = new int[width * height * ELEMENTS_PER_CELL];
         int copyWidth = Math.min(this.width, width);
         int copyHeight = Math.min(buffer.length / (this.width * ELEMENTS_PER_CELL), height);
@@ -180,17 +216,6 @@ public class TextModeBufferImp implements TextModeBuffer {
     @Override
     public void setViewport(int width, int height) {
         viewport = new int[] { width, height };
-    }
-
-    public void setDepth(int depth) {
-        colorMode = new FourBitColorMode();
-        currentForeground = new ColorData(0xFFFFFF, false);
-        currentBackground = new ColorData(0x000000, false);
-        for (int i = 0; i < buffer.length; i += ELEMENTS_PER_CELL) {
-            // TODO: setDepth does not clear the buffer
-            buffer[i] = 32;
-            buffer[i + 1] = packColors();
-        }
     }
 
     private int packColors() {

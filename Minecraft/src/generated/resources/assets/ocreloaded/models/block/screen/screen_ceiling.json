@@ -7,5 +7,51 @@
     "west": "ocreloaded:block/screen/back_single_single_side",
     "up": "ocreloaded:block/screen/back_single_single",
     "down": "ocreloaded:block/screen/front_single_single"
-  }
+  },
+  "elements": [
+    {
+      "from": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "to": [
+        16.0,
+        16.0,
+        16.0
+      ],
+      "faces": {
+        "east": {
+          "cullface": "east",
+          "texture": "#east",
+          "tintindex": 0
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#south",
+          "tintindex": 0
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#north",
+          "tintindex": 0
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#west",
+          "tintindex": 0
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#up",
+          "tintindex": 0
+        },
+        "down": {
+          "cullface": "down",
+          "texture": "#down",
+          "tintindex": 0
+        }
+      }
+    }
+  ]
 }
