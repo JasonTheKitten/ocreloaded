@@ -10,12 +10,16 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.slf4j.LoggerFactory;
+
 import li.cil.ocreloaded.core.network.Network;
 import li.cil.ocreloaded.core.network.NetworkMessage;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
 
 public class NetworkImp implements Network {
+
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(NetworkImp.class);
 
     private final Map<UUID, Set<NetworkNode>> connections = new HashMap<>();
 
@@ -71,6 +75,17 @@ public class NetworkImp implements Network {
     public void remove(NetworkNode node) {
         if (!connections.containsKey(node.id())) throw new IllegalArgumentException("Node is not in this network.");
         
+        List<NetworkNode> visible = switch(node.visibility()) {
+            case NONE -> List.of();
+            case NEIGHBORS -> List.copyOf(connections.get(node.id()));
+            case NETWORK -> allNodes().stream().filter(n -> n.visibility() == Visibility.NETWORK).collect(Collectors.toList());
+        };
+        for (NetworkNode neighbor : List.copyOf(connections.get(node.id()))) {
+            connections.get(neighbor.id()).remove(node);
+        }
+        for (NetworkNode neighbor : visible) {
+            neighbor.onDisconnect(node);
+        }
         connections.remove(node.id());
         handleSplit();
     }
@@ -203,6 +218,19 @@ public class NetworkImp implements Network {
             group.add(node);
             connections.getOrDefault(node.id(), Set.of()).forEach(neighbor -> exploreGroup(neighbor, group, visited));
         }
+    }
+
+    @Override
+    public void debug() {
+        StringBuilder builder = new StringBuilder("\n");
+        for (Map.Entry<UUID, Set<NetworkNode>> entry : connections.entrySet()) {
+            builder.append(entry.getKey()).append(" -> ");
+            for (NetworkNode node : entry.getValue()) {
+                builder.append(node.id()).append(":").append(node.component().map(c -> c.getType()).orElse("null")).append(", ");
+            }
+            builder.append("\n");
+        }
+        LOGGER.info(builder.toString());
     }
     
 }

@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.component.AnnotatedComponent;
+import li.cil.ocreloaded.core.machine.component.Component;
 import li.cil.ocreloaded.core.machine.component.ComponentCall.ComponentCallResult;
 import li.cil.ocreloaded.core.machine.component.ComponentCallArguments;
 import li.cil.ocreloaded.core.machine.component.ComponentCallContext;
@@ -52,6 +53,24 @@ public class ComputerComponent extends AnnotatedComponent {
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onConnect(NetworkNode node) {
+        if (node.component().isEmpty()) return;
+        Component component = node.component().get();
+        Optional<Machine> machine = machineSupplier.get();
+        machine.ifPresent(m -> m.signal(
+            "component_added", node.id().toString(), component.getType()));
+    }
+
+    @Override
+    public void onDisconnect(NetworkNode node) {
+        if (node.component().isEmpty()) return;
+        Component component = node.component().get();
+        Optional<Machine> machine = machineSupplier.get();
+        machine.ifPresent(m -> m.signal(
+            "component_removed", node.id().toString(), component.getType()));
     }
 
 }
