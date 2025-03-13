@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.slf4j.LoggerFactory;
+
 import li.cil.ocreloaded.core.network.Network;
 import li.cil.ocreloaded.core.network.NetworkMessage;
 import li.cil.ocreloaded.core.network.NetworkNode;
@@ -71,6 +73,13 @@ public class NetworkImp implements Network {
     public void remove(NetworkNode node) {
         if (!connections.containsKey(node.id())) throw new IllegalArgumentException("Node is not in this network.");
         
+        LoggerFactory.getLogger(NetworkImp.class).info("Removing node: {}", node.id());
+        for (NetworkNode neighbor : List.copyOf(connections.get(node.id()))) {
+            connections.get(neighbor.id()).remove(node);
+            if (neighbor.visibility() == Visibility.NEIGHBORS) {
+                neighbor.onDisconnect(node);
+            }
+        }
         connections.remove(node.id());
         handleSplit();
     }
@@ -143,6 +152,7 @@ public class NetworkImp implements Network {
             otherNode.onNetworkChange(otherNetwork, this);
         }
 
+        LoggerFactory.getLogger(NetworkImp.class).info("Merging networks: {} and {}", this, otherNetwork);
         connections.putAll(otherNetwork.connections);
         connections.get(reference.id()).add(node);
         connections.get(node.id()).add(reference);
@@ -203,6 +213,19 @@ public class NetworkImp implements Network {
             group.add(node);
             connections.getOrDefault(node.id(), Set.of()).forEach(neighbor -> exploreGroup(neighbor, group, visited));
         }
+    }
+
+    @Override
+    public void debug() {
+        StringBuilder builder = new StringBuilder("\n");
+        for (Map.Entry<UUID, Set<NetworkNode>> entry : connections.entrySet()) {
+            builder.append(entry.getKey()).append(" -> ");
+            for (NetworkNode node : entry.getValue()) {
+                builder.append(node.id()).append(":").append(node.component().map(c -> c.getType()).orElse("null")).append(", ");
+            }
+            builder.append("\n");
+        }
+        LoggerFactory.getLogger(NetworkImp.class).info(builder.toString());
     }
     
 }

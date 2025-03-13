@@ -39,6 +39,8 @@ public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentT
     private final NetworkNode networkNode = new ComponentNetworkNode(
         node -> new ScreenComponent(node, this::getScreenBuffer), Visibility.NETWORK
     );
+
+    private boolean initialized = false;
     private TextModeBuffer screenBuffer;
 
     public ScreenBlockEntity(BlockPos blockPos, BlockState blockState) {
@@ -48,6 +50,12 @@ public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentT
     @Override
     public NetworkNode networkNode() {
         return networkNode;
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        networkNode.remove();
     }
 
     @Override
@@ -84,7 +92,11 @@ public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentT
 
     @Override
     public void tick() {
-        if (level.isClientSide()) return;
+        if (level == null || level.isClientSide()) return;
+        if (!initialized) {
+            ComponentNetworkUtil.connectToNeighbors(level, worldPosition);
+            initialized = true;
+        }
 
         ChunkPos chunkPos = new ChunkPos(worldPosition);
         List<ServerPlayer> chunkTrackingPlayers = ((ServerLevel) level).getPlayers(

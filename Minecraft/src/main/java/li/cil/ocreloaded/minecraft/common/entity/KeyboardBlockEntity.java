@@ -29,6 +29,12 @@ public class KeyboardBlockEntity extends BlockEntityWithTick implements Componen
     }
 
     @Override
+    public void setRemoved() {
+        super.setRemoved();
+        networkNode.remove();
+    }
+
+    @Override
     public void load(CompoundTag compoundTag) {
         super.load(compoundTag);
         networkNode.load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
@@ -55,8 +61,8 @@ public class KeyboardBlockEntity extends BlockEntityWithTick implements Componen
     public void tick() {
         if (level == null || level.isClientSide) return;
         if (!initialized) {
-            initialized = true;
             ComponentNetworkUtil.connectToNeighbors(level, worldPosition);
+            initialized = true;
         }
     }
 
