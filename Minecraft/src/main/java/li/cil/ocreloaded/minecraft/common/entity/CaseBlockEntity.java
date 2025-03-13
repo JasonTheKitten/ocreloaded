@@ -32,6 +32,8 @@ import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
 import li.cil.ocreloaded.minecraft.common.item.ComponentItem;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
+import li.cil.ocreloaded.minecraft.common.util.ItemList;
+import li.cil.ocreloaded.minecraft.common.util.ItemList.ItemChangeListener;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -40,14 +42,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTileEntity {
+public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTileEntity, ItemChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CaseBlockEntity.class);
 
     private static final String TAG_POWERED = "ocreloaded:powered";
     private Optional<Machine> machine = Optional.empty();
 
-    private final NonNullList<ItemStack> items = NonNullList.withSize(10, ItemStack.EMPTY);
+    private final ItemList items = ItemList.withSize(10, this);
     private final NetworkNode networkNode = new ComponentNetworkNode(node -> new ComputerComponent(node, () -> machine), Visibility.NETWORK);
     private final NetworkNode tmpFsNode = new ComponentNetworkNode(node -> new FileSystemComponent(node, () -> new InMemoryFileSystem(), Label.create()), Visibility.NEIGHBORS);
     private final MachineProcessorImp processor = new MachineProcessorImp(MachineRegistry.getDefaultInstance());
@@ -114,6 +116,19 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
         machine.ifPresent(Machine::runSync);
     }
 
+    @Override
+    public void onItemChange(int slot, ItemStack oldStack, ItemStack newStack) {
+        NetworkNode oldNode = loadedComponents.remove(oldStack);
+        if (oldNode != null) {
+            LoggerFactory.getLogger(CaseBlockEntity.class).info("Removing component {} from slot {}.", oldNode.id(), slot);
+            oldNode.remove();
+        }
+        if (newStack.isEmpty()) return;
+        loadComponent(newStack, loadedComponents);
+        if (loadedComponents.containsKey(newStack))
+        LoggerFactory.getLogger(CaseBlockEntity.class).info("Adding component {} to slot {}.", loadedComponents.get(newStack).id(), slot);
+    }
+
     public NonNullList<ItemStack> getItems() {
         return this.items;
     }
@@ -155,25 +170,13 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
         Map<ItemStack, NetworkNode> components = new HashMap<>();
         for (ItemStack itemStack : this.items) {
             if (itemStack.isEmpty()) continue;
-            if (!(itemStack.getItem() instanceof ComponentItem componentHolder)) continue;
 
             if (loadedComponents.containsKey(itemStack)) {
                 components.put(itemStack, loadedComponents.remove(itemStack));
                 continue;
             }
 
-            NetworkNode networkNode = componentHolder.newNetworkNode();
-            if (!networkNode.component().isPresent()) continue;
-            Component component = networkNode.component().get();
-
-            CompoundTag tag = itemStack.getOrCreateTag();
-            component.load(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
-            // TODO: When should states be stored?
-            component.save(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
-            // TODO: Reset component on fresh boot?
-
-            components.put(itemStack, networkNode);
-            this.networkNode.connect(networkNode);
+            loadComponent(itemStack, components);
         }
 
         for (Entry<ItemStack, NetworkNode> entry : loadedComponents.entrySet()) {
@@ -181,6 +184,24 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
         }
 
         this.loadedComponents = components;
+    }
+
+    private void loadComponent(ItemStack itemStack, Map<ItemStack, NetworkNode> components) {
+        if (itemStack.isEmpty()) return;
+        if (!(itemStack.getItem() instanceof ComponentItem componentHolder)) return;
+
+        NetworkNode networkNode = componentHolder.newNetworkNode();
+        if (!networkNode.component().isPresent()) return;
+        Component component = networkNode.component().get();
+
+        CompoundTag tag = itemStack.getOrCreateTag();
+        component.load(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
+        // TODO: When should states be stored?
+        component.save(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
+        // TODO: Reset component on fresh boot?
+
+        components.put(itemStack, networkNode);
+        this.networkNode.connect(networkNode);
     }
 
     private Optional<Machine> createMachine() {
