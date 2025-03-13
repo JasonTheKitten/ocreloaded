@@ -19,6 +19,8 @@ import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
 
 public class NetworkImp implements Network {
 
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(NetworkImp.class);
+
     private final Map<UUID, Set<NetworkNode>> connections = new HashMap<>();
 
     public NetworkImp(NetworkNode firstNode) {
@@ -73,12 +75,16 @@ public class NetworkImp implements Network {
     public void remove(NetworkNode node) {
         if (!connections.containsKey(node.id())) throw new IllegalArgumentException("Node is not in this network.");
         
-        LoggerFactory.getLogger(NetworkImp.class).info("Removing node: {}", node.id());
+        List<NetworkNode> visible = switch(node.visibility()) {
+            case NONE -> List.of();
+            case NEIGHBORS -> List.copyOf(connections.get(node.id()));
+            case NETWORK -> allNodes().stream().filter(n -> n.visibility() == Visibility.NETWORK).collect(Collectors.toList());
+        };
         for (NetworkNode neighbor : List.copyOf(connections.get(node.id()))) {
             connections.get(neighbor.id()).remove(node);
-            if (neighbor.visibility() == Visibility.NEIGHBORS) {
-                neighbor.onDisconnect(node);
-            }
+        }
+        for (NetworkNode neighbor : visible) {
+            neighbor.onDisconnect(node);
         }
         connections.remove(node.id());
         handleSplit();
@@ -152,7 +158,6 @@ public class NetworkImp implements Network {
             otherNode.onNetworkChange(otherNetwork, this);
         }
 
-        LoggerFactory.getLogger(NetworkImp.class).info("Merging networks: {} and {}", this, otherNetwork);
         connections.putAll(otherNetwork.connections);
         connections.get(reference.id()).add(node);
         connections.get(node.id()).add(reference);
@@ -225,7 +230,7 @@ public class NetworkImp implements Network {
             }
             builder.append("\n");
         }
-        LoggerFactory.getLogger(NetworkImp.class).info(builder.toString());
+        LOGGER.info(builder.toString());
     }
     
 }

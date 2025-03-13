@@ -46,7 +46,6 @@ public class CaseBlock extends Block implements EntityBlock, TieredBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide()) {
-            ((CaseBlockEntity) level.getBlockEntity(pos)).networkNode().network().debug();
             MenuProvider menuProvider = state.getMenuProvider(level, pos);
             if (menuProvider != null && menuProvider instanceof CaseMenuProvider caseMenuProvider && player instanceof ServerPlayer serverPlayer) {
                 MenuRegistry.openExtendedMenu(serverPlayer, menuProvider, caseMenuProvider::writeData);

@@ -50,10 +50,14 @@ public class ComponentNetworkNode implements NetworkNode {
     }
 
     @Override
-    public void onConnect(NetworkNode otherNode) {}
+    public void onConnect(NetworkNode otherNode) {
+        component.ifPresent(c -> c.onConnect(otherNode));
+    }
 
     @Override
-    public void onDisconnect(NetworkNode otherNode) {}
+    public void onDisconnect(NetworkNode otherNode) {
+        component.ifPresent(c -> c.onDisconnect(otherNode));
+    }
 
     @Override
     public void onNetworkChange(Network oldNetwork, Network newNetwork) {

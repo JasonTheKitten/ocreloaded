@@ -38,6 +38,18 @@ public interface Component extends Persistable {
     default void onMessage(NetworkMessage message, NetworkNode sender) {};
 
     /**
+     * Handle when a component is connected to a network.
+     * @param node The network node holding the component.
+     */
+    default void onConnect(NetworkNode node) {}
+
+    /**
+     * Handle when a component is disconnected from a network.
+     * @param node The network node holding the component.
+     */
+    default void onDisconnect(NetworkNode node) {}
+
+    /**
      * Load component data from a persistent data store.
      * @param holder The persistence holder to store persistent data.
      */

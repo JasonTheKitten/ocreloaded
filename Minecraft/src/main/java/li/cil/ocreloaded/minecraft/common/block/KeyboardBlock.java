@@ -33,14 +33,6 @@ public class KeyboardBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (!level.isClientSide()) {
-            ((KeyboardBlockEntity) level.getBlockEntity(pos)).networkNode().network().debug();
-        }
-        return InteractionResult.SUCCESS;
-    }
-
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
         builder.add(ATTACH_FACE);

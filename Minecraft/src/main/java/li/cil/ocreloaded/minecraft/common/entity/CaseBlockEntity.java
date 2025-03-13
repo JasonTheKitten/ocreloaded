@@ -120,13 +120,10 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
     public void onItemChange(int slot, ItemStack oldStack, ItemStack newStack) {
         NetworkNode oldNode = loadedComponents.remove(oldStack);
         if (oldNode != null) {
-            LoggerFactory.getLogger(CaseBlockEntity.class).info("Removing component {} from slot {}.", oldNode.id(), slot);
             oldNode.remove();
         }
         if (newStack.isEmpty()) return;
         loadComponent(newStack, loadedComponents);
-        if (loadedComponents.containsKey(newStack))
-        LoggerFactory.getLogger(CaseBlockEntity.class).info("Adding component {} to slot {}.", loadedComponents.get(newStack).id(), slot);
     }
 
     public NonNullList<ItemStack> getItems() {
