@@ -2,6 +2,9 @@ package li.cil.ocreloaded.minecraft.common.entity;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.netty.buffer.ByteBuf;
 import li.cil.ocreloaded.core.component.ScreenComponent;
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
@@ -15,6 +18,7 @@ import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
 import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
 import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
 import li.cil.ocreloaded.minecraft.common.network.screen.NetworkedTextModeBufferProxy;
+import li.cil.ocreloaded.minecraft.common.network.screen.ScreenNetworkInputMessages;
 import li.cil.ocreloaded.minecraft.common.network.screen.ScreenNetworkMessage;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
@@ -29,6 +33,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 
 public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentTileEntity {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScreenNetworkInputMessages.class);
 
     private final NetworkNode networkNode = new ComponentNetworkNode(
         node -> new ScreenComponent(node, this::getScreenBuffer), Visibility.NETWORK
@@ -100,6 +106,24 @@ public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentT
 
     public void onKeyReleased(int keyCode, Player player) {
         networkNode.sendToNeighbors(new NetworkMessage("keyboard.keyUp", player.getName(), keyCode));
+    }
+
+    public void onMouseInput(int type, int button, double x, double y, Player player) {
+        String name = switch (type) {
+            case ScreenNetworkInputMessages.MOUSE_PRESSED -> "touch";
+            case ScreenNetworkInputMessages.MOUSE_RELEASED -> "drop";
+            case ScreenNetworkInputMessages.MOUSE_DRAGGED -> "drag";
+            case ScreenNetworkInputMessages.MOUSE_SCROLLED -> "scroll";
+            default -> null;
+        };
+
+        if (name == null) {
+            LOGGER.warn("Received unknown input type: {}", type);
+            return;
+        }
+
+        // TODO: Include player name
+        networkNode.sendToNeighbors(new NetworkMessage("computer.checked_signal", player, name, (int) (x + 1), (int) (y + 1), button));
     }
 
     public TextModeBuffer getScreenBuffer() {

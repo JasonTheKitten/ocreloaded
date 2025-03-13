@@ -9,6 +9,7 @@ import li.cil.ocreloaded.core.graphics.TextModeBuffer;
 import li.cil.ocreloaded.minecraft.client.assets.ClientTextures;
 import li.cil.ocreloaded.minecraft.client.renderer.entity.screen.GuiGraphicsDrawingContext;
 import li.cil.ocreloaded.minecraft.client.renderer.entity.screen.ScreenDisplayRenderer;
+import li.cil.ocreloaded.minecraft.client.renderer.entity.screen.ScreenDisplayRenderer.PositionScale;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
 import li.cil.ocreloaded.minecraft.common.menu.ScreenMenu;
 import li.cil.ocreloaded.minecraft.common.util.KeyMappings;
@@ -19,6 +20,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
 public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
+
+    // TODO: When we support other devices, we should split out some of this to something more reusable
 
     private static final int TEXTURE_WIDTH = 16;
     private static final int TEXTURE_HEIGHT = 16;
@@ -66,12 +69,7 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
 
         ScreenBlockEntity blockEntity = this.menu.getBlockEntity();
         TextModeBuffer textModeBuffer = blockEntity.getScreenBuffer();
-        float scale = calculateScale(textModeBuffer);
-        int[] resolution = textModeBuffer.viewport();
-        ScreenDisplayRenderer.PositionScale positionScale = new ScreenDisplayRenderer.PositionScale(
-            this.width / 2 - (int) (resolution[0] * ScreenDisplayRenderer.CELL_WIDTH / 2 * scale),
-            this.height / 2 - (int) (resolution[1] * ScreenDisplayRenderer.CELL_HEIGHT / 2 * scale),
-            scale);
+        PositionScale positionScale = computePositionScale(textModeBuffer);
         ScreenDisplayRenderer.renderDisplay(new GuiGraphicsDrawingContext(guiGraphics), positionScale, textModeBuffer);
     }
 
@@ -127,6 +125,34 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
         return true;
     }
 
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        double[] coords = computeMouseEventCoords(mouseX, mouseY);
+        menu.onMousePressed(button, coords[0], coords[1]);
+        return true;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        double[] coords = computeMouseEventCoords(mouseX, mouseY);
+        menu.onMouseReleased(button, coords[0], coords[1]);
+        return true;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        double[] coords = computeMouseEventCoords(mouseX, mouseY);
+        menu.onMouseDragged(button, coords[0], coords[1]);
+        return true;
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
+        double[] coords = computeMouseEventCoords(mouseX, mouseY);
+        menu.onMouseScrolled((int) deltaY, coords[0], coords[1]);
+        return true;
+    }
+
     private float calculateScale(TextModeBuffer textModeBuffer) {
         int[] resolution = textModeBuffer.viewport();
         int innerWidth = resolution[0] * ScreenDisplayRenderer.CELL_WIDTH;
@@ -140,6 +166,22 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
         float scaleX = (float) maxWidth / innerWidth;
         float scaleY = (float) maxHeight / innerHeight;
         return Math.min(1, Math.min(scaleX, scaleY));
+    }
+
+    private PositionScale computePositionScale(TextModeBuffer textModeBuffer) {
+        float scale = calculateScale(textModeBuffer);
+        int[] resolution = textModeBuffer.viewport();
+        return new ScreenDisplayRenderer.PositionScale(
+            this.width / 2 - (int) (resolution[0] * ScreenDisplayRenderer.CELL_WIDTH / 2 * scale),
+            this.height / 2 - (int) (resolution[1] * ScreenDisplayRenderer.CELL_HEIGHT / 2 * scale),
+            scale);
+    }
+
+    private double[] computeMouseEventCoords(double mouseX, double mouseY) {
+        PositionScale positionScale = computePositionScale(this.menu.getBlockEntity().getScreenBuffer());
+        double posX = (mouseX - positionScale.x()) / positionScale.scale() / ScreenDisplayRenderer.CELL_WIDTH;
+        double posY = (mouseY - positionScale.y()) / positionScale.scale() / ScreenDisplayRenderer.CELL_HEIGHT;
+        return new double[] { posX, posY };
     }
 
     private void borderBlit(GuiGraphics guiGraphics, float scale, int destX, int destY, int srcX, int srcY, int width, int height) {

@@ -15,6 +15,11 @@ public final class ScreenNetworkInputMessages {
 
     private static final int KEY_PRESSED = 1;
     private static final int KEY_RELEASED = 2;
+
+    public static final int MOUSE_PRESSED = 3;
+    public static final int MOUSE_RELEASED = 4;
+    public static final int MOUSE_DRAGGED = 5;
+    public static final int MOUSE_SCROLLED = 6;
     
     private ScreenNetworkInputMessages() {}
 
@@ -33,11 +38,22 @@ public final class ScreenNetworkInputMessages {
         return new ScreenNetworkMessage(blockPos, buffer, ScreenNetworkMessage.INPUT_CHANNEL);
     }
 
+    public static ScreenNetworkMessage createMouseMessage(int type, BlockPos blockPos, int button, double x, double y) {
+        ByteBuf buffer = Unpooled.buffer();
+        buffer.writeInt(type);
+        buffer.writeInt(button);
+        buffer.writeDouble(x);
+        buffer.writeDouble(y);
+        return new ScreenNetworkMessage(blockPos, buffer, ScreenNetworkMessage.INPUT_CHANNEL);
+    }
+
     public static void handleInput(ScreenBlockEntity entity, ByteBuf changeBuffer, Player player) {
         int type = changeBuffer.readInt();
         switch (type) {
             case KEY_PRESSED -> entity.onKeyPressed(changeBuffer.readInt(), changeBuffer.readInt(), player);
             case KEY_RELEASED -> entity.onKeyReleased(changeBuffer.readInt(), player);
+            case MOUSE_PRESSED, MOUSE_RELEASED, MOUSE_DRAGGED, MOUSE_SCROLLED ->
+                entity.onMouseInput(type, changeBuffer.readInt(), changeBuffer.readDouble(), changeBuffer.readDouble(), player);
             default -> LOGGER.warn("Received unknown input type: {}", type);
         }
     }
