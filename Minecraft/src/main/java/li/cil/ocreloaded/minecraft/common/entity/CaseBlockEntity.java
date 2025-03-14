@@ -40,6 +40,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTileEntity, ItemChangeListener {
@@ -109,6 +110,7 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
         super.setRemoved();
         this.machine.ifPresent(Machine::stop);
         networkNode.remove();
+        dropItems();
     }
 
     @Override
@@ -161,6 +163,23 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
             this.machine.ifPresent(Machine::stop);
             this.machine = Optional.empty();
         }
+    }
+
+    // Sadly, destroy(...) doesn't have access to the entity, and playerDestroy(...) only works in specific cases.
+    private void dropItems() {
+        for (ItemStack stack : this.items) {
+            if (stack.isEmpty()) continue;
+            Block.popResource(this.level, this.worldPosition, stack);
+        }
+        for (NetworkNode node : loadedComponents.values()) {
+            node.remove();
+        }
+
+        Block dropBlock = this.getBlockState().getBlock();
+        ItemStack dropStack = new ItemStack(dropBlock);
+        Block.popResource(this.level, this.worldPosition, dropStack);
+
+        this.items.clear();
     }
 
     private void loadComponents() {
