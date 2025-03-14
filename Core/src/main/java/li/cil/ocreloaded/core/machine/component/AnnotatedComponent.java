@@ -78,7 +78,7 @@ public abstract class AnnotatedComponent implements Component {
             return (ComponentCallResult) m.invoke(this, args);
         } catch (Exception e) {
             String message = e.getMessage() != null ? e.getMessage() : "unknown error";
-            LoggerFactory.getLogger(this.getClass()).error("error invoking method \"{}\" on {}", m.getName(), this.getClass().getCanonicalName(), e);
+            LOGGER.error("error invoking method \"{}\" on {}", m.getName(), this.getClass().getCanonicalName(), e);
             return ComponentCallResult.failure(message);
         }
     }

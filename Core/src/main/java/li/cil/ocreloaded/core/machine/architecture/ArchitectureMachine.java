@@ -68,10 +68,10 @@ public class ArchitectureMachine implements Machine {
             return;
         }
 
-        if (state.peek() == State.WAIT) {
+        if (state.peek() == State.WAIT || state.peek() == State.PAUSED) {
             waitTicks--;
             // TODO: Event queue
-            if (waitTicks <= 0 || !signals.isEmpty()) {
+            if (waitTicks <= 0 || (!signals.isEmpty() && state.peek() == State.WAIT)) {
                 state.pop();
                 setState(State.ASYNC);
             }
@@ -113,10 +113,35 @@ public class ArchitectureMachine implements Machine {
         return parameters;
     }
 
+    @Override
+    public boolean pause(double seconds) {
+        int ticksToPause = Math.max(1, (int) (seconds * 20));
+        boolean shouldPause;
+        synchronized(state) {
+            shouldPause = shouldPause(ticksToPause);
+        }
+        if (shouldPause) {
+            synchronized(this) {
+                synchronized(state) {
+                    if (state.peek() != State.PAUSED) {
+                        assert !state.contains(State.PAUSED);
+                        state.push(State.PAUSED);
+                    }
+                    waitTicks = ticksToPause;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     private boolean startInternal() {
         Optional<InputStream> codeStream = parameters.codeStreamSupplier().get();
         if (codeStream.isEmpty()) return false;
 
+        this.state.clear();
+        this.state.push(State.STARTING);
         startTime = System.currentTimeMillis();
         MachineResult result = architecture.start(codeStream.get());
         handleMachineResult(result);
@@ -147,6 +172,10 @@ public class ArchitectureMachine implements Machine {
     }
 
     private void setState(State state) {
+        boolean isPaused = this.state.peek() == State.PAUSED;
+        if (this.state.peek() == State.PAUSED) {
+            this.state.pop();
+        }
         switch (state) {
             case ASYNC:
                 this.state.push(State.ASYNC);
@@ -160,6 +189,17 @@ public class ArchitectureMachine implements Machine {
                 this.state.push(state);
                 break;
         }
+        if (isPaused) {
+            this.state.push(State.PAUSED);
+        }
+    }
+
+    private boolean shouldPause(int ticksToPause) {
+        return switch (state.peek()) {
+            case STOPPED -> false;
+            case PAUSED -> ticksToPause > waitTicks;
+            default -> true;
+        };
     }
 
     public Map<UUID, NetworkedComponent> getComponents() {

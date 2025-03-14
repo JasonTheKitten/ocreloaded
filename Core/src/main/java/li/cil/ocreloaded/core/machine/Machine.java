@@ -18,6 +18,8 @@ public interface Machine {
 
     MachineParameters parameters();
 
+    boolean pause(double duration);
+
     public static record Signal(String name, Object[] args) {}
 
 }

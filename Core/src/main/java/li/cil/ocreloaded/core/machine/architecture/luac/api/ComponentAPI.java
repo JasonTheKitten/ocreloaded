@@ -15,6 +15,7 @@ import li.cil.ocreloaded.core.machine.component.Component;
 import li.cil.ocreloaded.core.machine.component.ComponentCall;
 import li.cil.ocreloaded.core.machine.component.ComponentCallContext;
 import li.cil.ocreloaded.core.machine.component.ComponentMethod;
+import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.repack.com.naef.jnlua.LuaState;
 
 public final class ComponentAPI {
@@ -104,8 +105,10 @@ public final class ComponentAPI {
             return 2;
         }
 
+        ComponentCallContext context = createComponentCallContext(component, machine);
+
         ComponentCall.ComponentCallResult result = call.call(
-            new ComponentCallContext(component.networkNode()),
+            context,
             new LuaCComponentCallArguments(luaState, 3, luaState.getTop() - 2)
         );
 
@@ -121,6 +124,20 @@ public final class ComponentAPI {
         }
 
         return result.result().length + 1;
+    }
+
+    private static ComponentCallContext createComponentCallContext(NetworkedComponent component, Machine machine) {
+        return new ComponentCallContext() {
+            @Override
+            public void pause(double seconds) {
+                machine.pause(seconds);
+            }
+
+            @Override
+            public NetworkNode networkNode() {
+                return component.networkNode();
+            }
+        };
     }
 
     private static int type(LuaState luaState, Machine machine) {

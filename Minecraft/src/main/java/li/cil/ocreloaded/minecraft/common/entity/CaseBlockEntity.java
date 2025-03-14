@@ -2,6 +2,7 @@ package li.cil.ocreloaded.minecraft.common.entity;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -30,6 +31,8 @@ import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
 import li.cil.ocreloaded.minecraft.common.item.ComponentItem;
+import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
+import li.cil.ocreloaded.minecraft.common.network.sound.SoundNetworkMessage;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import li.cil.ocreloaded.minecraft.common.util.ItemList;
@@ -37,8 +40,11 @@ import li.cil.ocreloaded.minecraft.common.util.ItemList.ItemChangeListener;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -211,12 +217,21 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
 
         ExecutorService threadService = Executors.newCachedThreadPool(); // TODO: Custom thread pool
         MachineParameters parameters = new MachineParameters(
-            networkNode, tmpFsNode, codeStreamSupplier.get(), threadService, processor);
+            networkNode, tmpFsNode, codeStreamSupplier.get(), threadService, processor,
+            this::beep);
 
         return
             MachineRegistry.getDefaultInstance().getEntry(architecture)
                 .filter(MachineRegistryEntry::isSupported)
                 .flatMap(entry -> entry.createMachine(parameters));
+    }
+
+    private void beep(short frequency, short duration) {
+        ChunkPos chunkPos = new ChunkPos(worldPosition);
+        List<ServerPlayer> chunkTrackingPlayers = ((ServerLevel) level).getPlayers(
+            player -> player.getChunkTrackingView().contains(chunkPos)
+        );
+        NetworkUtil.getInstance().messageManyClients(SoundNetworkMessage.createBeepMessage(worldPosition, frequency, duration), chunkTrackingPlayers);
     }
     
 }
