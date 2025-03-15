@@ -7,7 +7,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +23,14 @@ import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigParseOptions;
 import com.typesafe.config.ConfigSyntax;
 import com.typesafe.config.ConfigValue;
+import com.typesafe.config.ConfigValueType;
 
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -38,16 +43,23 @@ public final class Recipes {
     private static final Recipes INSTANCE = new Recipes();
 
     private static final String[] RECIPE_SETS = new String[] {
-        "default", "hardmode", "gregtech", "peaceful"
+        "default", "hardmode", "peaceful"
     };
+    private static final Map<String, List<String>> ORE_DICT = new HashMap<>();
 
     private final Map<String, RecipeProcessor> recipeHandlers = new HashMap<>();
+
+    private boolean didInit = false;
 
     private Recipes() {}
     
     public void init(MinecraftServer server, RecipeRegistrationDelegate registrationDelegate) throws IOException {
+        if (didInit) return;
+        didInit = true;
+        
         File recipeDirectory = new File(server.getServerDirectory() + File.separator + "opencomputers");
         copyDefaultRecipes(recipeDirectory, server);
+        loadLegacyOreDict(recipeDirectory);
         Config config = loadConfig(recipeDirectory);
         registerRecipes(config, registrationDelegate);
     }
@@ -70,6 +82,35 @@ public final class Recipes {
         if (!userRecipeFile.exists()) {
             InputStream fileStream = ClassLoader.getSystemResourceAsStream("assets/ocreloaded/recipes/user.recipes");
             Files.copy(fileStream, userRecipeFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        File legacyOreDictFile = new File(recipeDirectory, "legacy_ore_dict.json");
+        if (!legacyOreDictFile.exists()) {
+            InputStream fileStream = ClassLoader.getSystemResourceAsStream("assets/ocreloaded/recipes/legacy_ore_dict.json");
+            Files.copy(fileStream, legacyOreDictFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void loadLegacyOreDict(File recipeDirectory) {
+        File legacyOreDictFile = new File(recipeDirectory, "legacy_ore_dict.json");
+        if (!legacyOreDictFile.exists()) {
+            return;
+        }
+
+        try {
+            Config legacyOreDict = ConfigFactory.parseFile(legacyOreDictFile, ConfigParseOptions.defaults().setSyntax(ConfigSyntax.JSON));
+            for (Map.Entry<String, ConfigValue> entry : legacyOreDict.entrySet()) {
+                LoggerFactory.getLogger(Recipes.class).info("Loading legacy ore dictionary entry {}", entry.getKey());
+                if (entry.getValue().valueType() == ConfigValueType.LIST) {
+                    LoggerFactory.getLogger(Recipes.class).info("Found List {}", entry.getKey());
+                    ORE_DICT.put(entry.getKey(), (List<String>) entry.getValue().unwrapped());
+                } else {
+                    LoggerFactory.getLogger(Recipes.class).warn("Invalid legacy ore dictionary entry '{}', expected list, got {}.", entry.getKey(), entry.getValue().valueType());
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed loading legacy ore dictionary, you will not be able to craft items using it.", e);
         }
     }
 
@@ -164,23 +205,39 @@ public final class Recipes {
 
     private static Ingredient parseMapIngredient(Map<Object, Object> map) {
         // TODO: Lookup ore dictionary
-        if (map.containsKey("item")) {
+        if (map.containsKey("oreDict")) {
+            Object value = map.get("oreDict");
+            if (value instanceof String name) {
+                return parseOreDictIngredient(name);
+            } else {
+                throw new RuntimeException(new RecipeException("Invalid name in recipe (not a string: " + value + ")."));
+            }
+        } else if (map.containsKey("item")) {
             Object value = map.get("item");
-            if (value instanceof String) {
-                return parseItemIngredient((String) value);
+            if (value instanceof String name) {
+                return parseItemIngredient(name);
             } else {
                 throw new RuntimeException(new RecipeException("Invalid item name in recipe (not a string: " + value + ")."));
             }
         } else if (map.containsKey("block")) {
             Object value = map.get("block");
-            if (value instanceof String) {
-                return parseBlockIngredient((String) value);
+            if (value instanceof String name) {
+                return parseBlockIngredient(name);
             } else {
                 throw new RuntimeException(new RecipeException("Invalid block name (not a string: " + value + ")."));
             }
         } else {
             throw new RuntimeException(new RecipeException("Invalid ingredient type (no oreDict, item or block entry)."));
         }
+    }
+
+    private static Ingredient parseOreDictIngredient(String name) {
+        Optional<Ingredient> ore = getOre(name);
+        if (ore.isPresent()) {
+            return ore.get();
+        }
+
+        throw new RuntimeException(new RecipeException("No ore dictionary entry found for ingredient with name '" + name + "'."));
     }
 
     private static Ingredient parseItemIngredient(String name) {
@@ -212,7 +269,10 @@ public final class Recipes {
             return null;
         }
 
-        // TODO: Lookup ore dictionary
+        Optional<Ingredient> ore = getOre(name);
+        if (ore.isPresent()) {
+            return ore.get();
+        }
 
         Item item = findItem(name);
         if (item == null || item.equals(ItemStack.EMPTY.getItem())) {
@@ -244,7 +304,8 @@ public final class Recipes {
             case "harddiskdrive1" -> "hdd1";
             case "harddiskdrive2" -> "hdd2";
             case "harddiskdrive3" -> "hdd3";
-            case "eeprom_lua" -> "eeprom"; // We have two EEPROMS, but the old version had them merged
+            case "chip_diamond" -> "chipdiamond";
+            case "eeprom_lua" -> "luabios";
             default -> modernName;
         };
     }
@@ -265,12 +326,43 @@ public final class Recipes {
             case "hdd1" -> "harddiskdrive1";
             case "hdd2" -> "harddiskdrive2";
             case "hdd3" -> "harddiskdrive3";
-            case "eeprom" -> "eeprom_lua"; // We have two EEPROMS, but the old version had them merged
+            case "chipdiamond" -> "chip_diamond";
+            case "luabios" -> "eeprom_lua";
+
             default -> name;
         };
         newName = newName.replaceAll("([A-Z])", "_$1").toLowerCase();
 
         return newProvider != null ? newProvider + ":" + newName : newName;
+    }
+
+    private static Optional<Ingredient> getOre(String name) {
+        Optional<TagKey<Item>> key = switch(name) {
+            case "ingotIron" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ingots/iron")));
+            case "ingotGold" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ingots/gold")));
+            case "gemDiamond" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ores/diamond")));
+            case "gemLapis" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ores/lapis")));
+            case "emerald" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ores/emerald")));
+            case "redstone" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ores/redstone")));
+            case "nuggetGold" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "nuggets/gold")));
+            default -> Optional.empty();
+        };
+
+        if (key.isPresent()) {
+            return Optional.of(Ingredient.of(key.get()));
+        }
+
+        Optional<String> oreName = Optional.ofNullable(ORE_DICT.get(name)).map(list -> list.get(0));
+        if (oreName.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Item item = findItem(oreName.get());
+        if (item == null || item.equals(ItemStack.EMPTY.getItem())) {
+            return Optional.empty();
+        }
+
+        return Optional.of(Ingredient.of(item));
     }
 
     private static ResourceLocation safeResourceLocation(String name) {

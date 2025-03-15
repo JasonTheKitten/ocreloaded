@@ -10,7 +10,6 @@
 
 include file("default.recipes")
 #include file("hardmode.recipes")
-#include file("gregtech.recipes")
 #include file("peaceful.recipes")
 #include file("your_custom.recipes")
 
