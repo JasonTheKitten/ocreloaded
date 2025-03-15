@@ -1,0 +1,79 @@
+include file("default.recipes")
+
+redstonecard2 {
+  input: [[blockRedstone, "ocreloaded:circuitChip2", gemDiamond]
+          ["", "ocreloaded:materialCard", ""]]
+}
+wlancard1 {
+  input: [[torchRedstoneActive, "ocreloaded:circuitChip1", torchRedstoneActive]
+          ["", "ocreloaded:materialCard", ""]]
+}
+wlancard2 {
+  input: [[gemDiamond, "ocreloaded:circuitChip2", ""]
+          ["", "ocreloaded:materialCard", ""]]
+}
+linkedcard {
+  input: [[gemDiamond, "", gemDiamond]
+          ["ocreloaded:lanCard", "ocreloaded:materialInterweb", "ocreloaded:lanCard"]
+          ["ocreloaded:circuitChip3", "", "ocreloaded:circuitChip3"]]
+  output: 2 # Note: all resulting cards are linked to each other.
+}
+
+angelupgrade {
+  input: [[ingotIron, gemDiamond, ingotIron]
+          ["ocreloaded:circuitChip1", pistonStickyBase, "ocreloaded:circuitChip1"]
+          [ingotIron, gemDiamond, ingotIron]]
+}
+chunkloaderupgrade {
+  input: [[ingotGold, blockGlass, ingotGold]
+          ["ocreloaded:circuitChip3", gemDiamond, "ocreloaded:circuitChip3"]
+          [obsidian, "ocreloaded:materialCircuitBoardPrinted", obsidian]]
+}
+inventoryupgrade {
+  input: [[plankWood, hopper, plankWood]
+          [dropper, chest, craftingPiston]
+          [plankWood, "ocreloaded:circuitChip1", plankWood]]
+}
+inventorycontrollerupgrade {
+  input: [[ingotGold, "ocreloaded:analyzer", ingotGold]
+          [dropper, "ocreloaded:circuitChip2", craftingPiston]
+          [ingotGold, "ocreloaded:materialCircuitBoardPrinted", ingotGold]]
+}
+signupgrade {
+  input: [[ingotIron, dyeBlack, ingotIron]
+          ["ocreloaded:circuitChip1", stickWood, "ocreloaded:circuitChip1"]
+          [ingotIron, craftingPiston, ingotIron]]
+}
+tankupgrade {
+  input: [[plankWood, fenceIron, plankWood]
+          [dropper, cauldron, craftingPiston]
+          [plankWood, "ocreloaded:circuitChip1", plankWood]]
+}
+tankcontrollerupgrade {
+  input: [[ingotGold, glassBottle, ingotGold]
+          [dropper, "ocreloaded:circuitChip2", craftingPiston]
+          [ingotGold, "ocreloaded:materialCircuitBoardPrinted", ingotGold]]
+}
+
+inkcartridgeempty {
+  input: [[iron_nugget, dropper, iron_nugget],
+          ["ocreloaded:materialTransistor", bucket, "ocreloaded:materialTransistor"],
+          [iron_nugget, "ocreloaded:materialCircuitBoardPrinted", iron_nugget]]
+}
+
+interweb {
+  input: [[redstone, {block="minecraft:wool", subID=9}, redstone]
+          [{block="minecraft:wool", subID=9}, gemDiamond, {block="minecraft:wool", subID=9}]
+          [redstone, {block="minecraft:wool", subID=9}, redstone]]
+}
+
+geolyzer {
+  input: [[ingotGold, compass, ingotGold]
+          [gemDiamond, "ocreloaded:circuitChip2", gemDiamond]
+          [ingotGold, "ocreloaded:materialCircuitBoardPrinted", ingotGold]]
+}
+hologram2 {
+  input: [["ocreloaded:circuitChip3", blockGlass, "ocreloaded:circuitChip3"]
+          ["ocreloaded:materialCircuitBoardPrinted", blockDiamond, "ocreloaded:materialCircuitBoardPrinted"]
+          [obsidian, yellowDust, obsidian]]
+}
