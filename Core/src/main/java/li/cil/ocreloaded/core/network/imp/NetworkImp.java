@@ -73,7 +73,8 @@ public class NetworkImp implements Network {
 
     @Override
     public void remove(NetworkNode node) {
-        if (!connections.containsKey(node.id())) throw new IllegalArgumentException("Node is not in this network.");
+        if (!connections.containsKey(node.id())) return;
+            // throw new IllegalArgumentException("Node is not in this network.");
         
         List<NetworkNode> visible = switch(node.visibility()) {
             case NONE -> List.of();
