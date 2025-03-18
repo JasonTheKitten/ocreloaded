@@ -3,14 +3,14 @@ package li.cil.ocreloaded.minecraft.common.block;
 
 import dev.architectury.registry.menu.MenuRegistry;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
-import li.cil.ocreloaded.minecraft.common.menu.provider.CaseMenuProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -45,20 +45,30 @@ public class CaseBlock extends Block implements EntityBlock, TieredBlock {
 
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (!level.isClientSide()) {
-            MenuProvider menuProvider = state.getMenuProvider(level, pos);
-            if (menuProvider != null && menuProvider instanceof CaseMenuProvider caseMenuProvider && player instanceof ServerPlayer serverPlayer) {
-                MenuRegistry.openExtendedMenu(serverPlayer, menuProvider, caseMenuProvider::writeData);
-                return InteractionResult.CONSUME;
-            }
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
         }
 
-        return InteractionResult.SUCCESS;
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof CaseBlockEntity caseBlockEntity && player instanceof ServerPlayer serverPlayer) {
+            MenuRegistry.openExtendedMenu(serverPlayer, caseBlockEntity, caseBlockEntity::writeData);
+        }
+
+        return InteractionResult.CONSUME;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
-        return new CaseMenuProvider(pos, tier);
+    public void onRemove(BlockState blockState, Level level, BlockPos blockPos, BlockState blockState2, boolean bl) {
+        Containers.dropContentsOnDestroy(blockState, blockState2, level, blockPos);
+        super.onRemove(blockState, level, blockPos, blockState2, bl);
+    }
+    
+    @Override
+    public void playerDestroy(Level level, Player player, BlockPos blockPos, BlockState blockState, BlockEntity blockEntity, ItemStack itemStack) {
+        super.playerDestroy(level, player, blockPos, blockState, blockEntity, itemStack);
+        popResource(level, blockPos, new ItemStack(this));
+        // TODO: How to instead use loot table and respect tier?
     }
 
     @Override

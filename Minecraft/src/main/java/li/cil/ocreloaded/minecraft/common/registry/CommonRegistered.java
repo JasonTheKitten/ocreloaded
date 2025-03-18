@@ -66,8 +66,8 @@ public class CommonRegistered {
     private static final Item.Properties DEFAULT_ITEM_PROPERTIES = new Item.Properties().arch$tab(CREATIVE_TAB);
 
     // Blocks
-    public static final RegistrySupplier<Block> CASE_BLOCK_TIER_1 = BLOCKS.register("case1", () -> new CaseBlock(DEFAULT_BLOCK_PROPERTIES, 1));
-    public static final RegistrySupplier<Block> CASE_BLOCK_TIER_2 = BLOCKS.register("case2", () -> new CaseBlock(DEFAULT_BLOCK_PROPERTIES, 2));
+    public static final RegistrySupplier<Block> CASE_BLOCK_TIER_1 = BLOCKS.register("case1", () -> new CaseBlock(DEFAULT_BLOCK_PROPERTIES.strength(2.5f), 1));
+    public static final RegistrySupplier<Block> CASE_BLOCK_TIER_2 = BLOCKS.register("case2", () -> new CaseBlock(DEFAULT_BLOCK_PROPERTIES.strength(2.5f), 2));
     public static final RegistrySupplier<Block> CASE_BLOCK_TIER_3 = BLOCKS.register("case3", () -> new CaseBlock(DEFAULT_BLOCK_PROPERTIES, 3));
     public static final RegistrySupplier<Block> CASE_BLOCK_CREATIVE = BLOCKS.register("casecreative", () -> new CaseBlock(DEFAULT_BLOCK_PROPERTIES, 4));
     public static final RegistrySupplier<Block> SCREEN_BLOCK_TIER_1 = BLOCKS.register("screen1", () -> new ScreenBlock(DEFAULT_BLOCK_PROPERTIES, 1));
@@ -150,6 +150,5 @@ public class CommonRegistered {
         .of(ScreenBlockEntity::new, SCREEN_BLOCK_TIER_1.get(), SCREEN_BLOCK_TIER_2.get(), SCREEN_BLOCK_TIER_3.get()).build(null));
     public static final RegistrySupplier<BlockEntityType<KeyboardBlockEntity>> KEYBOARD_BLOCK_ENTITY = BLOCK_ENTITIES.register("keyboard", () -> BlockEntityType.Builder
         .of(KeyboardBlockEntity::new, KEYBOARD_BLOCK.get()).build(null));
-        
 
 }

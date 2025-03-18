@@ -1,19 +1,20 @@
 package li.cil.ocreloaded.minecraft.common.entity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 
 public class BlockEntityTicker implements TickingBlockEntity {
 
-    private BlockEntityWithTick blockEntity;
+    private BlockEntity blockEntity;
 
-    public BlockEntityTicker(BlockEntityWithTick blockEntity) {
+    public BlockEntityTicker(BlockEntity blockEntity) {
         this.blockEntity = blockEntity;
     }
 
     @Override
     public void tick() {
-        blockEntity.tick();
+        ((TickableEntity) blockEntity).tick();
     }
 
     @Override
