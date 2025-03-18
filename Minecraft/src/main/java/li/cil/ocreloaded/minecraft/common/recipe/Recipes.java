@@ -85,15 +85,16 @@ public final class Recipes {
         }
 
         File legacyOreDictFile = new File(recipeDirectory, "legacy_ore_dict.json");
-        if (!legacyOreDictFile.exists()) {
-            InputStream fileStream = ClassLoader.getSystemResourceAsStream("assets/ocreloaded/recipes/legacy_ore_dict.json");
-            Files.copy(fileStream, legacyOreDictFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        }
+        InputStream fileStream = ClassLoader.getSystemResourceAsStream("assets/ocreloaded/recipes/legacy_ore_dict.json");
+        Files.copy(fileStream, legacyOreDictFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     @SuppressWarnings("unchecked")
     private static void loadLegacyOreDict(File recipeDirectory) {
-        File legacyOreDictFile = new File(recipeDirectory, "legacy_ore_dict.json");
+        File customLegacyOreDictFile = new File(recipeDirectory, "custom_ore_dict.json");
+        File legacyOreDictFile = customLegacyOreDictFile.exists() ?
+            customLegacyOreDictFile :
+            new File(recipeDirectory, "legacy_ore_dict.json");
         if (!legacyOreDictFile.exists()) {
             return;
         }
@@ -101,12 +102,10 @@ public final class Recipes {
         try {
             Config legacyOreDict = ConfigFactory.parseFile(legacyOreDictFile, ConfigParseOptions.defaults().setSyntax(ConfigSyntax.JSON));
             for (Map.Entry<String, ConfigValue> entry : legacyOreDict.entrySet()) {
-                LoggerFactory.getLogger(Recipes.class).info("Loading legacy ore dictionary entry {}", entry.getKey());
                 if (entry.getValue().valueType() == ConfigValueType.LIST) {
-                    LoggerFactory.getLogger(Recipes.class).info("Found List {}", entry.getKey());
                     ORE_DICT.put(entry.getKey(), (List<String>) entry.getValue().unwrapped());
                 } else {
-                    LoggerFactory.getLogger(Recipes.class).warn("Invalid legacy ore dictionary entry '{}', expected list, got {}.", entry.getKey(), entry.getValue().valueType());
+                    LOGGER.warn("Invalid legacy ore dictionary entry '{}', expected list, got {}.", entry.getKey(), entry.getValue().valueType());
                 }
             }
         } catch (Exception e) {
@@ -120,7 +119,6 @@ public final class Recipes {
             .setIncluder(new MyConfigIncluder(recipeDirectory));
 
         File recipeFile = new File(recipeDirectory, "user.recipes");
-        LoggerFactory.getLogger(Recipes.class).info("Loading recipe file {}", recipeFile.toString());
         return ConfigFactory.parseFile(recipeFile, configParseOptions);
     }
 
@@ -187,7 +185,7 @@ public final class Recipes {
     }
 
     public static int tryGetCount(Config recipe) {
-        return recipe.hasPath("count") ? recipe.getInt("count") : 1;
+        return recipe.hasPath("output") ? recipe.getInt("output") : 1;
     }
 
     @SuppressWarnings("unchecked")
@@ -306,7 +304,7 @@ public final class Recipes {
             case "harddiskdrive3" -> "hdd3";
             case "chip_diamond" -> "chipdiamond";
             case "eeprom_lua" -> "luabios";
-            default -> modernName;
+            default -> modernName.replaceAll("_", "");
         };
     }
 
@@ -337,6 +335,7 @@ public final class Recipes {
     }
 
     private static Optional<Ingredient> getOre(String name) {
+        // TODO: I don't think this actually works...
         Optional<TagKey<Item>> key = switch(name) {
             case "ingotIron" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ingots/iron")));
             case "ingotGold" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ingots/gold")));
@@ -345,24 +344,36 @@ public final class Recipes {
             case "emerald" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ores/emerald")));
             case "redstone" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ores/redstone")));
             case "nuggetGold" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "nuggets/gold")));
+            case "chipDiamond" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation(OCReloadedCommon.MOD_ID, "chip_diamond")));
             default -> Optional.empty();
         };
 
+        if (key.isEmpty() && name.contains(":")) {
+            String adjustedName = name.replaceAll("([A-Z]+)", "_$1").toLowerCase();
+            if (adjustedName.startsWith("oc:")) {
+                key = Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation(OCReloadedCommon.MOD_ID, adjustedName.substring(3))));
+            } else {
+                key = Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation(adjustedName)));
+            }
+        }
+
         if (key.isPresent()) {
-            return Optional.of(Ingredient.of(key.get()));
+            Ingredient ingredient = Ingredient.of(key.get());
+            if (ingredient.getItems().length > 0) {
+                return Optional.of(ingredient);
+            }
         }
 
-        Optional<String> oreName = Optional.ofNullable(ORE_DICT.get(name)).map(list -> list.get(0));
-        if (oreName.isEmpty()) {
-            return Optional.empty();
+        List<Item> items = ORE_DICT.getOrDefault(name, List.of()).stream()
+            .filter(oreName -> !oreName.isEmpty())
+            .map(Recipes::findItem)
+            .filter(item -> !item.equals(ItemStack.EMPTY.getItem()))
+            .toList();
+        if (!items.isEmpty()) {
+            return Optional.of(Ingredient.of(items.toArray(Item[]::new)));
         }
-
-        Item item = findItem(oreName.get());
-        if (item == null || item.equals(ItemStack.EMPTY.getItem())) {
-            return Optional.empty();
-        }
-
-        return Optional.of(Ingredient.of(item));
+        
+        return Optional.empty();
     }
 
     private static ResourceLocation safeResourceLocation(String name) {
@@ -393,7 +404,6 @@ public final class Recipes {
         @Override
         public ConfigObject includeFile(ConfigIncludeContext context, File what) {
             try {
-                LoggerFactory.getLogger(MyConfigIncluder.class).info("Loading recipe file {}", new File(recipeDirectory, what.getPath()).toString());
                 try (FileReader reader = what.isAbsolute() ?
                     new FileReader(what) :
                     new FileReader(new File(recipeDirectory, what.getPath()))

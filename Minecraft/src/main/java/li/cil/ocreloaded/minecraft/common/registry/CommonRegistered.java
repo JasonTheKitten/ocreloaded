@@ -18,6 +18,7 @@ import li.cil.ocreloaded.minecraft.common.item.FloppyDiskItem;
 import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
 import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
 import li.cil.ocreloaded.minecraft.common.item.LuaEepromItem;
+import li.cil.ocreloaded.minecraft.common.item.ManualItem;
 import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
 import li.cil.ocreloaded.minecraft.common.menu.ScreenMenu;
@@ -80,11 +81,34 @@ public class CommonRegistered {
     public static final RegistrySupplier<Item> CASE_BLOCK_ITEM_TIER_3 = ITEMS.register("case3", () -> new BlockItem(CASE_BLOCK_TIER_3.value(), DEFAULT_ITEM_PROPERTIES));
     public static final RegistrySupplier<Item> CASE_BLOCK_ITEM_CREATIVE = ITEMS.register("casecreative", () -> new BlockItem(CASE_BLOCK_CREATIVE.value(), DEFAULT_ITEM_PROPERTIES));
 
+    public static final RegistrySupplier<Item> KEYBOARD_BLOCK_ITEM = ITEMS.register("keyboard", () -> new BlockItem(KEYBOARD_BLOCK.value(), DEFAULT_ITEM_PROPERTIES));
+
     public static final RegistrySupplier<Item> SCREEN_BLOCK_ITEM_TIER_1 = ITEMS.register("screen1", () -> new BlockItem(SCREEN_BLOCK_TIER_1.value(), DEFAULT_ITEM_PROPERTIES));
     public static final RegistrySupplier<Item> SCREEN_BLOCK_ITEM_TIER_2 = ITEMS.register("screen2", () -> new BlockItem(SCREEN_BLOCK_TIER_2.value(), DEFAULT_ITEM_PROPERTIES));
     public static final RegistrySupplier<Item> SCREEN_BLOCK_ITEM_TIER_3 = ITEMS.register("screen3", () -> new BlockItem(SCREEN_BLOCK_TIER_3.value(), DEFAULT_ITEM_PROPERTIES));
 
-    public static final RegistrySupplier<Item> KEYBOARD_BLOCK_ITEM = ITEMS.register("keyboard", () -> new BlockItem(KEYBOARD_BLOCK.value(), DEFAULT_ITEM_PROPERTIES));
+    public static final RegistrySupplier<Item> ARITHMETIC_LOGIC_UNIT = ITEMS.register("alu", () -> new Item(DEFAULT_ITEM_PROPERTIES));
+    public static final RegistrySupplier<Item> ARROW_KEYS = ITEMS.register("arrow_keys", () -> new Item(DEFAULT_ITEM_PROPERTIES));
+    public static final RegistrySupplier<Item> BUTTON_GROUP = ITEMS.register("button_group", () -> new Item(DEFAULT_ITEM_PROPERTIES));
+    public static final RegistrySupplier<Item> CARD = ITEMS.register("card", () -> new Item(DEFAULT_ITEM_PROPERTIES));
+    public static final RegistrySupplier<Item> CONTROL_UNIT = ITEMS.register("cu", () -> new Item(DEFAULT_ITEM_PROPERTIES));
+
+    public static final RegistrySupplier<Item> CUTTING_WIRE = ITEMS.register("cutting_wire", () -> new Item(DEFAULT_ITEM_PROPERTIES));
+    public static final RegistrySupplier<Item> CHIP_DIAMOND = ITEMS.register("chip_diamond", () -> new Item(DEFAULT_ITEM_PROPERTIES));
+
+    public static final RegistrySupplier<Item> DISK = ITEMS.register("disk", () -> new Item(DEFAULT_ITEM_PROPERTIES));
+
+    public static final RegistrySupplier<Item> CHIP_TIER_1 = ITEMS.register("chip1", () -> new CPUItem(DEFAULT_ITEM_PROPERTIES, 1));
+    public static final RegistrySupplier<Item> CHIP_TIER_2 = ITEMS.register("chip2", () -> new CPUItem(DEFAULT_ITEM_PROPERTIES, 2));
+    public static final RegistrySupplier<Item> CHIP_TIER_3 = ITEMS.register("chip3", () -> new CPUItem(DEFAULT_ITEM_PROPERTIES, 3));
+
+    public static final RegistrySupplier<Item> NUMPAD = ITEMS.register("numpad", () -> new Item(DEFAULT_ITEM_PROPERTIES));
+
+    public static final RegistrySupplier<Item> PRINTED_CIRCUIT_BOARD = ITEMS.register("printed_circuit_board", () -> new Item(DEFAULT_ITEM_PROPERTIES));
+    public static final RegistrySupplier<Item> RAW_CIRCUIT_BOARD = ITEMS.register("raw_circuit_board", () -> new Item(DEFAULT_ITEM_PROPERTIES));
+
+    public static final RegistrySupplier<Item> TRANSISTOR = ITEMS.register("transistor", () -> new Item(DEFAULT_ITEM_PROPERTIES));
+    public static final RegistrySupplier<Item> MANUAL = ITEMS.register("manual", () -> new ManualItem(DEFAULT_ITEM_PROPERTIES));
 
     public static final RegistrySupplier<Item> CPU_TIER_1 = ITEMS.register("cpu1", () -> new CPUItem(DEFAULT_ITEM_PROPERTIES, 1));
     public static final RegistrySupplier<Item> CPU_TIER_2 = ITEMS.register("cpu2", () -> new CPUItem(DEFAULT_ITEM_PROPERTIES, 2));
@@ -126,5 +150,6 @@ public class CommonRegistered {
         .of(ScreenBlockEntity::new, SCREEN_BLOCK_TIER_1.get(), SCREEN_BLOCK_TIER_2.get(), SCREEN_BLOCK_TIER_3.get()).build(null));
     public static final RegistrySupplier<BlockEntityType<KeyboardBlockEntity>> KEYBOARD_BLOCK_ENTITY = BLOCK_ENTITIES.register("keyboard", () -> BlockEntityType.Builder
         .of(KeyboardBlockEntity::new, KEYBOARD_BLOCK.get()).build(null));
+        
 
 }

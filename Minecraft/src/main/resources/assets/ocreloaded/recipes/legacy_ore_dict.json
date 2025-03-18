@@ -215,14 +215,18 @@
     "redstone": ["minecraft:redstone"],
     "blockGlass": ["minecraft:glass"],
     "button": [
-        "minecraft:stone_button",
-        "minecraft:oak_button",
-        "minecraft:spruce_button",
-        "minecraft:birch_button",
-        "minecraft:jungle_button",
         "minecraft:acacia_button",
-        "minecraft:dark_oak_button",
+        "minecraft:bamboo_button",
+        "minecraft:birch_button",
+        "minecraft:cherry_button",
         "minecraft:crimson_button",
+        "minecraft:dark_oak_button",
+        "minecraft:jungle_button",
+        "minecraft:mangrove_button",
+        "minecraft:oak_button",
+        "minecraft:polished_blackstone_button",
+        "minecraft:spruce_button",
+        "minecraft:stone_button",
         "minecraft:warped_button"
     ],
     "fenceIron": ["minecraft:iron_bars"],
@@ -272,8 +276,6 @@
         "minecraft:green_carpet",
         "minecraft:red_carpet",
         "minecraft:black_carpet"
-    ],
-
-    "chipDiamond": ["ocreloaded:chip_diamond"]
+    ]
   }
   
