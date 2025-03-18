@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.netty.buffer.Unpooled;
 import li.cil.ocreloaded.core.component.ComputerComponent;
 import li.cil.ocreloaded.core.component.FileSystemComponent;
 import li.cil.ocreloaded.core.filesystem.InMemoryFileSystem;
@@ -31,6 +32,7 @@ import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
 import li.cil.ocreloaded.minecraft.common.item.ComponentItem;
+import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
 import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
 import li.cil.ocreloaded.minecraft.common.network.sound.SoundNetworkMessage;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
@@ -40,17 +42,22 @@ import li.cil.ocreloaded.minecraft.common.util.ItemList.ItemChangeListener;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTileEntity, ItemChangeListener {
+public class CaseBlockEntity extends RandomizableContainerBlockEntity implements TickableEntity, ComponentTileEntity, ItemChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CaseBlockEntity.class);
+    private static final net.minecraft.network.chat.Component MENU_NAME = net.minecraft.network.chat.Component.translatable("gui.ocreloaded.case");
 
     private static final String TAG_POWERED = "ocreloaded:powered";
     private Optional<Machine> machine = Optional.empty();
@@ -123,6 +130,31 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
     }
 
     @Override
+    public int getContainerSize() {
+        return 10;
+    }
+
+    @Override
+    protected void setItems(NonNullList<ItemStack> var1) {
+        assert var1.size() == 10;
+        for (int i = 0; i < 10; i++) {
+            this.items.set(i, var1.get(i));
+        }
+    }
+
+    @Override
+    protected net.minecraft.network.chat.Component getDefaultName() {
+        return MENU_NAME;
+    }
+
+    @Override
+    protected AbstractContainerMenu createMenu(int windowId, Inventory playerInventory) {
+        FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
+        writeData(data);
+        return new CaseMenu(windowId, playerInventory, data);
+    }
+
+    @Override
     public void onItemChange(int slot, ItemStack oldStack, ItemStack newStack) {
         NetworkNode oldNode = loadedComponents.remove(oldStack);
         if (oldNode != null) {
@@ -132,8 +164,14 @@ public class CaseBlockEntity extends BlockEntityWithTick implements ComponentTil
         loadComponent(newStack, loadedComponents);
     }
 
+    @Override
     public NonNullList<ItemStack> getItems() {
         return this.items;
+    }
+
+    public void writeData(FriendlyByteBuf data) {
+        data.writeBlockPos(this.worldPosition);
+        data.writeInt(((CaseBlock) this.getBlockState().getBlock()).getTier());
     }
 
     public boolean isPowered() {

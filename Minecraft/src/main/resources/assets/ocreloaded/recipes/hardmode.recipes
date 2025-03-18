@@ -1,0 +1,411 @@
+# Do not change this file, it is rewritten each time you start the game.
+# Instead, use the user.recipes file to edit recipes by redefining them there.
+
+include file("default.recipes")
+
+analyzer {
+  input: [["", torchRedstoneActive, ""]
+          ["ocreloaded:materialTransistor", "ocreloaded:circuitChip1", nuggetGold]
+          ["ocreloaded:materialTransistor", "ocreloaded:materialCircuitBoardPrinted", nuggetGold]]
+}
+terminal {
+  input: [[iron_nugget, "ocreloaded:solarGeneratorUpgrade", iron_nugget]
+          ["ocreloaded:circuitChip3", "ocreloaded:screen2", "ocreloaded:wlanCard2"]
+          [iron_nugget, "ocreloaded:keyboard", iron_nugget]]
+}
+
+server1 {
+  input: [["ocreloaded:circuitChip1", "ocreloaded:ram4", "ocreloaded:circuitChip1"]
+          ["ocreloaded:circuitChip2", "ocreloaded:case1", "ocreloaded:circuitChip2"]
+          ["ocreloaded:materialCircuitBoardPrinted", "ocreloaded:materialCircuitBoardPrinted", "ocreloaded:materialCircuitBoardPrinted"]]
+}
+server2 {
+  input: [["ocreloaded:circuitChip2", "ocreloaded:ram5", "ocreloaded:circuitChip2"]
+          ["ocreloaded:circuitChip3", "ocreloaded:case2", "ocreloaded:circuitChip3"]
+          ["ocreloaded:materialCircuitBoardPrinted", "ocreloaded:materialCircuitBoardPrinted", "ocreloaded:materialCircuitBoardPrinted"]]
+}
+server3 {
+  input: [["ocreloaded:circuitChip3", "ocreloaded:ram6", "ocreloaded:circuitChip3"]
+          ["ocreloaded:circuitChip3", "ocreloaded:case3", "ocreloaded:circuitChip3"]
+          ["ocreloaded:materialCircuitBoardPrinted", "ocreloaded:materialCircuitBoardPrinted", "ocreloaded:materialCircuitBoardPrinted"]]
+}
+
+ram1 {
+  input: [["ocreloaded:circuitChip1", "ocreloaded:circuitChip1", "ocreloaded:circuitChip1"]
+          ["ocreloaded:materialCircuitBoardPrinted", "ocreloaded:materialCircuitBoardPrinted", "ocreloaded:materialCircuitBoardPrinted"]]
+}
+ram2 {
+  input: [["ocreloaded:circuitChip1", "ocreloaded:circuitChip1", "ocreloaded:circuitChip1"]
+          ["ocreloaded:ram1", "ocreloaded:materialCircuitBoardPrinted", "ocreloaded:ram1"]]
+}
+ram3 {
+  input: [["ocreloaded:circuitChip2", "ocreloaded:circuitChip2", "ocreloaded:circuitChip2"]
+          ["ocreloaded:ram2", "ocreloaded:materialCircuitBoardPrinted", "ocreloaded:ram2"]]
+}
+ram4 {
+  input: [["ocreloaded:circuitChip2", "ocreloaded:circuitChip2", "ocreloaded:circuitChip2"]
+          ["ocreloaded:ram3", "ocreloaded:materialCircuitBoardPrinted", "ocreloaded:ram3"]]
+}
+ram5 {
+  input: [["ocreloaded:circuitChip3", "ocreloaded:circuitChip3", "ocreloaded:circuitChip3"]
+          ["ocreloaded:ram4", "ocreloaded:materialCircuitBoardPrinted", "ocreloaded:ram4"]]
+}
+ram6 {
+  input: [["ocreloaded:circuitChip3", "ocreloaded:circuitChip3", "ocreloaded:circuitChip3"]
+          ["ocreloaded:ram5", "ocreloaded:materialCircuitBoardPrinted", "ocreloaded:ram5"]]
+}
+
+floppy {
+  input: [[iron_nugget, lever, iron_nugget]
+          ["ocreloaded:materialCircuitBoard", "ocreloaded:materialDisk", "ocreloaded:materialCircuitBoard"]
+          [iron_nugget, paper, iron_nugget]]
+}
+hdd1 {
+  input: [["ocreloaded:circuitChip1", "ocreloaded:materialDisk", ingotIron]
+          ["ocreloaded:materialCircuitBoardPrinted", "ocreloaded:materialDisk", craftingPiston]
+          ["ocreloaded:circuitChip1", "ocreloaded:materialDisk", ingotIron]]
+}
+hdd2 {
+  input: [[ingotGold, "ocreloaded:hdd1", ingotGold]
+          ["ocreloaded:circuitChip2", "ocreloaded:materialCircuitBoardPrinted", "ocreloaded:circuitChip2"]
+          [ingotGold, "ocreloaded:hdd1", ingotGold]]
+}
+hdd3 {
+  input: [["ocreloaded:circuitChip3", "ocreloaded:hdd2", "ocreloaded:circuitChip3"]
+          ["ocreloaded:ram1", "ocreloaded:materialCircuitBoardPrinted", "ocreloaded:ram1"]
+          ["ocreloaded:circuitChip3", "ocreloaded:hdd2", "ocreloaded:circuitChip3"]]
+}
+
+abstractbuscard {
+  input: [[{block="StargateTech2:block.busCable"}, {item="StargateTech2:naquadah", subID=3}, ""]
+          ["", "ocreloaded:materialCard", ""]]
+}
+datacard2 {
+  input: [[nuggetGold, "ocreloaded:cpu1", "ocreloaded:circuitChip3"]
+          ["", "ocreloaded:dataCard1", ""]]
+}
+datacard3 {
+  input: [[gemDiamond, "ocreloaded:cpu2", "ocreloaded:ram5"]
+          ["", "ocreloaded:dataCard2", ""]]
+}
+graphicscard1 {
+  input: [["ocreloaded:circuitChip1", "ocreloaded:materialALU", "ocreloaded:ram1"]
+          ["", "ocreloaded:materialCard", ""]]
+}
+graphicscard2 {
+  input: [["ocreloaded:circuitChip2", "ocreloaded:circuitChip2", "ocreloaded:ram3"]
+          ["", "ocreloaded:graphicsCard1", ""]]
+}
+graphicscard3 {
+  input: [["ocreloaded:circuitChip3", "ocreloaded:circuitChip3", "ocreloaded:ram5"]
+          ["", "ocreloaded:graphicsCard2", ""]]
+}
+internetcard {
+  input: [["ocreloaded:materialInterweb", "ocreloaded:circuitChip3", torchRedstoneActive]
+          ["", "ocreloaded:wlanCard2", obsidian]]
+}
+redstonecard1 {
+  input: [[torchRedstoneActive, "ocreloaded:circuitChip1", ""]
+          ["", "ocreloaded:materialCard", ""]]
+}
+redstonecard2 {
+  input: [[blockRedstone, "ocreloaded:circuitChip2", materialEnderPearl]
+          ["", "ocreloaded:redstoneCard1", ""]]
+}
+lancard {
+  input: [["ocreloaded:cable", "ocreloaded:circuitChip1", ""]
+          ["", "ocreloaded:materialCard", ""]]
+}
+wlancard1 {
+  input: [[torchRedstoneActive, "ocreloaded:circuitChip1", torchRedstoneActive]
+          ["", "ocreloaded:lanCard", ""]]
+}
+wlancard2 {
+  input: [[materialEnderPearl, "ocreloaded:circuitChip2", ""]
+          ["", "ocreloaded:lanCard", ""]]
+}
+linkedcard {
+  input: [[eyeOfEnder, "", eyeOfEnder]
+          ["ocreloaded:wlanCard2", "ocreloaded:materialInterweb", "ocreloaded:wlanCard2"]
+          ["ocreloaded:circuitChip3", "", "ocreloaded:circuitChip3"]]
+  output: 2 # Note: all resulting cards are linked to each other.
+}
+
+batteryupgrade1 {
+  input: [[ingotIron, nuggetGold, ingotIron]
+          ["ocreloaded:materialTransistor", "ocreloaded:capacitor", "ocreloaded:materialTransistor"]
+          [ingotIron, nuggetGold, ingotIron]]
+}
+batteryupgrade2 {
+  input: [[ingotGold, "ocreloaded:capacitor", ingotGold]
+          ["ocreloaded:materialTransistor", nuggetGold, "ocreloaded:materialTransistor"]
+          [ingotGold, "ocreloaded:capacitor", ingotGold]]
+}
+batteryupgrade3 {
+  input: [[gemDiamond, "ocreloaded:capacitor", gemDiamond]
+          ["ocreloaded:materialTransistor", "ocreloaded:capacitor", "ocreloaded:materialTransistor"]
+          [gemDiamond, "ocreloaded:capacitor", gemDiamond]]
+}
+craftingupgrade {
+  input: [[ingotIron, craftingPiston, ingotIron]
+          ["ocreloaded:circuitChip1", workbench, "ocreloaded:circuitChip1"]
+          [ingotIron, "ocreloaded:materialCircuitBoardPrinted", ingotIron]]
+}
+experienceupgrade {
+  input: [[ingotGold, "ocreloaded:analyzer", ingotGold]
+          ["ocreloaded:circuitChip3", emerald, "ocreloaded:circuitChip3"]
+          [ingotGold, "ocreloaded:materialCircuitBoardPrinted", ingotGold]]
+}
+generatorupgrade {
+  input: [[ingotIron, "", ingotIron]
+          ["ocreloaded:circuitChip1", craftingPiston, "ocreloaded:circuitChip1"]
+          ["ocreloaded:materialCircuitBoardPrinted", ingotIron, "ocreloaded:materialCircuitBoardPrinted"]]
+}
+inventoryupgrade {
+  input: [[ingotIron, hopper, ingotIron]
+          [dispenser, chest, craftingPiston]
+          [ingotIron, "ocreloaded:circuitChip1", ingotIron]]
+}
+inventorycontrollerupgrade {
+  input: [[ingotGold, "ocreloaded:circuitChip2", ingotGold]
+          [dispenser, "ocreloaded:inventoryUpgrade", craftingPiston]
+          [ingotGold, "ocreloaded:materialCircuitBoardPrinted", ingotGold]]
+}
+navigationupgrade {
+  input: [[ingotGold, compass, ingotGold]
+          ["ocreloaded:circuitChip3", {item=filled_map, subID=any}, "ocreloaded:circuitChip3"]
+          [ingotGold, potion, ingotGold]]
+}
+signupgrade {
+  input: [[ingotIron, dyeBlack, ingotIron]
+          ["ocreloaded:circuitChip1", stickWood, "ocreloaded:circuitChip1"]
+          [ingotIron, pistonStickyBase, ingotIron]]
+}
+solargeneratorupgrade {
+  input: [[blockGlass, blockGlass, blockGlass]
+          ["ocreloaded:circuitChip3", "ocreloaded:generatorUpgrade", "ocreloaded:circuitChip3"]]
+}
+tradingupgrade {
+  input: [["ocreloaded:circuitChip2", chest, "ocreloaded:circuitChip2"]
+          [emerald, "ocreloaded:circuitChip2", emerald]
+          [dropper, "ocreloaded:materialCircuitBoardPrinted", craftingPiston]]
+}
+
+cuttingwire {
+  input: [[stickWood, iron_nugget, stickWood]]
+}
+disk {
+  input: [["", iron_nugget, ""]
+          [iron_nugget, "", iron_nugget]
+          ["", iron_nugget, ""]]
+}
+
+buttongroup {
+  input: [[button, button, button]
+          [button, button, button]]
+}
+arrowkeys {
+  input: [["", button, ""]
+          [button, button, button]]
+}
+numpad {
+  input: [[button, button, button]
+          [button, button, button]
+          [button, button, button]]
+}
+
+transistor {
+  input: [[iron_nugget, iron_nugget, iron_nugget]
+          [nuggetGold, paper, nuggetGold]
+          ["", redstone, ""]]
+}
+chip1 {
+  input: [[iron_nugget, "", iron_nugget]
+          ["ocreloaded:materialTransistor", nuggetGold, "ocreloaded:materialTransistor"]
+          [iron_nugget, "", iron_nugget]]
+}
+chip2 {
+  input: [[nuggetGold, {item=dyePowder, subID=4} , nuggetGold]
+          ["ocreloaded:circuitChip1", netherquartz, "ocreloaded:circuitChip1"]
+          [nuggetGold, {item=dyePowder, subID=4}, nuggetGold]]
+}
+chip3 {
+  input: [[yellowDust, comparator, yellowDust]
+          ["ocreloaded:circuitChip2", gemDiamond, "ocreloaded:circuitChip2"]
+          [yellowDust, comparator, yellowDust]]
+}
+alu {
+  input: [[diode, torchRedstoneActive, diode]
+          ["ocreloaded:materialTransistor", "ocreloaded:materialTransistor", "ocreloaded:materialTransistor"]
+          [iron_nugget, redstone, iron_nugget]]
+}
+apu2 {
+  input: [[gemDiamond, "ocreloaded:circuitChip2", gemDiamond]
+          ["ocreloaded:cpu3", "ocreloaded:componentBus2", "ocreloaded:graphicsCard2"]
+          [gemDiamond, "ocreloaded:circuitChip2", gemDiamond]]
+}
+componentbus1 {
+  input: [[iron_nugget, redstone, iron_nugget]
+          ["ocreloaded:circuitChip1", "ocreloaded:materialCU", ""]
+          [iron_nugget, "ocreloaded:materialCircuitBoardPrinted", iron_nugget]]
+}
+componentbus2 {
+  input: [[nuggetGold, "ocreloaded:ram3", nuggetGold]
+          ["ocreloaded:circuitChip2", "ocreloaded:componentBus1", ""]
+          [nuggetGold, "ocreloaded:materialCircuitBoardPrinted", nuggetGold]]
+}
+componentbus3 {
+  input: [[gemDiamond, "ocreloaded:ram5", gemDiamond]
+          ["ocreloaded:circuitChip3", "ocreloaded:componentBus2", ""]
+          [gemDiamond, "ocreloaded:materialCircuitBoardPrinted", gemDiamond]]
+}
+cpu1 {
+  input: [[iron_nugget, redstone, iron_nugget]
+          ["ocreloaded:circuitChip1", "ocreloaded:materialCU", "ocreloaded:circuitChip1"]
+          [iron_nugget, "ocreloaded:materialALU", iron_nugget]]
+}
+cpu2 {
+  input: [[nuggetGold, "ocreloaded:ram3", nuggetGold]
+          ["ocreloaded:circuitChip2", "ocreloaded:cpu1", "ocreloaded:circuitChip2"]
+          [nuggetGold, "ocreloaded:ram3", nuggetGold]]
+}
+cpu3 {
+  input: [[gemDiamond, "ocreloaded:ram5", gemDiamond]
+          ["ocreloaded:circuitChip3", "ocreloaded:cpu2", "ocreloaded:circuitChip3"]
+          [gemDiamond, "ocreloaded:ram5", gemDiamond]]
+}
+cu {
+  input: [[nuggetGold, torchRedstoneActive, nuggetGold]
+          ["ocreloaded:materialTransistor", clock, "ocreloaded:materialTransistor"]
+          [nuggetGold, redstone, nuggetGold]]
+}
+
+rawcircuitboard {
+  type: shapeless
+  input: ["ocreloaded:materialCuttingWire", clay, dyeGreen]
+}
+circuitboard {
+  type: furnace
+  input: "ocreloaded:materialCircuitBoardRaw"
+}
+printedcircuitboard {
+  type: shapeless
+  input: ["ocreloaded:materialCircuitBoard", nuggetGold, "ocreloaded:materialAcid"]
+  output: 1
+}
+card {
+  input: [[iron_nugget, "ocreloaded:circuitChip1", "ocreloaded:materialTransistor"]
+          [iron_nugget, "ocreloaded:materialCircuitBoardPrinted", "ocreloaded:materialCircuitBoardPrinted"]
+          [iron_nugget, nuggetGold, nuggetGold]]
+}
+
+interweb {
+  input: [[string, materialEnderPearl, string]
+          [materialEnderPearl, string, materialEnderPearl]
+          [string, materialEnderPearl, string]]
+}
+
+adapter {
+  input: [[ingotIron, "ocreloaded:cable", ingotIron]
+          ["ocreloaded:cable", "ocreloaded:circuitChip1", "ocreloaded:cable"]
+          [ingotIron, "ocreloaded:materialCircuitBoardPrinted", ingotIron]]
+}
+cable {
+  input: [["", iron_nugget, ""]
+          [iron_nugget, redstone, iron_nugget]
+          ["", iron_nugget, ""]]
+  output: 4
+}
+carpetedcapacitor {
+  type: shapeless
+  input: [carpet, "ocreloaded:capacitor"]
+}
+capacitor {
+  input: [[ingotIron, "ocreloaded:materialTransistor", ingotIron]
+          [nuggetGold, paper, nuggetGold]
+          [ingotIron, "ocreloaded:materialCircuitBoardPrinted", ingotIron]]
+}
+charger {
+  input: [[ingotIron, ingotGold, ingotIron]
+          ["ocreloaded:capacitor", "ocreloaded:circuitChip2", "ocreloaded:capacitor"]
+          [ingotIron, "ocreloaded:materialCircuitBoardPrinted", ingotIron]]
+}
+case1 {
+  input: [[ingotIron, "ocreloaded:circuitChip1", ingotIron]
+          [fenceIron, chest, fenceIron]
+          [ingotIron, "ocreloaded:materialCircuitBoardPrinted", ingotIron]]
+}
+case2 {
+  input: [[ingotGold, "ocreloaded:circuitChip2", ingotGold]
+          ["ocreloaded:circuitChip2", "ocreloaded:case1", "ocreloaded:circuitChip2"]
+          [ingotGold, "ocreloaded:materialCircuitBoardPrinted", ingotGold]]
+}
+case3 {
+  input: [[gemDiamond, "ocreloaded:circuitChip3", gemDiamond]
+          ["ocreloaded:circuitChip3", "ocreloaded:case2", "ocreloaded:circuitChip3"]
+          [gemDiamond, "ocreloaded:materialCircuitBoardPrinted", gemDiamond]]
+}
+diskdrive {
+  input: [[ingotIron, "ocreloaded:circuitChip1", ingotIron]
+          [craftingPiston, stickWood, ""]
+          [ingotIron, "ocreloaded:materialCircuitBoardPrinted", ingotIron]]
+}
+geolyzer {
+  input: [[ingotGold, "ocreloaded:analyzer", ingotGold]
+          [eyeOfEnder, "ocreloaded:circuitChip2", eyeOfEnder]
+          [ingotGold, "ocreloaded:materialCircuitBoardPrinted", ingotGold]]
+}
+hologram1 {
+  input: [["ocreloaded:circuitChip2", paneGlass, "ocreloaded:circuitChip2"]
+          ["ocreloaded:materialCircuitBoardPrinted", gemDiamond, "ocreloaded:materialCircuitBoardPrinted"]
+          [obsidian, yellowDust, obsidian]]
+}
+hologram2 {
+  input: [["ocreloaded:circuitChip3", blockGlass, "ocreloaded:circuitChip3"]
+          ["ocreloaded:materialCircuitBoardPrinted", blockDiamond, "ocreloaded:materialCircuitBoardPrinted"]
+          [obsidian, blazePowder, obsidian]]
+}
+keyboard {
+  input: [["ocreloaded:materialButtonGroup", "ocreloaded:materialButtonGroup", "ocreloaded:materialButtonGroup"]
+          ["ocreloaded:materialButtonGroup", "ocreloaded:materialArrowKey", "ocreloaded:materialNumPad"]]
+}
+powerconverter {
+  input: [[ingotIron, "ocreloaded:cable", ingotIron]
+          [ingotGold, "ocreloaded:circuitChip1", ingotGold]
+          [ingotIron, "ocreloaded:materialCircuitBoardPrinted", ingotIron]]
+}
+powerdistributor {
+  input: [[ingotIron, ingotGold, ingotIron]
+          ["ocreloaded:cable", "ocreloaded:circuitChip1", "ocreloaded:cable"]
+          [ingotIron, "ocreloaded:materialCircuitBoardPrinted", ingotIron]]
+}
+rack {
+  input: [["ocreloaded:circuitChip3", "ocreloaded:wlanCard2", "ocreloaded:circuitChip3"]
+          [fenceIron, chest, fenceIron]
+          ["ocreloaded:relay", "ocreloaded:materialCircuitBoardPrinted","ocreloaded:powerDistributor"]]
+}
+redstone {
+  input: [[ingotIron, "ocreloaded:circuitChip3", ingotIron]
+          [blockRedstone, "ocreloaded:redstoneCard1", blockRedstone]
+          [ingotIron, "ocreloaded:materialCircuitBoardPrinted", ingotIron]]
+}
+relay {
+  input: [[ingotIron, "ocreloaded:cable", ingotIron]
+          ["ocreloaded:cable", "ocreloaded:lanCard", "ocreloaded:cable"]
+          [ingotIron, "ocreloaded:materialCircuitBoardPrinted", ingotIron]]
+}
+screen1 {
+  input: [[ingotIron, ingotIron, blockGlass]
+          [redstone, "ocreloaded:materialTransistor", blockGlass]
+          [ingotIron, ingotIron, blockGlass]]
+}
+screen2 {
+  input: [[ingotGold, dyeRed, ingotGold]
+          ["ocreloaded:circuitChip2", dyeGreen, "ocreloaded:screen1"]
+          [ingotGold, dyeBlue, ingotGold]]
+}
+screen3 {
+  input: [[obsidian, "ocreloaded:materialCircuitBoardPrinted", "ocreloaded:circuitChip3"]
+          [blazeRod, netherquartz, "ocreloaded:screen2"]
+          [obsidian, "ocreloaded:materialCircuitBoardPrinted", "ocreloaded:circuitChip3"]]
+}

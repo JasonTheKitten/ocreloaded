@@ -1,0 +1,6 @@
+{
+    "parent": "ocreloaded:item/flat",
+    "textures": {
+        "layer0": "ocreloaded:item/card"
+    }
+}

@@ -10,6 +10,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -49,6 +50,13 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
     @Override
     public int getTier() {
         return tier;
+    }
+    
+    @Override
+    public void playerDestroy(Level level, Player player, BlockPos blockPos, BlockState blockState, BlockEntity blockEntity, ItemStack itemStack) {
+        super.playerDestroy(level, player, blockPos, blockState, blockEntity, itemStack);
+        popResource(level, blockPos, new ItemStack(this));
+        // TODO: How to instead use loot table and respect tier?
     }
 
     @Override
