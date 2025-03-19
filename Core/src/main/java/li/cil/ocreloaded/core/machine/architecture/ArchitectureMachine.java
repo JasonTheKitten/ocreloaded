@@ -32,6 +32,8 @@ public class ArchitectureMachine implements Machine {
 
     private int waitTicks = 0;
     private long startTime = 0;
+    private long cpuTime = 0;
+    private int uptime = 0;
 
     public ArchitectureMachine(Function<Machine, Architecture> architectureFactory, MachineParameters parameters) {
         this.architecture = architectureFactory.apply(this);
@@ -66,7 +68,13 @@ public class ArchitectureMachine implements Machine {
             state.pop();
             setState(State.ASYNC);
             return;
+        } else if (state.peek() == State.RESTARTING) {
+            startInternal();
+            return;
         }
+
+        if (state.peek() == State.STOPPED || state.peek() == State.STOPPING) return;
+        uptime++;
 
         if (state.peek() == State.WAIT || state.peek() == State.PAUSED) {
             waitTicks--;
@@ -79,7 +87,9 @@ public class ArchitectureMachine implements Machine {
 
         if (state.peek() != State.SYNC) return;
         state.pop();
+        startTime = System.nanoTime();
         handleMachineResult(architecture.resume());
+        cpuTime += System.nanoTime() - startTime;
     }
 
     @Override
@@ -87,7 +97,9 @@ public class ArchitectureMachine implements Machine {
         if (state.peek() != State.ASYNC) return;
         state.pop();
 
+        startTime = System.nanoTime();
         handleMachineResult(architecture.resume());
+        cpuTime += System.nanoTime() - startTime;
     }
 
     @Override
@@ -104,8 +116,13 @@ public class ArchitectureMachine implements Machine {
     }
 
     @Override
-    public long uptime() {
-        return System.currentTimeMillis() - startTime;
+    public double cpuTime() {
+        return (cpuTime + (System.nanoTime() - startTime)) / 1_000_000.0;
+    }
+
+    @Override
+    public double uptime() {
+        return uptime / 20.0;
     }
 
     @Override
@@ -142,7 +159,7 @@ public class ArchitectureMachine implements Machine {
 
         this.state.clear();
         this.state.push(State.STARTING);
-        startTime = System.currentTimeMillis();
+        uptime = 0;
         MachineResult result = architecture.start(codeStream.get());
         handleMachineResult(result);
 
@@ -158,12 +175,11 @@ public class ArchitectureMachine implements Machine {
             setState(State.WAIT);
             waitTicks = waitResult.ticks();
         } else if (result instanceof MachineResult.Stop stopResult) {
+            setState(State.STOPPING);
             stop();
-            setState(State.STOPPED);
-            if (stopResult.restart()) {
-                startInternal();
-            }
+            setState(stopResult.restart() ? State.RESTARTING : State.STOPPED);
         } else if (result instanceof MachineResult.Error error) {
+            setState(State.STOPPING);
             stop();
             setState(State.STOPPED);
             // TODO: Proper error handling
@@ -214,7 +230,7 @@ public class ArchitectureMachine implements Machine {
     public static record NetworkedComponent(Component component, NetworkNode networkNode) {}
 
     private static enum State {
-        STOPPED, STARTING, SYNC, ASYNC, WAIT, PAUSED
+        STOPPED, STOPPING, STARTING, SYNC, ASYNC, WAIT, PAUSED, RESTARTING
     }
     
 }

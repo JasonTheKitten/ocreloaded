@@ -13,8 +13,10 @@ public interface Machine {
     boolean signal(String name, Object... args);
 
     Signal popSignal();
+
+    double cpuTime();
     
-    long uptime();
+    double uptime();
 
     MachineParameters parameters();
 

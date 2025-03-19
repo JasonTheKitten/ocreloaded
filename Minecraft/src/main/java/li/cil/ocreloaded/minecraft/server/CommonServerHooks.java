@@ -3,6 +3,7 @@ package li.cil.ocreloaded.minecraft.server;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
@@ -17,6 +18,8 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 
 public final class CommonServerHooks {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommonServerHooks.class);
     
     private CommonServerHooks() {}
 
@@ -57,7 +60,7 @@ public final class CommonServerHooks {
                     ));
             recipesField.set(recipeManager, finalRecipes);
         } catch (Exception e) {
-            LoggerFactory.getLogger(CommonServerHooks.class).error("Failed to inject recipes into server", e);
+            LOGGER.error("Failed to inject recipes into server", e);
         }
     }
 

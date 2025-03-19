@@ -1,8 +1,12 @@
 package li.cil.ocreloaded.core.machine;
 
+import java.util.List;
+
 import li.cil.ocreloaded.core.machine.imp.MachineProcessorImp;
 
 public interface MachineProcessor {
+
+    List<String> supportedArchitectures();
     
     String getArchitecture();
 

@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.ByteBuf;
-import li.cil.ocreloaded.core.component.ScreenComponent;
+import li.cil.ocreloaded.core.component.ScreenComponentBase;
 import li.cil.ocreloaded.core.graphics.TextModeBuffer;
 import li.cil.ocreloaded.core.network.NetworkMessage;
 import li.cil.ocreloaded.core.network.NetworkNode;
@@ -38,7 +38,7 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
     private static final Logger LOGGER = LoggerFactory.getLogger(ScreenNetworkInputMessages.class);
 
     private final NetworkNode networkNode = new ComponentNetworkNode(
-        node -> new ScreenComponent(node, this::getScreenBuffer), Visibility.NETWORK
+        node -> new ScreenComponentBase(node, this::getScreenBuffer), Visibility.NETWORK
     );
 
     private boolean initialized = false;
@@ -136,7 +136,12 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
         }
 
         // TODO: Include player name
-        networkNode.sendToNeighbors(new NetworkMessage("computer.checked_signal", player, name, (int) (x + 1), (int) (y + 1), button));
+        boolean isPrecise = networkNode.component().map(c -> ((ScreenComponentBase) c).isPrecise()).orElse(false);
+        if (isPrecise) {
+            networkNode.sendToNeighbors(new NetworkMessage("computer.checked_signal", player, name, x, y, button));
+        } else {
+            networkNode.sendToNeighbors(new NetworkMessage("computer.checked_signal", player, name, (int) (x + 1), (int) (y + 1), button));
+        }
     }
 
     public TextModeBuffer getScreenBuffer() {

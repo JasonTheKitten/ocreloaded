@@ -39,6 +39,17 @@ public class DirectoryFileSystem implements FileSystem {
     }
 
     @Override
+    public long getCapacity() {
+        // TODO: Allow limiting the space
+        return root.toFile().getTotalSpace();
+    }
+
+    @Override
+    public long getUsedSpace() {
+        return root.toFile().length();
+    }
+
+    @Override
     public boolean isDirectory(String path) {
         Path resolved = root.resolve(path);
         return resolved.toFile().isDirectory();

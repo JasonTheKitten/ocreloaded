@@ -1,5 +1,6 @@
 package li.cil.ocreloaded.core.machine.imp;
 
+import java.util.List;
 import java.util.Optional;
 
 import li.cil.ocreloaded.core.machine.MachineProcessor;
@@ -14,6 +15,11 @@ public class MachineProcessorImp implements MachineProcessor {
 
     public MachineProcessorImp(MachineRegistry registry) {
         this.registry = registry;
+    }
+
+    @Override
+    public List<String> supportedArchitectures() {
+        return registry.getSupportedEntries();
     }
 
     @Override

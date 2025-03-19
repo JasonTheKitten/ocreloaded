@@ -57,6 +57,16 @@ public class FileSystemComponent extends AnnotatedComponent {
         return ComponentCallResult.success(filesystem.isReadOnly());
     }
 
+    @ComponentMethod(direct = true, doc = "function():number -- The overall capacity of the file system, in bytes.")
+    public ComponentCallResult spaceTotal(ComponentCallContext context, ComponentCallArguments arguments) {
+        return ComponentCallResult.success(filesystem.getCapacity());
+    }
+
+    @ComponentMethod(direct = true, doc = "function():number -- The currently used capacity of the file system, in bytes.")
+    public ComponentCallResult spaceUsed(ComponentCallContext context, ComponentCallArguments arguments) {
+        return ComponentCallResult.success(filesystem.getUsedSpace());
+    }
+
     @ComponentMethod(direct = true, doc = "function(path:string):boolean -- Returns whether an object exists at the specified absolute path in the file system.")
     public ComponentCallResult exists(ComponentCallContext context, ComponentCallArguments arguments) {
         String path = PathUtil.minimizePath(arguments.checkString(0));
@@ -127,7 +137,11 @@ public class FileSystemComponent extends AnnotatedComponent {
         int handle = arguments.checkInteger(0);
         
         try {
-            filesystem.getHandle(handle).close();
+            FileHandle fileHandle = filesystem.getHandle(handle);
+            if (fileHandle == null) {
+                return ComponentCallResult.failure("bad file descriptor");
+            }
+            fileHandle.close();
             openFiles.remove((Integer) handle);
         } catch (IOException e) {
             return ComponentCallResult.failure(e.getMessage());

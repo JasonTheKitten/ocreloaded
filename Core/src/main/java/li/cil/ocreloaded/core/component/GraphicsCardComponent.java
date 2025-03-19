@@ -39,7 +39,7 @@ public class GraphicsCardComponent extends AnnotatedComponent {
         if (node.isEmpty() || node.get().component().isEmpty()) {
             return ComponentCallResult.success(false, "invalid address");
         }
-        if (!(node.get().component().get() instanceof ScreenComponent)) {
+        if (!(node.get().component().get() instanceof ScreenComponentBase)) {
             return ComponentCallResult.success(false, "not a screen");
         }
         screenId = node.get().id();
@@ -265,8 +265,8 @@ public class GraphicsCardComponent extends AnnotatedComponent {
             return Optional.ofNullable(screenId)
                 .flatMap(context.networkNode()::reachableNode)
                 .flatMap(NetworkNode::component)
-                .flatMap(component -> component instanceof ScreenComponent screenComponent ? Optional.of(screenComponent) : Optional.empty())
-                .map(ScreenComponent::getScreenBuffer)
+                .flatMap(component -> component instanceof ScreenComponentBase screenComponent ? Optional.of(screenComponent) : Optional.empty())
+                .map(ScreenComponentBase::getScreenBuffer)
                 .map(buffer -> { synchronized(buffer) {
                     return function.apply(buffer);
                 }})
