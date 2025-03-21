@@ -84,16 +84,23 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
         if (key != null && key.getType() == InputConstants.Type.KEYSYM) {
             String keyName = GLFW.glfwGetKeyName(keyCode, scanCode);
             int translatedValue = KeyMappings.translateKeyCode(key.getValue());
-            if (
-                ((keyName != null && keyName.length() == 1) || key.getValue() == InputConstants.KEY_SPACE)
-                && (modifiers & InputConstants.MOD_CONTROL) == 0 // If control is pressed, there's no follow up char event
-            ) {
+
+            if ((modifiers & InputConstants.MOD_CONTROL) != 0 && key.getValue() == InputConstants.KEY_INSERT) {
+                assert minecraft != null;
+                menu.onKeyboardClipboard(minecraft.keyboardHandler.getClipboard());
+                return true;
+            }
+
+            if (((keyName != null && keyName.length() == 1) || key.getValue() == InputConstants.KEY_SPACE)
+                && (modifiers & InputConstants.MOD_CONTROL) == 0) {
                 // TODO: Better way to handle characters
                 lastKeyCode = translatedValue;
             } else if (key.getValue() == InputConstants.KEY_BACKSPACE) {
                 menu.onKeyPressed(8, translatedValue);
             } else if (key.getValue() == InputConstants.KEY_TAB) {
                 menu.onKeyPressed(9, translatedValue);
+            } else if (key.getValue() == InputConstants.KEY_RETURN) {
+                menu.onKeyPressed(10, translatedValue);
             } else {
                 // TODO: Properly determine charCode when CTRL is pressed
                 menu.onKeyPressed(0, translatedValue);

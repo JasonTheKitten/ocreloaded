@@ -20,6 +20,7 @@ public final class ScreenNetworkInputMessages {
     public static final int MOUSE_RELEASED = 4;
     public static final int MOUSE_DRAGGED = 5;
     public static final int MOUSE_SCROLLED = 6;
+    public static final int CLIPBOARD_PASTE = 7;
     
     private ScreenNetworkInputMessages() {}
 
@@ -47,6 +48,17 @@ public final class ScreenNetworkInputMessages {
         return new ScreenNetworkMessage(blockPos, buffer, ScreenNetworkMessage.INPUT_CHANNEL);
     }
 
+    public static ScreenNetworkMessage createClipboardPasteMessage(BlockPos blockPos, String text) {
+        ByteBuf buffer = Unpooled.buffer();
+        buffer.writeInt(CLIPBOARD_PASTE);
+
+        byte[] textBytes = text.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        buffer.writeInt(textBytes.length);
+        buffer.writeBytes(textBytes);
+        
+        return new ScreenNetworkMessage(blockPos, buffer, ScreenNetworkMessage.INPUT_CHANNEL);
+    }
+
     public static void handleInput(ScreenBlockEntity entity, ByteBuf changeBuffer, Player player) {
         int type = changeBuffer.readInt();
         switch (type) {
@@ -54,8 +66,14 @@ public final class ScreenNetworkInputMessages {
             case KEY_RELEASED -> entity.onKeyReleased(changeBuffer.readInt(), player);
             case MOUSE_PRESSED, MOUSE_RELEASED, MOUSE_DRAGGED, MOUSE_SCROLLED ->
                 entity.onMouseInput(type, changeBuffer.readInt(), changeBuffer.readDouble(), changeBuffer.readDouble(), player);
+            case CLIPBOARD_PASTE -> {
+                int length = changeBuffer.readInt();
+                byte[] textBytes = new byte[length];
+                changeBuffer.readBytes(textBytes);
+                String text = new String(textBytes, java.nio.charset.StandardCharsets.UTF_8);
+                entity.onClipboardPaste(text, player);
+            }
             default -> LOGGER.warn("Received unknown input type: {}", type);
         }
     }
-
 }

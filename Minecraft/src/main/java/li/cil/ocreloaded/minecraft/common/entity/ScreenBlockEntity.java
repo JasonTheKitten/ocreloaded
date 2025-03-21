@@ -34,7 +34,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentTileEntity {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScreenNetworkInputMessages.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScreenBlockEntity.class);
 
     private final NetworkNode networkNode = new ComponentNetworkNode(
         node -> new ScreenComponent(node, this::getScreenBuffer), Visibility.NETWORK
@@ -118,6 +118,10 @@ public class ScreenBlockEntity extends BlockEntityWithTick implements ComponentT
 
     public void onKeyReleased(int keyCode, Player player) {
         networkNode.sendToNeighbors(new NetworkMessage("keyboard.keyUp", player.getName(), keyCode));
+    }
+
+    public void onClipboardPaste(String text, Player player) {
+        networkNode.sendToNeighbors(new NetworkMessage("keyboard.clipboard", player.getName(), text));
     }
 
     public void onMouseInput(int type, int button, double x, double y, Player player) {
