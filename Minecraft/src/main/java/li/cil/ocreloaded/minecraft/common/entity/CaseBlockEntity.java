@@ -22,6 +22,8 @@ import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
 import li.cil.ocreloaded.core.machine.MachineParameters;
 import li.cil.ocreloaded.core.machine.MachineRegistry;
 import li.cil.ocreloaded.core.machine.MachineRegistryEntry;
+import li.cil.ocreloaded.core.machine.Persistable;
+import li.cil.ocreloaded.core.machine.PersistenceHolder;
 import li.cil.ocreloaded.core.machine.component.Component;
 import li.cil.ocreloaded.core.machine.imp.MachineProcessorImp;
 import li.cil.ocreloaded.core.misc.Label;
@@ -54,7 +56,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class CaseBlockEntity extends RandomizableContainerBlockEntity implements TickableEntity, ComponentTileEntity, ItemChangeListener {
+public class CaseBlockEntity extends RandomizableContainerBlockEntity implements TickableEntity, ComponentTileEntity, ItemChangeListener, Persistable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CaseBlockEntity.class);
     private static final net.minecraft.network.chat.Component MENU_NAME = net.minecraft.network.chat.Component.translatable("gui.ocreloaded.case");
@@ -83,20 +85,16 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     @Override
     public void load(CompoundTag compoundTag) {
         super.load(compoundTag);
-        networkNode.load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
-
         ContainerHelper.loadAllItems(compoundTag, this.items);
-        this.powered = compoundTag.getBoolean(TAG_POWERED);
+        load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
         updateBlockState();
     }
 
     @Override
     public void saveAdditional(CompoundTag compoundTag) {
         super.saveAdditional(compoundTag);
-        networkNode.save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
-
         ContainerHelper.saveAllItems(compoundTag, this.items);
-        compoundTag.putBoolean(TAG_POWERED, this.powered);
+        save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 
     @Override
@@ -156,6 +154,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
 
     @Override
     public void onItemChange(int slot, ItemStack oldStack, ItemStack newStack) {
+        if (level == null || level.isClientSide) return;
         NetworkNode oldNode = loadedComponents.remove(oldStack);
         if (oldNode != null) {
             oldNode.remove();
@@ -167,6 +166,21 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     @Override
     public NonNullList<ItemStack> getItems() {
         return this.items;
+    }
+
+    @Override
+    public void save(PersistenceHolder holder) {
+        networkNode.save(holder);
+        holder.storeBool(TAG_POWERED, this.powered);
+    }
+
+    @Override
+    public void load(PersistenceHolder holder) {
+        networkNode.load(holder);
+        this.powered = holder.loadBool(TAG_POWERED);
+        for (ItemStack itemStack : this.items) {
+            loadComponent(itemStack, loadedComponents);
+        }
     }
 
     public void writeData(FriendlyByteBuf data) {
@@ -237,9 +251,8 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
 
         CompoundTag tag = itemStack.getOrCreateTag();
         component.load(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
-        // TODO: When should states be stored?
         component.save(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
-        // TODO: Reset component on fresh boot?
+        // TODO: Reset component on fresh boot if tmp is not persistant
 
         components.put(itemStack, networkNode);
         this.networkNode.connect(networkNode);

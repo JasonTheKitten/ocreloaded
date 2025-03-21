@@ -43,7 +43,6 @@ public class ScreenRenderer implements BlockEntityRenderer<ScreenBlockEntity> {
         DrawingContext drawingContext = new MultiBufferSourceDrawingContext(bufferSource, poseStack.last().pose());
         PositionScale positionScale = new PositionScale(0, 0, 1.0f);
         
-        // TODO: Improve FPS - GuiGraphics flushes too often, so maybe make alternate interface
         ScreenDisplayRenderer.renderDisplay(drawingContext, positionScale, textModeBuffer);
 
         poseStack.popPose();

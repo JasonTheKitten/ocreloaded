@@ -1,5 +1,6 @@
 package li.cil.ocreloaded.minecraft.server;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,7 +44,7 @@ public final class CommonServerHooks {
         // Hacky way to load our recipes
         RecipeManager recipeManager = server.getRecipeManager();
         try {
-            java.lang.reflect.Field recipesField = RecipeManager.class.getDeclaredField("recipes");
+            Field recipesField = getRecipesField();
             recipesField.setAccessible(true);
             @SuppressWarnings("unchecked")
             Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>> serverRecipes = (Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>>) recipesField.get(recipeManager);
@@ -62,6 +63,24 @@ public final class CommonServerHooks {
         } catch (Exception e) {
             LOGGER.error("Failed to inject recipes into server", e);
         }
+    }
+
+    // I don't feel like transformers today, so quick hack until later
+    private static Field getRecipesField() {
+        for (Field field : RecipeManager.class.getDeclaredFields()) {
+            if (field.getName().equals("recipes")) {
+                return field;
+            }
+        }
+
+        // Otherwise, hopefully guess it
+        for (Field field : RecipeManager.class.getDeclaredFields()) {
+            if (field.getType().equals(Map.class)) {
+                return field;
+            }
+        }
+
+        throw new RuntimeException("Failed to find recipes field in RecipeManager");
     }
 
 }
