@@ -9,6 +9,8 @@ import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 
+import java.nio.charset.StandardCharsets;
+
 public final class ScreenNetworkInputMessages {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScreenNetworkInputMessages.class);
@@ -52,7 +54,7 @@ public final class ScreenNetworkInputMessages {
         ByteBuf buffer = Unpooled.buffer();
         buffer.writeInt(CLIPBOARD_PASTE);
 
-        byte[] textBytes = text.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        byte[] textBytes = text.getBytes(StandardCharsets.UTF_8);
         buffer.writeInt(textBytes.length);
         buffer.writeBytes(textBytes);
         
@@ -70,7 +72,7 @@ public final class ScreenNetworkInputMessages {
                 int length = changeBuffer.readInt();
                 byte[] textBytes = new byte[length];
                 changeBuffer.readBytes(textBytes);
-                String text = new String(textBytes, java.nio.charset.StandardCharsets.UTF_8);
+                String text = new String(textBytes, StandardCharsets.UTF_8);
                 entity.onClipboardPaste(text, player);
             }
             default -> LOGGER.warn("Received unknown input type: {}", type);
