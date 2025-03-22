@@ -2,6 +2,7 @@ package li.cil.ocreloaded.minecraft.common.entity;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -21,6 +22,8 @@ import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
 import li.cil.ocreloaded.core.machine.MachineParameters;
 import li.cil.ocreloaded.core.machine.MachineRegistry;
 import li.cil.ocreloaded.core.machine.MachineRegistryEntry;
+import li.cil.ocreloaded.core.machine.Persistable;
+import li.cil.ocreloaded.core.machine.PersistenceHolder;
 import li.cil.ocreloaded.core.machine.component.Component;
 import li.cil.ocreloaded.core.machine.imp.MachineProcessorImp;
 import li.cil.ocreloaded.core.misc.Label;
@@ -32,6 +35,8 @@ import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
 import li.cil.ocreloaded.minecraft.common.item.ComponentItem;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
+import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
+import li.cil.ocreloaded.minecraft.common.network.sound.SoundNetworkMessage;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import li.cil.ocreloaded.minecraft.common.util.ItemList;
@@ -40,15 +45,18 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class CaseBlockEntity extends RandomizableContainerBlockEntity implements TickableEntity, ComponentTileEntity, ItemChangeListener {
+public class CaseBlockEntity extends RandomizableContainerBlockEntity implements TickableEntity, ComponentTileEntity, ItemChangeListener, Persistable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CaseBlockEntity.class);
     private static final net.minecraft.network.chat.Component MENU_NAME = net.minecraft.network.chat.Component.translatable("gui.ocreloaded.case");
@@ -77,20 +85,16 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     @Override
     public void load(CompoundTag compoundTag) {
         super.load(compoundTag);
-        networkNode.load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
-
         ContainerHelper.loadAllItems(compoundTag, this.items);
-        this.powered = compoundTag.getBoolean(TAG_POWERED);
+        load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
         updateBlockState();
     }
 
     @Override
     public void saveAdditional(CompoundTag compoundTag) {
         super.saveAdditional(compoundTag);
-        networkNode.save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
-
         ContainerHelper.saveAllItems(compoundTag, this.items);
-        compoundTag.putBoolean(TAG_POWERED, this.powered);
+        save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 
     @Override
@@ -150,6 +154,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
 
     @Override
     public void onItemChange(int slot, ItemStack oldStack, ItemStack newStack) {
+        if (level == null || level.isClientSide) return;
         NetworkNode oldNode = loadedComponents.remove(oldStack);
         if (oldNode != null) {
             oldNode.remove();
@@ -161,6 +166,21 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     @Override
     public NonNullList<ItemStack> getItems() {
         return this.items;
+    }
+
+    @Override
+    public void save(PersistenceHolder holder) {
+        networkNode.save(holder);
+        holder.storeBool(TAG_POWERED, this.powered);
+    }
+
+    @Override
+    public void load(PersistenceHolder holder) {
+        networkNode.load(holder);
+        this.powered = holder.loadBool(TAG_POWERED);
+        for (ItemStack itemStack : this.items) {
+            loadComponent(itemStack, loadedComponents);
+        }
     }
 
     public void writeData(FriendlyByteBuf data) {
@@ -231,9 +251,8 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
 
         CompoundTag tag = itemStack.getOrCreateTag();
         component.load(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
-        // TODO: When should states be stored?
         component.save(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
-        // TODO: Reset component on fresh boot?
+        // TODO: Reset component on fresh boot if tmp is not persistant
 
         components.put(itemStack, networkNode);
         this.networkNode.connect(networkNode);
@@ -249,12 +268,21 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
 
         ExecutorService threadService = Executors.newCachedThreadPool(); // TODO: Custom thread pool
         MachineParameters parameters = new MachineParameters(
-            networkNode, tmpFsNode, codeStreamSupplier.get(), threadService, processor);
+            networkNode, tmpFsNode, codeStreamSupplier.get(), threadService, processor,
+            this::beep);
 
         return
             MachineRegistry.getDefaultInstance().getEntry(architecture)
                 .filter(MachineRegistryEntry::isSupported)
                 .flatMap(entry -> entry.createMachine(parameters));
+    }
+
+    private void beep(short frequency, short duration) {
+        ChunkPos chunkPos = new ChunkPos(worldPosition);
+        List<ServerPlayer> chunkTrackingPlayers = ((ServerLevel) level).getPlayers(
+            player -> player.getChunkTrackingView().contains(chunkPos)
+        );
+        NetworkUtil.getInstance().messageManyClients(SoundNetworkMessage.createBeepMessage(worldPosition, frequency, duration), chunkTrackingPlayers);
     }
     
 }

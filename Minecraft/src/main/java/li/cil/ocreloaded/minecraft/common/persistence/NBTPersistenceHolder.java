@@ -21,8 +21,7 @@ public class NBTPersistenceHolder implements PersistenceHolder {
 
     @Override
     public void storeBool(String key, boolean val) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'storeBool'");
+        tag.putBoolean(prefix + key, val);
     }
 
     @Override
@@ -61,8 +60,7 @@ public class NBTPersistenceHolder implements PersistenceHolder {
 
     @Override
     public boolean loadBool(String key) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'loadBool'");
+        return tag.getBoolean(prefix + key);
     }
 
     @Override

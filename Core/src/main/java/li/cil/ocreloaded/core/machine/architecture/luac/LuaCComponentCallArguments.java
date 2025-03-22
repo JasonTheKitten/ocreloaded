@@ -16,6 +16,11 @@ public class LuaCComponentCallArguments implements ComponentCallArguments {
     }
 
     @Override
+    public int count() {
+        return count;
+    }
+
+    @Override
     public String checkString(int index) {
         return luaState.checkString(this.index + index);
     }
@@ -27,6 +32,11 @@ public class LuaCComponentCallArguments implements ComponentCallArguments {
         }
 
         return luaState.checkString(this.index + index);
+    }
+
+    @Override
+    public boolean isString(int index) {
+        return luaState.isString(this.index + index);
     }
 
     @Override
@@ -42,6 +52,15 @@ public class LuaCComponentCallArguments implements ComponentCallArguments {
         }
 
         return checkInteger(index);
+    }
+
+    @Override
+    public double optionalDouble(int index, double defaultValue) {
+        if (index >= count || luaState.isNoneOrNil(this.index + index)) {
+            return defaultValue;
+        }
+
+        return luaState.toNumber(this.index + index);
     }
 
     @Override

@@ -12,7 +12,8 @@ public record MachineParameters(
     NetworkNode tmpFsNode,
     Supplier<Optional<InputStream>> codeStreamSupplier,
     ExecutorService threadService,
-    MachineProcessor processor
+    MachineProcessor processor,
+    MachineActions actions
 ) {
     
 }

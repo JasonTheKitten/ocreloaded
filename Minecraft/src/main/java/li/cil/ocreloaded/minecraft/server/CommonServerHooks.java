@@ -1,8 +1,10 @@
 package li.cil.ocreloaded.minecraft.server;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
@@ -17,6 +19,8 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 
 public final class CommonServerHooks {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommonServerHooks.class);
     
     private CommonServerHooks() {}
 
@@ -40,7 +44,7 @@ public final class CommonServerHooks {
         // Hacky way to load our recipes
         RecipeManager recipeManager = server.getRecipeManager();
         try {
-            java.lang.reflect.Field recipesField = RecipeManager.class.getDeclaredField("recipes");
+            Field recipesField = getRecipesField();
             recipesField.setAccessible(true);
             @SuppressWarnings("unchecked")
             Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>> serverRecipes = (Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>>) recipesField.get(recipeManager);
@@ -57,8 +61,26 @@ public final class CommonServerHooks {
                     ));
             recipesField.set(recipeManager, finalRecipes);
         } catch (Exception e) {
-            LoggerFactory.getLogger(CommonServerHooks.class).error("Failed to inject recipes into server", e);
+            LOGGER.error("Failed to inject recipes into server", e);
         }
+    }
+
+    // I don't feel like transformers today, so quick hack until later
+    private static Field getRecipesField() {
+        for (Field field : RecipeManager.class.getDeclaredFields()) {
+            if (field.getName().equals("recipes")) {
+                return field;
+            }
+        }
+
+        // Otherwise, hopefully guess it
+        for (Field field : RecipeManager.class.getDeclaredFields()) {
+            if (field.getType().equals(Map.class)) {
+                return field;
+            }
+        }
+
+        throw new RuntimeException("Failed to find recipes field in RecipeManager");
     }
 
 }

@@ -46,6 +46,18 @@ public class ArchiveFileSystem implements FileSystem {
     }
 
     @Override
+    public long getCapacity() {
+        return getUsedSpace();
+    }
+
+    @Override
+    public long getUsedSpace() {
+        return archive.entries.values().stream()
+            .mapToLong(ArchiveEntry::size)
+            .sum();
+    }
+
+    @Override
     public boolean isDirectory(String path) {
         // TODO: A bit of a hack, may not detect empty directories correctly
         String fixedPath = PathUtil.minimizePath(archive.prefix + "/" + path) + "/";

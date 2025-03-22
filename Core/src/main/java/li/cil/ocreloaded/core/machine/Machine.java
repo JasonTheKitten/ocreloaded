@@ -13,10 +13,14 @@ public interface Machine {
     boolean signal(String name, Object... args);
 
     Signal popSignal();
+
+    double cpuTime();
     
-    long uptime();
+    double uptime();
 
     MachineParameters parameters();
+
+    boolean pause(double duration);
 
     public static record Signal(String name, Object[] args) {}
 

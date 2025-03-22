@@ -11,6 +11,10 @@ public interface FileSystem {
 
     long size(String path);
 
+    long getCapacity();
+
+    long getUsedSpace();
+
     boolean isDirectory(String path);
 
     long lastModified(String path);

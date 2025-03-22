@@ -38,6 +38,16 @@ public class InMemoryFileSystem implements FileSystem {
     }
 
     @Override
+    public long getCapacity() {
+        return Long.MAX_VALUE;
+    }
+
+    @Override
+    public long getUsedSpace() {
+        return getUsedSpace(root);
+    }
+
+    @Override
     public boolean isDirectory(String path) {
         return nodeByPath(path) instanceof InMemoryDirectory;
     }
@@ -147,6 +157,20 @@ public class InMemoryFileSystem implements FileSystem {
         }
 
         return parent;
+    }
+
+    private long getUsedSpace(InMemoryDirectory directory) {
+        long usedSpace = 0;
+        for (String childName : directory.list()) {
+            InMemoryNode node = directory.node(childName);
+            if (node instanceof InMemoryFile file) {
+                usedSpace += file.length();
+            } else if (node instanceof InMemoryDirectory inMemoryDirectory) {
+                usedSpace += getUsedSpace(inMemoryDirectory);
+            }
+        }
+
+        return usedSpace;
     }
     
 }

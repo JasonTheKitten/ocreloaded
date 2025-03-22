@@ -25,7 +25,19 @@ public class ComputerComponent extends AnnotatedComponent {
 
     @ComponentMethod(doc = "function([frequency:string or number[, duration:number]]) -- Plays a tone, useful to alert users via audible feedback.")
     public ComponentCallResult beep(ComponentCallContext context, ComponentCallArguments arguments) {
-        // TODO: Implement
+        if (arguments.count() == 1 && arguments.isString(0)) {
+            // TODO: Implement named beep
+        } else {
+            int frequency = arguments.optionalInteger(0, 440);
+            if (frequency < 20 || frequency > 2000) {
+                return ComponentCallResult.failure("invalid frequency, must be in [20, 2000]");
+            }
+            double duration = arguments.optionalDouble(1, 0.1);
+            int durationInMs = Math.max(50, Math.min(5000, (int) (duration * 1000)));
+            context.pause(durationInMs / 1000.0);
+            machineSupplier.get().ifPresent(machine -> machine.parameters().actions()
+                .beep((short) frequency, (short) durationInMs));
+        }
         return ComponentCallResult.success();
     }
 

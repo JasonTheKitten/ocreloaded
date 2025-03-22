@@ -73,19 +73,19 @@ public final class Recipes {
             recipeDirectory.mkdirs();
         }
         for (String recipeSet : RECIPE_SETS) {
-            InputStream fileStream = ClassLoader.getSystemResourceAsStream("assets/ocreloaded/recipes/" + recipeSet + ".recipes");
+            InputStream fileStream = streamAsset(server, "custom_recipes/" + recipeSet + ".recipes");
             File recipeFile = new File(recipeDirectory, recipeSet + ".recipes");
             Files.copy(fileStream, recipeFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
 
         File userRecipeFile = new File(recipeDirectory, "user.recipes");
         if (!userRecipeFile.exists()) {
-            InputStream fileStream = ClassLoader.getSystemResourceAsStream("assets/ocreloaded/recipes/user.recipes");
+            InputStream fileStream = streamAsset(server, "custom_recipes/user.recipes");
             Files.copy(fileStream, userRecipeFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
 
         File legacyOreDictFile = new File(recipeDirectory, "legacy_ore_dict.json");
-        InputStream fileStream = ClassLoader.getSystemResourceAsStream("assets/ocreloaded/recipes/legacy_ore_dict.json");
+        InputStream fileStream = streamAsset(server, "custom_recipes/legacy_ore_dict.json");
         Files.copy(fileStream, legacyOreDictFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
@@ -202,7 +202,6 @@ public final class Recipes {
     }
 
     private static Ingredient parseMapIngredient(Map<Object, Object> map) {
-        // TODO: Lookup ore dictionary
         if (map.containsKey("oreDict")) {
             Object value = map.get("oreDict");
             if (value instanceof String name) {
@@ -378,6 +377,10 @@ public final class Recipes {
 
     private static ResourceLocation safeResourceLocation(String name) {
         return new ResourceLocation(name.toLowerCase());
+    }
+
+    private static InputStream streamAsset(MinecraftServer server, String asset) throws IOException {
+        return server.getResourceManager().getResource(new ResourceLocation(OCReloadedCommon.MOD_ID, asset)).get().open();
     }
 
     private static class MyConfigIncluder implements ConfigIncluder, ConfigIncluderFile {

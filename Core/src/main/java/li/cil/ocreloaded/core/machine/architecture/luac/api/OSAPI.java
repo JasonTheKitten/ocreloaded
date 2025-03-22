@@ -19,8 +19,7 @@ public final class OSAPI {
     }
 
     private static int clock(LuaState luaState, Machine machine) {
-        // TODO: I forget, is uptime the same as CPU time?
-        luaState.pushNumber(machine.uptime());
+        luaState.pushNumber(machine.cpuTime());
         return 1;
     }
 

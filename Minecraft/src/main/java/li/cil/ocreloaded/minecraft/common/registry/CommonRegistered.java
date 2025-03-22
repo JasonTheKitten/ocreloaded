@@ -25,6 +25,7 @@ import li.cil.ocreloaded.minecraft.common.menu.ScreenMenu;
 import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
 import li.cil.ocreloaded.minecraft.common.network.power.PowerNetworkHandler;
 import li.cil.ocreloaded.minecraft.common.network.screen.ScreenNetworkHandler;
+import li.cil.ocreloaded.minecraft.common.network.sound.SoundNetworkHandler;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
@@ -53,6 +54,7 @@ public class CommonRegistered {
 
         NetworkUtil.getInstance().registerHandler("ocreloaded:power", new PowerNetworkHandler());
         NetworkUtil.getInstance().registerHandler("ocreloaded:screen", new ScreenNetworkHandler());
+        NetworkUtil.getInstance().registerHandler("ocreloaded:sound", new SoundNetworkHandler());
     }
 
     // Creative mode tabs

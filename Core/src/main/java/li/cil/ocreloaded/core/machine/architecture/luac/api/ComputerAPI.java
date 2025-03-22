@@ -26,6 +26,7 @@ public final class ComputerAPI {
             entry("tmpAddress", ComputerAPI::tmpAddress),
             entry("energy", ComputerAPI::energy),
             entry("maxEnergy", ComputerAPI::maxEnergy),
+            entry("getArchitectures", ComputerAPI::getArchitectures),
             entry("getArchitecture", ComputerAPI::getArchitecture),
             entry("setArchitecture", ComputerAPI::setArchitecture)
         ));
@@ -37,7 +38,7 @@ public final class ComputerAPI {
     }
 
     private static int uptime(LuaState luaState, Machine machine) {
-        luaState.pushNumber(machine.uptime() / 1000);
+        luaState.pushNumber(machine.uptime());
         return 1;
     }
 
@@ -84,6 +85,17 @@ public final class ComputerAPI {
     private static int maxEnergy(LuaState luaState, Machine machine) {
         // TODO: Use proper energy amount
         luaState.pushNumber(60);
+        return 1;
+    }
+
+    private static int getArchitectures(LuaState luaState, Machine machine) {
+        luaState.newTable();
+        List<String> supportedArchitectures = machine.parameters().processor().supportedArchitectures();
+        for (int i = 0; i < supportedArchitectures.size(); i++) {
+            luaState.pushNumber(i + 1);
+            luaState.pushString(supportedArchitectures.get(i));
+            luaState.setTable(-3);
+        }
         return 1;
     }
 
