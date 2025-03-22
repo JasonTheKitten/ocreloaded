@@ -76,5 +76,11 @@ public class ScreenMenu extends AbstractContainerMenu {
             blockEntity.getBlockState().getBlock() instanceof ScreenBlock screenBlock
             && screenBlock.getTier() > 1;
     }
+
+
+    public void onKeyboardClipboard(String clipboard) {
+        NetworkUtil.getInstance().messageServer(
+                ScreenNetworkInputMessages.createClipboardPasteMessage(blockEntity.getBlockPos(), clipboard));
+    }
     
 }

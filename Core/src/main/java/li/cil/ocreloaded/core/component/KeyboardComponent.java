@@ -2,7 +2,6 @@ package li.cil.ocreloaded.core.component;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import li.cil.ocreloaded.core.machine.component.AnnotatedComponent;
 import li.cil.ocreloaded.core.network.NetworkMessage;
@@ -40,6 +39,14 @@ public class KeyboardComponent extends AnnotatedComponent {
                     node.sendToReachable(new NetworkMessage("computer.checked_signal", player, "key_up", (int) charCode, keyCode, playerName));
                 }
                 break;
+            }
+            case "keyboard.clipboard": {
+                Player player = null;
+                String clipboard = (String) message.arguments()[1];
+                if (clipboard != null) {
+                    String playerName = "";//player.getName().getString();
+                    node.sendToReachable(new NetworkMessage("computer.checked_signal", player, "clipboard", clipboard, playerName));
+                }
             }
             default:
                 break;
