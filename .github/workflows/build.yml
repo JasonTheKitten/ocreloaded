@@ -1,5 +1,11 @@
 name: Build
-on: [pull_request, push]
+on:
+  push:
+    branches: [main]
+  merge_group:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+    branches: [main]
 
 jobs:
   build:
