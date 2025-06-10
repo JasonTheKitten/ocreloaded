@@ -16,5 +16,8 @@ jobs:
           distribution: 'microsoft'
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-      - name: build
-        run: ./gradlew build
+      - uses: burrunan/gradle-cache-action@v3
+        name: build project
+        with:
+          arguments: build
+          gradle-version: wrapper
