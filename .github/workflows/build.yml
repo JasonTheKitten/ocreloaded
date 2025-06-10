@@ -1,44 +1,29 @@
 name: Build
-
 on:
   push:
-    branches: [ master, staging, stable ]
+    branches: [main]
   merge_group:
   pull_request:
-    types: [ opened, reopened, synchronize, ready_for_review ]
-    branches: [ master, staging, stable ]
+    types: [opened, reopened, synchronize, ready_for_review]
+    branches: [main]
 
 jobs:
   build:
-    if: github.event.pull_request.draft == false
-    strategy:
-      matrix:
-        os: [ ubuntu-latest ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
-      - name: checkout branch
+      - name: checkout repository
         uses: actions/checkout@v4
-
       - name: validate gradle wrapper
         uses: gradle/actions/wrapper-validation@v4
-
       - name: setup jdk
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'microsoft'
-
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-
-      - name: build
-        run: ./gradlew build
-
-  ci-success:
-    name: Build
-    needs:
-      - build
-    runs-on: ubuntu-latest
-    steps:
-      - name: CI succeeded
-        run: exit 0
+      - uses: burrunan/gradle-cache-action@v3
+        name: build project
+        with:
+          arguments: build
+          gradle-version: wrapper
