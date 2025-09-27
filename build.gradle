@@ -22,7 +22,7 @@ allprojects {
         }
     }
 }
-["Fabric", "Forge", "NeoForge"].each { projectName ->
+["Fabric", "NeoForge"].each { projectName ->
     configure(project(projectName)) {
         apply plugin: 'com.github.johnrengelman.shadow'
         apply plugin: 'dev.architectury.loom'
