@@ -1,8 +1,8 @@
 .gradle
 build
-*/build
-*/run
-*/bin
+projects/*/build
+projects/*/run
+projects/*/bin
 
 .architectury-transformer
 

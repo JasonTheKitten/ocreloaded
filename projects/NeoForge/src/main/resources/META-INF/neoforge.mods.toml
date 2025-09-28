@@ -1,0 +1,32 @@
+modLoader = "javafml"
+loaderVersion = "{neoforgeLoaderVersionRange}"
+
+license = "See the LICENSE file included in the source code of this mod"
+
+[[mods]]
+modId = "ocreloaded"
+version = "{version}"
+displayName = "OpenComputers Reloaded"
+displayURL = "https://oc.cil.li/"
+logoFile = "../../../../../Minecraft/src/main/resources/ocreloaded/textures/gui/logo.png"
+logoBlur = false
+credits = "Based on the original OpenComputers mod, which was inspired by a few mods, most notably ComputerCraft."
+authors = "EveryOS, 6TELOIV, Walksanator, timuzkas. Resources are from authors of original OpenComputers (Sangar, payonel, Vexatos and others)"
+description = "Bring programmable computers to Minecraft! This mod is a complete rewrite of OpenComputers, but with extra goodies."
+
+[[dependencies.ocreloaded]]
+modId = "neoforge"
+type = "required"
+versionRange = "{neoforgeVersionRange}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.ocreloaded]]
+modId = "minecraft"
+type = "required"
+versionRange = "{minecraftVersionRange}"
+ordering = "NONE"
+side = "BOTH"
+
+[[mixins]]
+config = "ocreloaded.mixins.json"

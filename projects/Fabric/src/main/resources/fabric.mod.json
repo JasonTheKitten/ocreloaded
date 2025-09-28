@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "ocreloaded",
+  "version": "${version}",
+  "name": "OpenComputers Reloaded",
+  "description": "Bring programmable computers to Minecraft! This mod is a complete rewrite of OpenComputers, but with extra goodies.",
+  "authors": ["EveryOS, 6TELOIV, Walksanator, timuzkas - OC Rewrite", "Sangar, payonel, Vexatos, and others - Original OC authors"],
+  "license": "See LICENSE.txt file",
+  "icon": "assets/ocreloaded/textures/gui/logo.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "li.cil.ocreloaded.fabric.client.OCReloadedClient"
+    ],
+    "main": [
+      "li.cil.ocreloaded.fabric.common.OCReloaded"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~{minecraftVersion}",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
