@@ -18,7 +18,6 @@ pluginManagement {
 rootProject.name = "OpenComputersReloaded"
 
 include("Core")
-include("MinecraftAPI")
 include("Minecraft")
 include("NeoForge")
 include("Fabric")

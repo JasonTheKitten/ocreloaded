@@ -45,6 +45,7 @@ public final class Recipes {
     private static final String[] RECIPE_SETS = new String[] {
         "default", "hardmode", "peaceful"
     };
+
     private static final Map<String, List<String>> ORE_DICT = new HashMap<>();
 
     private final Map<String, RecipeProcessor> recipeHandlers = new HashMap<>();

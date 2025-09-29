@@ -1,6 +1,5 @@
 package li.cil.ocreloaded.minecraft.common.block;
 
-import li.cil.ocreloaded.minecraft.api.registry.menu.MenuRegistry;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
 import li.cil.ocreloaded.minecraft.common.menu.provider.ScreenMenuProvider;
 import net.minecraft.core.BlockPos;
@@ -18,11 +17,7 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.AttachFace;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
@@ -67,7 +62,8 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
                 && player instanceof ServerPlayer serverPlayer
                 && isKeyboardConnected(level, pos)
              ) {
-                MenuRegistry.openExtendedMenu(serverPlayer, menuProvider, screenMenuProvider::writeData);
+                // TODO: add back a way to open menus :PP
+                //MenuRegistry.openExtendedMenu(serverPlayer, menuProvider, screenMenuProvider::writeData);
                 return InteractionResult.CONSUME;
             }
         }

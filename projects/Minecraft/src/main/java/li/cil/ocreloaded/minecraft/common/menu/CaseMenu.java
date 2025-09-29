@@ -1,16 +1,9 @@
 package li.cil.ocreloaded.minecraft.common.menu;
 
-import java.util.List;
-
 import li.cil.ocreloaded.minecraft.common.assets.SharedTextures;
 import li.cil.ocreloaded.minecraft.common.container.BasicContainer;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
-import li.cil.ocreloaded.minecraft.common.item.CPUItem;
-import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
-import li.cil.ocreloaded.minecraft.common.item.EepromItem;
-import li.cil.ocreloaded.minecraft.common.item.FloppyDiskItem;
-import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
-import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
+import li.cil.ocreloaded.minecraft.common.item.*;
 import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
 import li.cil.ocreloaded.minecraft.common.network.power.PowerNetworkMessage;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
@@ -25,6 +18,8 @@ import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 public class CaseMenu extends AbstractContainerMenu {
 

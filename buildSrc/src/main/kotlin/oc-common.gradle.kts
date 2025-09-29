@@ -7,9 +7,6 @@ configurations {
     create("coreJava") {
         isCanBeResolved = true
     }
-    create("apiJava") {
-        isCanBeResolved = true
-    }
 }
 
 repositories {

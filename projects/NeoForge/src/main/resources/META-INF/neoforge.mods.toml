@@ -5,10 +5,10 @@ license = "See the LICENSE file included in the source code of this mod"
 
 [[mods]]
 modId = "ocreloaded"
-version = "{version}"
+version = "${version}"
 displayName = "OpenComputers Reloaded"
 displayURL = "https://oc.cil.li/"
-logoFile = "../../../../../Minecraft/src/main/resources/ocreloaded/textures/gui/logo.png"
+logoFile = "assets/ocreloaded/textures/gui/logo.png"
 logoBlur = false
 credits = "Based on the original OpenComputers mod, which was inspired by a few mods, most notably ComputerCraft."
 authors = "EveryOS, 6TELOIV, Walksanator, timuzkas. Resources are from authors of original OpenComputers (Sangar, payonel, Vexatos and others)"

@@ -9,9 +9,6 @@ public final class CommonClientHooks {
     private CommonClientHooks() {}
 
     public static void setup() {
-        ColorHandlers.setup();
-
         ClientBridge.getInstance().registerClient(SoundPlayerProvider.class, new SoundPlayer());
     }
-
 }

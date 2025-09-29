@@ -1,6 +1,5 @@
 plugins {
     id("oc-neo-based")
-    `java-library`
 }
 
 neoForge {
@@ -9,7 +8,6 @@ neoForge {
 
 dependencies {
     api(project(":Core"))
-    api(project(":MinecraftAPI"))
 }
 
 tasks.register<Copy>("copyResources") {
