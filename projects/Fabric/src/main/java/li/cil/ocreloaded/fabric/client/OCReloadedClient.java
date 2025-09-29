@@ -8,6 +8,6 @@ public class OCReloadedClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientRegistered.setup();
-        //CommonClientHooks.setup();
+        CommonClientHooks.setup();
     }
 }

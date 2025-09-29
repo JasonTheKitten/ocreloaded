@@ -50,14 +50,12 @@ public class CaseBlock extends Block implements EntityBlock, TieredBlock {
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof CaseBlockEntity caseBlockEntity && player instanceof ServerPlayer serverPlayer) {
-            // TODO: COMEBACK
-            //MenuRegistry.openExtendedMenu(serverPlayer, caseBlockEntity, caseBlockEntity::writeData);
+            MenuRegistry.openExtendedMenu(serverPlayer, caseBlockEntity, caseBlockEntity::writeData);
         }
 
         return InteractionResult.CONSUME;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void onRemove(BlockState blockState, Level level, BlockPos blockPos, BlockState blockState2, boolean bl) {
         Containers.dropContentsOnDestroy(blockState, blockState2, level, blockPos);

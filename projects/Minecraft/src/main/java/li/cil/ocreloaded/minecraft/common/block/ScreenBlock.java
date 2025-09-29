@@ -6,7 +6,6 @@ import li.cil.ocreloaded.minecraft.common.menu.provider.ScreenMenuProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
@@ -68,8 +67,7 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
                 && player instanceof ServerPlayer serverPlayer
                 && isKeyboardConnected(level, pos)
              ) {
-                // TODO: COMEBACK
-                //MenuRegistry.openExtendedMenu(serverPlayer, menuProvider, screenMenuProvider::writeData);
+                MenuRegistry.openExtendedMenu(serverPlayer, menuProvider, screenMenuProvider::writeData);
                 return InteractionResult.CONSUME;
             }
         }

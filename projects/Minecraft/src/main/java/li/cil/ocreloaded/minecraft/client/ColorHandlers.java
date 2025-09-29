@@ -1,6 +1,6 @@
 package li.cil.ocreloaded.minecraft.client;
 
-import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
+import li.cil.ocreloaded.minecraft.api.registry.client.rendering.ColorHandlerRegistry;
 import li.cil.ocreloaded.minecraft.common.block.TieredBlock;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import li.cil.ocreloaded.minecraft.common.util.Colors;

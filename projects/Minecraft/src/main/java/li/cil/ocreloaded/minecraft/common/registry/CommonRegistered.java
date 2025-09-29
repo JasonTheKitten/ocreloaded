@@ -143,7 +143,6 @@ public class CommonRegistered {
     public static final RegistrySupplier<Item> EEPROM_LUA = ITEMS.register("eeprom_lua", () -> new LuaEepromItem(DEFAULT_ITEM_PROPERTIES));
 
     // Menu types
-    // TODO: COMEBACK
     public static final RegistrySupplier<MenuType<CaseMenu>> CASE_MENU_TYPE = MENUS.register("case", () -> MenuRegistry.ofExtended(CaseMenu::new));
     public static final RegistrySupplier<MenuType<ScreenMenu>> SCREEN_MENU_TYPE = MENUS.register("screen", () -> MenuRegistry.ofExtended(ScreenMenu::new));
 
