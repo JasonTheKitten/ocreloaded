@@ -1,10 +1,29 @@
 package li.cil.ocreloaded.minecraft.common.entity;
 
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Supplier;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.netty.buffer.Unpooled;
 import li.cil.ocreloaded.core.component.ComputerComponent;
 import li.cil.ocreloaded.core.component.FileSystemComponent;
 import li.cil.ocreloaded.core.filesystem.InMemoryFileSystem;
-import li.cil.ocreloaded.core.machine.*;
+import li.cil.ocreloaded.core.machine.Machine;
+import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
+import li.cil.ocreloaded.core.machine.MachineParameters;
+import li.cil.ocreloaded.core.machine.MachineRegistry;
+import li.cil.ocreloaded.core.machine.MachineRegistryEntry;
+import li.cil.ocreloaded.core.machine.Persistable;
+import li.cil.ocreloaded.core.machine.PersistenceHolder;
 import li.cil.ocreloaded.core.machine.component.Component;
 import li.cil.ocreloaded.core.machine.imp.MachineProcessorImp;
 import li.cil.ocreloaded.core.misc.Label;
@@ -25,10 +44,8 @@ import li.cil.ocreloaded.minecraft.common.util.ItemList.ItemChangeListener;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
@@ -39,18 +56,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.function.Supplier;
 
 public class CaseBlockEntity extends RandomizableContainerBlockEntity implements TickableEntity, ComponentTileEntity, ItemChangeListener, Persistable {
 

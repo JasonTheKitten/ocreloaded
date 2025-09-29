@@ -1,9 +1,10 @@
 package li.cil.ocreloaded.fabric.common;
 
+import io.netty.buffer.Unpooled;
 import li.cil.ocreloaded.minecraft.common.registry.IPlatformRegistryHelper;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -25,8 +26,14 @@ public class FabricPlatformRegistryHelper implements IPlatformRegistryHelper {
 
     @Override
     public <T extends AbstractContainerMenu> MenuType<T> registerMenuType(TypedMenuConstructor<T> menuConstructor) {
-        ExtendedScreenHandlerType.ExtendedFactory<T, RegistryFriendlyByteBuf> screenFactory = menuConstructor::createMenu;
+        ExtendedScreenHandlerType.ExtendedFactory<T, FriendlyByteBuf> screenFactory = menuConstructor::createMenu;
 
-        return new ExtendedScreenHandlerType<>(screenFactory, StreamCodec.of((object, object2) -> {}, object -> null));
+        return new ExtendedScreenHandlerType<>(screenFactory, StreamCodec.of((dest, src) -> {
+            dest.writeBytes(src);
+        }, s -> {
+            FriendlyByteBuf byteBuf = new FriendlyByteBuf(Unpooled.buffer());
+            byteBuf.writeBytes(s);
+            return byteBuf;
+        }));
     }
 }

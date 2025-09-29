@@ -1,7 +1,9 @@
 package li.cil.ocreloaded.minecraft.common.registry;
 
+import java.util.ServiceLoader;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -11,9 +13,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.ServiceLoader;
-
 public interface IPlatformRegistryHelper {
+
     IPlatformRegistryHelper INSTANCE = ServiceLoader.load(IPlatformRegistryHelper.class).findFirst().orElseThrow();
 
     CreativeModeTab.Builder constructTabBuilder();
@@ -28,6 +29,7 @@ public interface IPlatformRegistryHelper {
 
     @FunctionalInterface
     interface TypedMenuConstructor<T extends AbstractContainerMenu> {
-        T createMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buf);
+        T createMenu(int containerId, Inventory playerInventory, FriendlyByteBuf buf);
     }
+    
 }

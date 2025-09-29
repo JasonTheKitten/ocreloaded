@@ -2,6 +2,7 @@ package li.cil.ocreloaded.minecraft.common.block;
 
 
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
+import li.cil.ocreloaded.minecraft.common.util.IPlatformMenuHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,8 +50,7 @@ public class CaseBlock extends Block implements EntityBlock, TieredBlock {
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof CaseBlockEntity caseBlockEntity && player instanceof ServerPlayer serverPlayer) {
-            // TODO: add back a way to open menus :PP
-            // MenuRegistry.openExtendedMenu(serverPlayer, caseBlockEntity, caseBlockEntity::writeData);
+            IPlatformMenuHelper.INSTANCE.openExtendedMenu(serverPlayer, caseBlockEntity, caseBlockEntity::writeData);
         }
 
         return InteractionResult.CONSUME;

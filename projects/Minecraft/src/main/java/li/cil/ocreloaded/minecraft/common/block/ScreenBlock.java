@@ -2,6 +2,7 @@ package li.cil.ocreloaded.minecraft.common.block;
 
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
 import li.cil.ocreloaded.minecraft.common.menu.provider.ScreenMenuProvider;
+import li.cil.ocreloaded.minecraft.common.util.IPlatformMenuHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -62,8 +63,7 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
                 && player instanceof ServerPlayer serverPlayer
                 && isKeyboardConnected(level, pos)
              ) {
-                // TODO: add back a way to open menus :PP
-                //MenuRegistry.openExtendedMenu(serverPlayer, menuProvider, screenMenuProvider::writeData);
+                IPlatformMenuHelper.INSTANCE.openExtendedMenu(serverPlayer, menuProvider, screenMenuProvider::writeData);
                 return InteractionResult.CONSUME;
             }
         }

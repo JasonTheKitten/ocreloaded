@@ -16,6 +16,7 @@ public class NeoPlatformRegistryHelper implements IPlatformRegistryHelper {
     }
 
     @Override
+    @SuppressWarnings("null")
     public <T extends BlockEntity> BlockEntityType<T> createBlockEntityType(BlockEntityConstructor<T> constructor, Block... blocks) {
         // Quote: "Build using null; vanilla does some datafixer shenanigans with the parameter that we don't need."
         //noinspection DataFlowIssue
