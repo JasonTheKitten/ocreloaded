@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.client.renderer.entity;
 
+import javax.annotation.Nonnull;
+
 import org.joml.Quaternionf;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -18,7 +20,10 @@ public class CaseRenderer implements BlockEntityRenderer<CaseBlockEntity> {
     public CaseRenderer(BlockEntityRendererProvider.Context context) {}
 
     @Override
-    public void render(CaseBlockEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
+    public void render(
+        @Nonnull CaseBlockEntity blockEntity, float partialTick, @Nonnull PoseStack poseStack,
+        @Nonnull MultiBufferSource bufferSource, int combinedLight, int combinedOverlay
+    ) {
         poseStack.pushPose();
 
         poseStack.translate(.5, .5, 0.5);

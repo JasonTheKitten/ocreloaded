@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.client.renderer.entity.screen;
 
+import javax.annotation.Nonnull;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 
@@ -22,8 +24,8 @@ public class ScreenRenderer implements BlockEntityRenderer<ScreenBlockEntity> {
 
     @Override
     public void render(
-        ScreenBlockEntity blockEntity, float partialTick, PoseStack poseStack,
-        MultiBufferSource bufferSource, int combinedLight, int combinedOverlay
+        @Nonnull ScreenBlockEntity blockEntity, float partialTick, @Nonnull PoseStack poseStack,
+        @Nonnull MultiBufferSource bufferSource, int combinedLight, int combinedOverlay
     ) {
         int[] bufferSize = blockEntity.getScreenBuffer().viewport();
         float totalWidth = bufferSize[0] * ScreenDisplayRenderer.CELL_WIDTH;
