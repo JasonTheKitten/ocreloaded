@@ -49,12 +49,11 @@ public final class RenderUtil {
 
     private static void putVertexWithAO(VertexConsumer vertexConsumer, Matrix4f matrix, float x, float y, TextureAtlasSprite sprite, float brightness, int lightmap) {
         vertexConsumer
-            .vertex(matrix, x, y, 0)
-            .color((int) (brightness * 255), (int) (brightness * 255), (int) (brightness * 255), 255)
-            .uv(sprite.getU(x > 0 ? 1 : 0), sprite.getV(y > 0 ? 0 : 1))
-            .uv2(lightmap)
-            .normal(0, 0, 0)
-            .endVertex();
+            .addVertex(matrix, x, y, 0)
+            .setColor((int) (brightness * 255), (int) (brightness * 255), (int) (brightness * 255), 255)
+            .setUv(sprite.getU(x > 0 ? 1 : 0), sprite.getV(y > 0 ? 0 : 1))
+            .setLight(lightmap)
+            .setNormal(0, 0, 0);
     }
 
     private static float getVertexPosX(int vertexIndex) {

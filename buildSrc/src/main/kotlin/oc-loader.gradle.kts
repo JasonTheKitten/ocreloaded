@@ -2,20 +2,6 @@ plugins {
     id("oc-common")
 }
 
-configurations {
-    create("commonJava") {
-        isCanBeResolved = true
-    }
-    create("commonResources") {
-        isCanBeResolved = true
-    }
-}
-
-tasks.named<JavaCompile>("compileJava") {
-    dependsOn(configurations["commonJava"])
-    source(configurations["commonJava"])
-}
-
 tasks.withType<ProcessResources> {
     val properties = mapOf(
         "neoforgeVersionRange" to rootProject.properties["neo_loader_version_range"],

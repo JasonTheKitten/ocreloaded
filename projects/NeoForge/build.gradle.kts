@@ -20,7 +20,5 @@ neoForge {
 }
 
 dependencies {
-    compileOnly(project(":Minecraft"))
-    commonJava(project(path = ":Minecraft", configuration = "commonJava"))
-    commonResources(project(path = ":Minecraft", configuration = "commonResources"))
+    implementation(project(":Minecraft"))
 }

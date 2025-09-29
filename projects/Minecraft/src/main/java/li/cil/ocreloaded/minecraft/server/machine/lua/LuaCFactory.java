@@ -81,7 +81,7 @@ public class LuaCFactory {
     }
 
     private Optional<Resource> getResource(String architecture) {
-        ResourceLocation resourceLocation = new ResourceLocation(OCReloadedCommon.MOD_ID, "libs/" + architecture + "/" + executableName);
+        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, "libs/" + architecture + "/" + executableName);
         return server.getResourceManager().getResource(resourceLocation);
     }
 

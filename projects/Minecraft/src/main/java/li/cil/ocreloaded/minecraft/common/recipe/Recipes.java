@@ -124,7 +124,8 @@ public final class Recipes {
 
     private void registerRecipes(Config config, RecipeRegistrationDelegate registrationDelegate) {
         for (Item item: BuiltInRegistries.ITEM) {
-            ResourceLocation key = item.arch$registryName();
+            // TODO: COMEBACK
+            /*ResourceLocation key = item.arch$registryName();
             if (!key.getNamespace().equals(OCReloadedCommon.MOD_ID)) continue;
 
             String name = key.getPath();
@@ -150,7 +151,7 @@ public final class Recipes {
                 }
             } else {
                 LOGGER.warn("No recipe for '{}', you will not be able to craft this item. To suppress this warning, disable the recipe (assign `false` to it).", name);
-            }
+            }*/
         }
     }
 
@@ -283,11 +284,11 @@ public final class Recipes {
     }
 
     private static Item findItem(String name) {
-        return BuiltInRegistries.ITEM.get(safeResourceLocation(name));
+        return BuiltInRegistries.ITEM.get(ResourceLocation.parse(name));
     }
 
     private static Block findBlock(String name) {
-        return BuiltInRegistries.BLOCK.get(safeResourceLocation(name));
+        return BuiltInRegistries.BLOCK.get(ResourceLocation.parse(name));
     }
 
     private static String toLegacyName(String modernName) {
@@ -336,23 +337,23 @@ public final class Recipes {
     private static Optional<Ingredient> getOre(String name) {
         // TODO: I don't think this actually works...
         Optional<TagKey<Item>> key = switch(name) {
-            case "ingotIron" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ingots/iron")));
-            case "ingotGold" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ingots/gold")));
-            case "gemDiamond" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ores/diamond")));
-            case "gemLapis" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ores/lapis")));
-            case "emerald" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ores/emerald")));
-            case "redstone" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "ores/redstone")));
-            case "nuggetGold" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", "nuggets/gold")));
-            case "chipDiamond" -> Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation(OCReloadedCommon.MOD_ID, "chip_diamond")));
+            case "ingotIron" -> Optional.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ingots/iron")));
+            case "ingotGold" -> Optional.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ingots/gold")));
+            case "gemDiamond" -> Optional.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ores/diamond")));
+            case "gemLapis" -> Optional.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ores/lapis")));
+            case "emerald" -> Optional.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ores/emerald")));
+            case "redstone" -> Optional.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ores/redstone")));
+            case "nuggetGold" -> Optional.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "nuggets/gold")));
+            case "chipDiamond" -> Optional.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, "chip_diamond")));
             default -> Optional.empty();
         };
 
         if (key.isEmpty() && name.contains(":")) {
             String adjustedName = name.replaceAll("([A-Z]+)", "_$1").toLowerCase();
             if (adjustedName.startsWith("oc:")) {
-                key = Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation(OCReloadedCommon.MOD_ID, adjustedName.substring(3))));
+                key = Optional.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, adjustedName.substring(3))));
             } else {
-                key = Optional.of(TagKey.create(Registries.ITEM, new ResourceLocation(adjustedName)));
+                key = Optional.of(TagKey.create(Registries.ITEM, ResourceLocation.parse(adjustedName)));
             }
         }
 
@@ -375,12 +376,8 @@ public final class Recipes {
         return Optional.empty();
     }
 
-    private static ResourceLocation safeResourceLocation(String name) {
-        return new ResourceLocation(name.toLowerCase());
-    }
-
     private static InputStream streamAsset(MinecraftServer server, String asset) throws IOException {
-        return server.getResourceManager().getResource(new ResourceLocation(OCReloadedCommon.MOD_ID, asset)).get().open();
+        return server.getResourceManager().getResource(ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, asset)).get().open();
     }
 
     private static class MyConfigIncluder implements ConfigIncluder, ConfigIncluderFile {

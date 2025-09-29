@@ -55,7 +55,7 @@ public final class LootFileSystemSupplier {
     
     private static Map<String, String> getRemappings(ResourceManager resourceManager, ResourceLocation resourceLocation, String data) {
         String remapPath = resourceLocation.getPath() + "/" + data + ".remap";
-        Optional<Resource> remapResource = resourceManager.getResource(new ResourceLocation(resourceLocation.getNamespace(), remapPath));
+        Optional<Resource> remapResource = resourceManager.getResource(ResourceLocation.fromNamespaceAndPath(resourceLocation.getNamespace(), remapPath));
         if (remapResource.isEmpty()) {
             return Map.of();
         }

@@ -64,22 +64,20 @@ public class MultiBufferSourceDrawingContext implements DrawingContext {
 
     private void putVertexWithAO(VertexConsumer vertexConsumer, Matrix4f matrix, float x, float y, float u, float v, TextureAtlasSprite sprite) {
         vertexConsumer
-            .vertex(matrix, x, y, 0)
-            .color((int) (color[0] * 255), (int) (color[1] * 255), (int) (color[2] * 255), (int) (color[3] * 255))
-            .uv(sprite.getU(u), sprite.getV(v))
-            .uv2(0xF000F0)
-            .normal(0, 0, 0)
-            .endVertex();
+            .addVertex(matrix, x, y, 0)
+            .setColor((int) (color[0] * 255), (int) (color[1] * 255), (int) (color[2] * 255), (int) (color[3] * 255))
+            .setUv(sprite.getU(u), sprite.getV(v))
+            .setLight(0xF000F0)
+            .setNormal(0, 0, 0);
     }
 
     private void putFillVertexWithAO(VertexConsumer vertexConsumer, Matrix4f matrix, float x, float y, float u, float v, TextureAtlasSprite sprite, int myColor) {
         vertexConsumer
-            .vertex(matrix, x, y, .001f)
-            .color((myColor >> 16) & 0xFF, (myColor >> 8) & 0xFF, myColor & 0xFF, (myColor >> 24) & 0xFF)
-            .uv(sprite.getU(u), sprite.getV(v))
-            .uv2(0xF000F0)
-            .normal(0, 0, 0)
-            .endVertex();
+            .addVertex(matrix, x, y, .001f)
+            .setColor((myColor >> 16) & 0xFF, (myColor >> 8) & 0xFF, myColor & 0xFF, (myColor >> 24) & 0xFF)
+            .setUv(sprite.getU(u), sprite.getV(v))
+            .setLight(0xF000F0)
+            .setNormal(0, 0, 0);
     }
 
 }

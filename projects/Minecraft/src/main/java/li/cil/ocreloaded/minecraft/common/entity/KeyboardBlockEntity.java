@@ -9,6 +9,7 @@ import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -36,14 +37,14 @@ public class KeyboardBlockEntity extends BlockEntity implements TickableEntity, 
     }
 
     @Override
-    public void load(CompoundTag compoundTag) {
-        super.load(compoundTag);
+    public void loadAdditional(CompoundTag compoundTag, HolderLookup.Provider registries) {
+        super.loadAdditional(compoundTag, registries);
         networkNode.load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 
     @Override
-    public void saveAdditional(CompoundTag compoundTag) {
-        super.saveAdditional(compoundTag);
+    public void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider registries) {
+        super.saveAdditional(compoundTag, registries);
         networkNode.save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 

@@ -23,6 +23,7 @@ import li.cil.ocreloaded.minecraft.common.network.screen.ScreenNetworkMessage;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -77,8 +78,8 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
     }
 
     @Override
-    public void load(CompoundTag compoundTag) {
-        super.load(compoundTag);
+    public void loadAdditional(CompoundTag compoundTag, HolderLookup.Provider registries) {
+        super.loadAdditional(compoundTag, registries);
         networkNode.load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
 
         if (this.level == null || level.isClientSide) return;
@@ -86,8 +87,8 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
     }
 
     @Override
-    public void saveAdditional(CompoundTag compoundTag) {
-        super.saveAdditional(compoundTag);
+    public void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider registries) {
+        super.saveAdditional(compoundTag, registries);
         networkNode.save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 

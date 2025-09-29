@@ -1,9 +1,10 @@
 package li.cil.ocreloaded.minecraft.common.registry;
 
 import dev.architectury.registry.CreativeTabRegistry;
-import dev.architectury.registry.menu.MenuRegistry;
-import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
+import li.cil.ocreloaded.minecraft.api.BlockEntityTypeHelper;
+import li.cil.ocreloaded.minecraft.api.registry.menu.MenuRegistry;
+import li.cil.ocreloaded.minecraft.api.registry.registries.DeferredRegister;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
 import li.cil.ocreloaded.minecraft.common.block.KeyboardBlock;
@@ -58,14 +59,14 @@ public class CommonRegistered {
     }
 
     // Creative mode tabs
-    public static final RegistrySupplier<CreativeModeTab> CREATIVE_TAB = CREATIVE_TABS.register("creative", () -> CreativeTabRegistry.create(
+    /*public static final RegistrySupplier<CreativeModeTab> CREATIVE_TAB = CREATIVE_TABS.register("creative", () -> CreativeTabRegistry.create(
         Component.translatable("title.ocreloaded"),
         () -> new ItemStack(CommonRegistered.CASE_BLOCK_ITEM_TIER_1.get())
-    ));
+    ));*/
 
     // Default properties
     private static final BlockBehaviour.Properties DEFAULT_BLOCK_PROPERTIES = BlockBehaviour.Properties.of().strength(2f).noOcclusion();
-    private static final Item.Properties DEFAULT_ITEM_PROPERTIES = new Item.Properties().arch$tab(CREATIVE_TAB);
+    private static final Item.Properties DEFAULT_ITEM_PROPERTIES = new Item.Properties();//.arch$tab(CREATIVE_TAB);
 
     // Blocks
     public static final RegistrySupplier<Block> CASE_BLOCK_TIER_1 = BLOCKS.register("case1", () -> new CaseBlock(DEFAULT_BLOCK_PROPERTIES.strength(2.5f), 1));
@@ -142,15 +143,17 @@ public class CommonRegistered {
     public static final RegistrySupplier<Item> EEPROM_LUA = ITEMS.register("eeprom_lua", () -> new LuaEepromItem(DEFAULT_ITEM_PROPERTIES));
 
     // Menu types
+    // TODO: COMEBACK
     public static final RegistrySupplier<MenuType<CaseMenu>> CASE_MENU_TYPE = MENUS.register("case", () -> MenuRegistry.ofExtended(CaseMenu::new));
     public static final RegistrySupplier<MenuType<ScreenMenu>> SCREEN_MENU_TYPE = MENUS.register("screen", () -> MenuRegistry.ofExtended(ScreenMenu::new));
 
     // Block entities
-    public static final RegistrySupplier<BlockEntityType<CaseBlockEntity>> CASE_BLOCK_ENTITY = BLOCK_ENTITIES.register("case", () -> BlockEntityType.Builder
-        .of(CaseBlockEntity::new, CASE_BLOCK_TIER_1.get(), CASE_BLOCK_TIER_2.get(), CASE_BLOCK_TIER_3.get(), CASE_BLOCK_CREATIVE.get()).build(null));
-    public static final RegistrySupplier<BlockEntityType<ScreenBlockEntity>> SCREEN_BLOCK_ENTITY = BLOCK_ENTITIES.register("screen", () -> BlockEntityType.Builder
-        .of(ScreenBlockEntity::new, SCREEN_BLOCK_TIER_1.get(), SCREEN_BLOCK_TIER_2.get(), SCREEN_BLOCK_TIER_3.get()).build(null));
-    public static final RegistrySupplier<BlockEntityType<KeyboardBlockEntity>> KEYBOARD_BLOCK_ENTITY = BLOCK_ENTITIES.register("keyboard", () -> BlockEntityType.Builder
-        .of(KeyboardBlockEntity::new, KEYBOARD_BLOCK.get()).build(null));
+    public static final RegistrySupplier<BlockEntityType<CaseBlockEntity>> CASE_BLOCK_ENTITY = BLOCK_ENTITIES.register("case", () -> BlockEntityTypeHelper
+        .createBlockEntityType(CaseBlockEntity::new, CASE_BLOCK_TIER_1.get(), CASE_BLOCK_TIER_2.get(), CASE_BLOCK_TIER_3.get(), CASE_BLOCK_CREATIVE.get()));
+
+    public static final RegistrySupplier<BlockEntityType<ScreenBlockEntity>> SCREEN_BLOCK_ENTITY = BLOCK_ENTITIES.register("screen", () -> BlockEntityTypeHelper
+        .createBlockEntityType(ScreenBlockEntity::new, SCREEN_BLOCK_TIER_1.get(), SCREEN_BLOCK_TIER_2.get(), SCREEN_BLOCK_TIER_3.get()));
+    public static final RegistrySupplier<BlockEntityType<KeyboardBlockEntity>> KEYBOARD_BLOCK_ENTITY = BLOCK_ENTITIES.register("keyboard", () -> BlockEntityTypeHelper
+        .createBlockEntityType(KeyboardBlockEntity::new, KEYBOARD_BLOCK.get()));
 
 }

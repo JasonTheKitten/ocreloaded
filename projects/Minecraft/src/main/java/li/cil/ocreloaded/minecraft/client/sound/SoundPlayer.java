@@ -9,7 +9,7 @@ public class SoundPlayer implements SoundPlayerProvider {
     
     @Override
     public void playBeepSound(BlockPos position, short frequency, short duration) {
-        ResourceLocation resourceLocation = new ResourceLocation("ocreloaded", "beep");
+        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath("ocreloaded", "beep");
         BeepSound beepSound = new BeepSound(resourceLocation, position, frequency, duration);
         Minecraft.getInstance().getSoundManager().play(beepSound);
     }

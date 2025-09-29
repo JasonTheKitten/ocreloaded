@@ -1,3 +1,5 @@
+evaluationDependsOn(":Minecraft")
+
 plugins {
     id("oc-loader")
     alias(libs.plugins.loom)
@@ -16,7 +18,11 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${libs.versions.fabricLoader.get()}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${libs.versions.fabricApi.get()}")
 
-    compileOnly(project(":Minecraft"))
-    commonJava(project(path = ":Minecraft", configuration = "commonJava"))
-    commonResources(project(path = ":Minecraft", configuration = "commonResources"))
+    implementation(project(":Minecraft"))
+}
+
+sourceSets.named("main") {
+    resources {
+        srcDir(project(":Minecraft").sourceSets.named("main").get().resources.srcDirs)
+    }
 }

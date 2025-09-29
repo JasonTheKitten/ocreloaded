@@ -1,6 +1,6 @@
 package li.cil.ocreloaded.minecraft.common.block;
 
-import dev.architectury.registry.menu.MenuRegistry;
+import li.cil.ocreloaded.minecraft.api.registry.menu.MenuRegistry;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
 import li.cil.ocreloaded.minecraft.common.menu.provider.ScreenMenuProvider;
 import net.minecraft.core.BlockPos;
@@ -60,7 +60,7 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide()) {
             MenuProvider menuProvider = state.getMenuProvider(level, pos);
             if (
@@ -68,7 +68,8 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
                 && player instanceof ServerPlayer serverPlayer
                 && isKeyboardConnected(level, pos)
              ) {
-                MenuRegistry.openExtendedMenu(serverPlayer, menuProvider, screenMenuProvider::writeData);
+                // TODO: COMEBACK
+                //MenuRegistry.openExtendedMenu(serverPlayer, menuProvider, screenMenuProvider::writeData);
                 return InteractionResult.CONSUME;
             }
         }

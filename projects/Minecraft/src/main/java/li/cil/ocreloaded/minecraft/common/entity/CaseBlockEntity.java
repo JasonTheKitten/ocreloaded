@@ -42,6 +42,7 @@ import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import li.cil.ocreloaded.minecraft.common.util.ItemList;
 import li.cil.ocreloaded.minecraft.common.util.ItemList.ItemChangeListener;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -83,23 +84,23 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     }
 
     @Override
-    public void load(CompoundTag compoundTag) {
-        super.load(compoundTag);
-        ContainerHelper.loadAllItems(compoundTag, this.items);
+    public void loadAdditional(CompoundTag compoundTag, HolderLookup.Provider registries) {
+        super.loadAdditional(compoundTag, registries);
+        ContainerHelper.loadAllItems(compoundTag, this.items, registries);
         load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
         updateBlockState();
     }
 
     @Override
-    public void saveAdditional(CompoundTag compoundTag) {
-        super.saveAdditional(compoundTag);
-        ContainerHelper.saveAllItems(compoundTag, this.items);
+    public void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider registries) {
+        super.saveAdditional(compoundTag, registries);
+        ContainerHelper.saveAllItems(compoundTag, this.items, registries);
         save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag compoundTag = super.getUpdateTag();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag compoundTag = super.getUpdateTag(registries);
         compoundTag.putBoolean(TAG_POWERED, this.powered);
 
         return compoundTag;
@@ -249,9 +250,10 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
         if (!networkNode.component().isPresent()) return;
         Component component = networkNode.component().get();
 
-        CompoundTag tag = itemStack.getOrCreateTag();
-        component.load(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
-        component.save(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
+        // TODO: COMEBACK
+        // CompoundTag tag = itemStack.getOrCreateTag();
+        // component.load(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
+        // component.save(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
         // TODO: Reset component on fresh boot if tmp is not persistant
 
         components.put(itemStack, networkNode);
