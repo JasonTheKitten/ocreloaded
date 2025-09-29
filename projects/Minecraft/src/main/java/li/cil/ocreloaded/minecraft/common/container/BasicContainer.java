@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.common.container;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -74,12 +76,12 @@ public class BasicContainer implements Container {
     }
 
     @Override
-    public void setItem(int index, ItemStack itemStack) {
+    public void setItem(int index, @Nonnull ItemStack itemStack) {
         this.items.set(index, itemStack);
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@Nonnull Player player) {
         return true;
     }
     

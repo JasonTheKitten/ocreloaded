@@ -51,7 +51,7 @@ public class LuaCFactory {
             && tempDir != null
             && (resource = getResource(architecture)).isPresent();
 
-        if (isAvailable) {
+        if (isAvailable && resource != null) {
             LOGGER.trace("LuaJIT native library available for this platform: " + resource.get());
         } else {
             LOGGER.error("LuaJIT native library not available for this platform.");

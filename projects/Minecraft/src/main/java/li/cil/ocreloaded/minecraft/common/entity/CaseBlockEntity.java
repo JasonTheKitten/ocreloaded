@@ -10,6 +10,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +86,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     }
 
     @Override
-    public void loadAdditional(CompoundTag compoundTag, HolderLookup.Provider registries) {
+    public void loadAdditional(@Nonnull CompoundTag compoundTag, @Nonnull HolderLookup.Provider registries) {
         super.loadAdditional(compoundTag, registries);
         ContainerHelper.loadAllItems(compoundTag, this.items, registries);
         load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
@@ -92,14 +94,14 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     }
 
     @Override
-    public void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider registries) {
+    public void saveAdditional(@Nonnull CompoundTag compoundTag, @Nonnull HolderLookup.Provider registries) {
         super.saveAdditional(compoundTag, registries);
         ContainerHelper.saveAllItems(compoundTag, this.items, registries);
         save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+    public CompoundTag getUpdateTag(@Nonnull HolderLookup.Provider registries) {
         CompoundTag compoundTag = super.getUpdateTag(registries);
         compoundTag.putBoolean(TAG_POWERED, this.powered);
 
@@ -107,12 +109,11 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     }
 
     @Override
-    public void setLevel(Level level) {
+    public void setLevel(@Nonnull Level level) {
         super.setLevel(level);
-        if (level == null) return;
 
         if (!level.isClientSide()) {
-            this.level.addBlockEntityTicker(new BlockEntityTicker(this));
+            level.addBlockEntityTicker(new BlockEntityTicker(this));
         }
     }
 
@@ -134,7 +135,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     }
 
     @Override
-    protected void setItems(NonNullList<ItemStack> var1) {
+    protected void setItems(@Nonnull NonNullList<ItemStack> var1) {
         assert var1.size() == 10;
         for (int i = 0; i < 10; i++) {
             this.items.set(i, var1.get(i));
@@ -147,13 +148,14 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     }
 
     @Override
-    protected AbstractContainerMenu createMenu(int windowId, Inventory playerInventory) {
+    protected AbstractContainerMenu createMenu(int windowId, @Nonnull Inventory playerInventory) {
         FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
         writeData(data);
         return new CaseMenu(windowId, playerInventory, data);
     }
 
     @Override
+    @SuppressWarnings("null") // Linting being not smart
     public void onItemChange(int slot, ItemStack oldStack, ItemStack newStack) {
         if (level == null || level.isClientSide) return;
         NetworkNode oldNode = loadedComponents.remove(oldStack);
@@ -199,6 +201,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
         updateBlockState();
     }
 
+    @SuppressWarnings("null") // Linting being not smart
     private void updateBlockState() {
         if (this.level == null || level.isClientSide) return;
         if (!(this.level.isLoaded(this.worldPosition) && this.getBlockState().getBlock() instanceof CaseBlock)) return;
@@ -279,7 +282,9 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
                 .flatMap(entry -> entry.createMachine(parameters));
     }
 
+    @SuppressWarnings("null") // Linting being not smart
     private void beep(short frequency, short duration) {
+        if (level == null) return;
         ChunkPos chunkPos = new ChunkPos(worldPosition);
         List<ServerPlayer> chunkTrackingPlayers = ((ServerLevel) level).getPlayers(
             player -> player.getChunkTrackingView().contains(chunkPos)

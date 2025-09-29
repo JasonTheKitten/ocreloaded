@@ -13,13 +13,17 @@ public class ComponentNetworkUtil {
 
     public static void connectToNeighbors(Level level, BlockPos pos) {
         if (level == null) return;
+
+        BlockEntity thisBlockEntity = level.getBlockEntity(pos);
+        if (thisBlockEntity == null) return;
+        NetworkNode thisNode = ((ComponentTileEntity) thisBlockEntity).networkNode();
+
         for (Direction facing : Direction.values()) {
             BlockPos neighborPos = pos.relative(facing);
             if (!level.isLoaded(neighborPos)) continue;
             BlockEntity neighborEntity = level.getBlockEntity(neighborPos);
             if (!(neighborEntity instanceof ComponentTileEntity neighborComponent)) continue;
             NetworkNode neighborNode = neighborComponent.networkNode();
-            NetworkNode thisNode = ((ComponentTileEntity) level.getBlockEntity(pos)).networkNode();
             thisNode.connect(neighborNode);
         }
     }

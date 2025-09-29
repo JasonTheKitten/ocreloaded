@@ -2,6 +2,8 @@ package li.cil.ocreloaded.minecraft.common.entity;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,9 +63,8 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
     }
 
     @Override
-    public void setLevel(Level level) {
+    public void setLevel(@Nonnull Level level) {
         super.setLevel(level);
-        if (level == null) return;
 
         ScreenBlock block = (ScreenBlock) getBlockState().getBlock();
         int[] maxResolution = GraphicsCardItem.TIER_RESOLUTIONS[block.getTier() - 1];
@@ -78,7 +79,8 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
     }
 
     @Override
-    public void loadAdditional(CompoundTag compoundTag, HolderLookup.Provider registries) {
+    @SuppressWarnings("null") // Linting being not smart
+    public void loadAdditional(@Nonnull CompoundTag compoundTag, @Nonnull HolderLookup.Provider registries) {
         super.loadAdditional(compoundTag, registries);
         networkNode.load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
 
@@ -87,12 +89,13 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
     }
 
     @Override
-    public void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider registries) {
+    public void saveAdditional(@Nonnull CompoundTag compoundTag, @Nonnull HolderLookup.Provider registries) {
         super.saveAdditional(compoundTag, registries);
         networkNode.save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 
     @Override
+    @SuppressWarnings("null") // Linting being not smart
     public void tick() {
         if (level == null || level.isClientSide()) return;
         if (!initialized) {

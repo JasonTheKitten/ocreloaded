@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.common.menu;
 
+import javax.annotation.Nonnull;
+
 import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
 import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
@@ -24,12 +26,12 @@ public class ScreenMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player var1, int var2) {
+    public ItemStack quickMoveStack(@Nonnull Player var1, int var2) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean stillValid(Player var1) {
+    public boolean stillValid(@Nonnull Player var1) {
         return inventory.stillValid(var1);
     }
 

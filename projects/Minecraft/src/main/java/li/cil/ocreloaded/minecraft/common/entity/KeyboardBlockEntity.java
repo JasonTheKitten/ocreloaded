@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.common.entity;
 
+import javax.annotation.Nonnull;
+
 import li.cil.ocreloaded.core.component.KeyboardComponent;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
@@ -37,29 +39,28 @@ public class KeyboardBlockEntity extends BlockEntity implements TickableEntity, 
     }
 
     @Override
-    public void loadAdditional(CompoundTag compoundTag, HolderLookup.Provider registries) {
+    public void loadAdditional(@Nonnull CompoundTag compoundTag, @Nonnull HolderLookup.Provider registries) {
         super.loadAdditional(compoundTag, registries);
         networkNode.load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 
     @Override
-    public void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider registries) {
+    public void saveAdditional(@Nonnull CompoundTag compoundTag, @Nonnull HolderLookup.Provider registries) {
         super.saveAdditional(compoundTag, registries);
         networkNode.save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 
     // TODO: Find a simpler way to do this than needing both setLevel and a ticker
     @Override
-    public void setLevel(Level level) {
+    public void setLevel(@Nonnull Level level) {
         super.setLevel(level);
-        if (level == null) return;
-
         if (!level.isClientSide()) {
             level.addBlockEntityTicker(new BlockEntityTicker(this));
         }
     }
 
     @Override
+    @SuppressWarnings("null") // Linting being not smart
     public void tick() {
         if (level == null || level.isClientSide) return;
         if (!initialized) {

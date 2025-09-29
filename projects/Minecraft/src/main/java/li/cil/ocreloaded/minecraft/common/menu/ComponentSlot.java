@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.common.menu;
 
+import javax.annotation.Nonnull;
+
 import li.cil.ocreloaded.minecraft.common.item.TieredItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -25,7 +27,7 @@ public class ComponentSlot extends Slot {
     }
     
     @Override
-    public boolean mayPlace(ItemStack stack) {
+    public boolean mayPlace(@Nonnull ItemStack stack) {
         return itemClass.isInstance(stack.getItem()) && (
             !(stack.getItem() instanceof TieredItem) ||
             ((TieredItem) stack.getItem()).getTier() <= teir);

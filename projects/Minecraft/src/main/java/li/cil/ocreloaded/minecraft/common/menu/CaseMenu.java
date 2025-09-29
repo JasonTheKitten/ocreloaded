@@ -21,6 +21,8 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 public class CaseMenu extends AbstractContainerMenu {
 
     private static final List<List<ComponentSlotEntry>> COMPONENT_SLOTS = List.of(
@@ -89,12 +91,12 @@ public class CaseMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@Nonnull Player player) {
         return inventory.stillValid(player);
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int index) {
+    public ItemStack quickMoveStack(@Nonnull Player player, int index) {
         return ComponentQuickMove.quickMoveStack(slots, player, index);
     }
 

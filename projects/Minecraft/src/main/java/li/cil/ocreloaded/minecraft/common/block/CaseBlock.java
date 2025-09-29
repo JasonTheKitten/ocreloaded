@@ -1,6 +1,9 @@
 package li.cil.ocreloaded.minecraft.common.block;
 
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
 import li.cil.ocreloaded.minecraft.common.util.IPlatformMenuHelper;
 import net.minecraft.core.BlockPos;
@@ -43,7 +46,7 @@ public class CaseBlock extends Block implements EntityBlock, TieredBlock {
     }
 
     @Override
-    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull BlockHitResult hit) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
@@ -57,31 +60,34 @@ public class CaseBlock extends Block implements EntityBlock, TieredBlock {
     }
 
     @Override
-    public void onRemove(BlockState blockState, Level level, BlockPos blockPos, BlockState blockState2, boolean bl) {
+    public void onRemove(@Nonnull BlockState blockState, @Nonnull Level level, @Nonnull BlockPos blockPos, @Nonnull BlockState blockState2, boolean bl) {
         Containers.dropContentsOnDestroy(blockState, blockState2, level, blockPos);
         super.onRemove(blockState, level, blockPos, blockState2, bl);
     }
     
     @Override
-    public void playerDestroy(Level level, Player player, BlockPos blockPos, BlockState blockState, BlockEntity blockEntity, ItemStack itemStack) {
+    public void playerDestroy(
+        @Nonnull Level level, @Nonnull Player player, @Nonnull BlockPos blockPos,
+        @Nonnull BlockState blockState, @Nullable BlockEntity blockEntity, @Nonnull ItemStack itemStack
+    ) {
         super.playerDestroy(level, player, blockPos, blockState, blockEntity, itemStack);
         popResource(level, blockPos, new ItemStack(this));
         // TODO: How to instead use loot table and respect tier?
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+    public BlockEntity newBlockEntity(@Nonnull BlockPos blockPos, @Nonnull BlockState blockState) {
         return new CaseBlockEntity(blockPos, blockState);
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
         builder.add(RUNNING);
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
+    public BlockState getStateForPlacement(@Nonnull BlockPlaceContext context) {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 }
