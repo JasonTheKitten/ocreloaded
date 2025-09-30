@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.common.menu.provider;
 
+import javax.annotation.Nonnull;
+
 import io.netty.buffer.Unpooled;
 import li.cil.ocreloaded.minecraft.common.menu.ScreenMenu;
 import net.minecraft.core.BlockPos;
@@ -28,7 +30,7 @@ public class ScreenMenuProvider implements MenuProvider {
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int windowId, @Nonnull Inventory playerInventory, @Nonnull Player player) {
         FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
         writeData(data);
         return new ScreenMenu(windowId, playerInventory, data);

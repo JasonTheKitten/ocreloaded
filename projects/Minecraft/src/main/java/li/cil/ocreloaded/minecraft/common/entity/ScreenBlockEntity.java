@@ -2,6 +2,9 @@ package li.cil.ocreloaded.minecraft.common.entity;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import commonnetwork.api.Dispatcher;
+import li.cil.ocreloaded.minecraft.common.network.packets.ScreenPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,13 +19,12 @@ import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
 import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
-import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
-import li.cil.ocreloaded.minecraft.common.network.screen.NetworkedTextModeBufferProxy;
-import li.cil.ocreloaded.minecraft.common.network.screen.ScreenNetworkInputMessages;
-import li.cil.ocreloaded.minecraft.common.network.screen.ScreenNetworkMessage;
+import li.cil.ocreloaded.minecraft.common.network.packets.screen.NetworkedTextModeBufferProxy;
+import li.cil.ocreloaded.minecraft.common.network.packets.screen.ScreenNetworkInputMessages;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -60,9 +62,8 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
     }
 
     @Override
-    public void setLevel(Level level) {
+    public void setLevel(@Nonnull Level level) {
         super.setLevel(level);
-        if (level == null) return;
 
         ScreenBlock block = (ScreenBlock) getBlockState().getBlock();
         int[] maxResolution = GraphicsCardItem.TIER_RESOLUTIONS[block.getTier() - 1];
@@ -77,8 +78,9 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
     }
 
     @Override
-    public void load(CompoundTag compoundTag) {
-        super.load(compoundTag);
+    @SuppressWarnings("null") // Linting being not smart
+    public void loadAdditional(@Nonnull CompoundTag compoundTag, @Nonnull HolderLookup.Provider registries) {
+        super.loadAdditional(compoundTag, registries);
         networkNode.load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
 
         if (this.level == null || level.isClientSide) return;
@@ -86,12 +88,13 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
     }
 
     @Override
-    public void saveAdditional(CompoundTag compoundTag) {
-        super.saveAdditional(compoundTag);
+    public void saveAdditional(@Nonnull CompoundTag compoundTag, @Nonnull HolderLookup.Provider registries) {
+        super.saveAdditional(compoundTag, registries);
         networkNode.save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 
     @Override
+    @SuppressWarnings("null") // Linting being not smart
     public void tick() {
         if (level == null || level.isClientSide()) return;
         if (!initialized) {
@@ -107,10 +110,7 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
         NetworkedTextModeBufferProxy proxy = (NetworkedTextModeBufferProxy) screenBuffer;
         if (!proxy.hasChanges()) return;
         ByteBuf changeBuffer = proxy.getBuffer();
-        NetworkUtil.getInstance().messageManyClients(
-            new ScreenNetworkMessage(worldPosition, changeBuffer, ScreenNetworkMessage.TEXT_MODE_BUFFER_CHANNEL),
-            chunkTrackingPlayers
-        );
+        Dispatcher.sendToClients(new ScreenPacket(worldPosition, ScreenPacket.TEXT_MODE_BUFFER_CHANNEL, changeBuffer.array()), chunkTrackingPlayers);
     }
 
     public void onKeyPressed(int charCode, int keyCode, Player player) {
@@ -151,5 +151,4 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
     public TextModeBuffer getScreenBuffer() {
         return screenBuffer;
     }
-
 }

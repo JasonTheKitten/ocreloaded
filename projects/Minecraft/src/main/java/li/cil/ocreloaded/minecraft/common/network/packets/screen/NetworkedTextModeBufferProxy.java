@@ -1,4 +1,4 @@
-package li.cil.ocreloaded.minecraft.common.network.screen;
+package li.cil.ocreloaded.minecraft.common.network.packets.screen;
 
 
 import org.slf4j.Logger;
@@ -219,7 +219,9 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
         return syncBuffer;
     }
 
-    public static void writeTextModeBuffer(TextModeBuffer buffer, ByteBuf byteBuf) {
+    public static void writeTextModeBuffer(TextModeBuffer buffer, byte[] buf) {
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(buf);
+
         while (true) {
             int command = byteBuf.readInt();
             if (command == 0) break;
@@ -249,6 +251,8 @@ public class NetworkedTextModeBufferProxy implements TextModeBuffer {
                 break;
             }
         }
+
+        byteBuf.release();
     }
 
     private static void handleSync(TextModeBuffer buffer, ByteBuf byteBuf) {

@@ -1,12 +1,14 @@
 package li.cil.ocreloaded.minecraft.common.block;
 
-import dev.architectury.registry.menu.MenuRegistry;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
 import li.cil.ocreloaded.minecraft.common.menu.provider.ScreenMenuProvider;
+import li.cil.ocreloaded.minecraft.common.util.IPlatformMenuHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
@@ -19,11 +21,7 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.AttachFace;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
@@ -53,14 +51,19 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
     }
     
     @Override
-    public void playerDestroy(Level level, Player player, BlockPos blockPos, BlockState blockState, BlockEntity blockEntity, ItemStack itemStack) {
+    public void playerDestroy(
+        @Nonnull Level level, @Nonnull Player player, @Nonnull BlockPos blockPos,
+        @Nonnull BlockState blockState, @Nullable BlockEntity blockEntity, @Nonnull ItemStack itemStack
+    ) {
         super.playerDestroy(level, player, blockPos, blockState, blockEntity, itemStack);
         popResource(level, blockPos, new ItemStack(this));
         // TODO: How to instead use loot table and respect tier?
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(
+        @Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull BlockHitResult hitResult
+    ) {
         if (!level.isClientSide()) {
             MenuProvider menuProvider = state.getMenuProvider(level, pos);
             if (
@@ -68,7 +71,7 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
                 && player instanceof ServerPlayer serverPlayer
                 && isKeyboardConnected(level, pos)
              ) {
-                MenuRegistry.openExtendedMenu(serverPlayer, menuProvider, screenMenuProvider::writeData);
+                IPlatformMenuHelper.INSTANCE.openExtendedMenu(serverPlayer, menuProvider, screenMenuProvider::writeData);
                 return InteractionResult.CONSUME;
             }
         }
@@ -77,17 +80,17 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
     }
 
     @Override
-    public MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
+    public MenuProvider getMenuProvider(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos) {
         return new ScreenMenuProvider(pos, tier);
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+    public BlockEntity newBlockEntity(@Nonnull BlockPos blockPos, @Nonnull BlockState blockState) {
         return new ScreenBlockEntity(blockPos, blockState);
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
         builder.add(ATTACH_FACE);
         for (BooleanProperty side : SIDES) {
@@ -96,7 +99,7 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
+    public BlockState getStateForPlacement(@Nonnull BlockPlaceContext context) {
         BlockState blockState = this.defaultBlockState();
         blockState = determineDefaultPlacement(context, blockState);
 
@@ -115,8 +118,8 @@ public class ScreenBlock extends Block implements EntityBlock, TieredBlock {
 
     @Override
     public BlockState updateShape(
-        BlockState myState, Direction placementDirection, BlockState otherState,
-        LevelAccessor levelAccessor, BlockPos myPos, BlockPos otherPos
+        @Nonnull BlockState myState, @Nonnull Direction placementDirection, @Nonnull BlockState otherState,
+        @Nonnull LevelAccessor levelAccessor, @Nonnull BlockPos myPos, @Nonnull BlockPos otherPos
     ) {
         Side side = getSideForDirection(myState.getValue(FACING), myState.getValue(ATTACH_FACE), placementDirection);
         if (side == null) return myState;

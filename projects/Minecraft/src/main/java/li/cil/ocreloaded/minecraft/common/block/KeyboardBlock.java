@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.common.block;
 
+import javax.annotation.Nonnull;
+
 import li.cil.ocreloaded.minecraft.common.entity.KeyboardBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -28,13 +30,15 @@ public class KeyboardBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
         builder.add(ATTACH_FACE);
     }
 
     @Override
-    public VoxelShape getShape(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, CollisionContext collisionContext) {
+    public VoxelShape getShape(
+        @Nonnull BlockState blockState, @Nonnull BlockGetter blockGetter, @Nonnull BlockPos blockPos, @Nonnull CollisionContext collisionContext
+    ) {
         return switch (blockState.getValue(ATTACH_FACE)) {
             case CEILING -> switch (blockState.getValue(FACING)) {
                 case NORTH, SOUTH -> Block.box(1.0, 0.0, 4.0, 15.0, 1.0, 12.0);
@@ -54,7 +58,7 @@ public class KeyboardBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
+    public BlockState getStateForPlacement(@Nonnull BlockPlaceContext context) {
         BlockState blockState = this.defaultBlockState();
 
         Direction facingDirection = context.getHorizontalDirection().getOpposite();
@@ -70,7 +74,7 @@ public class KeyboardBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+    public BlockEntity newBlockEntity(@Nonnull BlockPos blockPos, @Nonnull BlockState blockState) {
         return new KeyboardBlockEntity(blockPos, blockState);
     }
 

@@ -6,7 +6,7 @@ from typing import Iterable
 def main() -> int:
     any_failed = False
     for file_name in get_text_files():
-        if is_file_crlf(file_name):
+        if is_file_crlf(file_name) and file_name != "gradlew.bat": # gradlew.bat gets a pass, it's meant for windows.
             print(f"::error file={file_name},title=File contains CRLF line endings::The file '{file_name}' was committed with CRLF new lines. Please make sure your git client is configured correctly and you are not uploading files directly to GitHub via the web interface.")
             any_failed = True
 

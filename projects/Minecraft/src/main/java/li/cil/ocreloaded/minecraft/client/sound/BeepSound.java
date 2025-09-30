@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
 import javax.sound.sampled.AudioFormat;
 
 import net.minecraft.client.Minecraft;
@@ -57,10 +58,10 @@ public class BeepSound extends AbstractSoundInstance implements AudioStream {
     }
 
     @Override
-    public WeighedSoundEvents resolve(SoundManager soundManager) {
+    public WeighedSoundEvents resolve(@Nonnull SoundManager soundManager) {
         float volume = Minecraft.getInstance().options.getSoundSourceVolume(SoundSource.BLOCKS);
         this.sound = new Sound(
-            new ResourceLocation("minecraft", "intentionally_empty").toString(),
+            ResourceLocation.fromNamespaceAndPath("minecraft", "intentionally_empty"),
             (SampledFloat) ConstantFloat.of(volume), (SampledFloat) ConstantFloat.of(1.0f), 1, Sound.Type.FILE, true, false, 16);
         return new WeighedSoundEvents(getLocation(), null);
     }

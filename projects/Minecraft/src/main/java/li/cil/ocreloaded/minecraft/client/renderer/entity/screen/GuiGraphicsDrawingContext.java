@@ -26,7 +26,7 @@ public class GuiGraphicsDrawingContext implements DrawingContext {
         ResourceLocation textureLocation, int adjustedDestX, int adjustedDestY, int adjustedDestW, int adjustedDestH,
         int srcX, int srcY, int srcW, int srcH, int textureWidth, int textureHeight
     ) {
-        ResourceLocation adjustedTextureLocation = new ResourceLocation(textureLocation.getNamespace(), "textures/" + textureLocation.getPath() + ".png");
+        ResourceLocation adjustedTextureLocation = ResourceLocation.fromNamespaceAndPath(textureLocation.getNamespace(), "textures/" + textureLocation.getPath() + ".png");
         this.graphics.blit(adjustedTextureLocation, adjustedDestX, adjustedDestY, adjustedDestW, adjustedDestH, srcX, srcY, srcW, srcH, textureWidth, textureHeight);
     }
     

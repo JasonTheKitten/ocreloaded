@@ -2,6 +2,8 @@ package li.cil.ocreloaded.minecraft.client.screen;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -36,7 +38,7 @@ public class CaseScreen extends AbstractContainerScreen<CaseMenu> {
     }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(@Nonnull GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
         int x = (this.width - this.imageWidth) / 2;
         int y = (this.height - this.imageHeight) / 2;
         guiGraphics.blit(ClientTextures.BACKGROUND, x, y, 0, 0, this.imageWidth, this.imageHeight);
@@ -46,7 +48,7 @@ public class CaseScreen extends AbstractContainerScreen<CaseMenu> {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(@Nonnull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         for (Slot slot: ComponentHighlightHint.findHighlightHintSlots(this.menu.slots, this.hoveredSlot)) {
             renderSlotHighlight(guiGraphics, slot.x + (this.width - this.imageWidth) / 2, slot.y + (this.height - this.imageHeight) / 2, 0);

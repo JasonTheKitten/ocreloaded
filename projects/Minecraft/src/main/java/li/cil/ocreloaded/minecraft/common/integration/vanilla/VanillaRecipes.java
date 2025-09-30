@@ -23,6 +23,8 @@ import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 
 public final class VanillaRecipes {
+
+    // TODO: COMEBACK
     
     private VanillaRecipes() {}
 
@@ -64,10 +66,10 @@ public final class VanillaRecipes {
 
         ShapedRecipePattern shapedRecipePattern = ShapedRecipePattern.of(input, shape);
         ShapedRecipe shapedRecipe = new ShapedRecipe("", CraftingBookCategory.EQUIPMENT, shapedRecipePattern, itemStack);
-        ResourceLocation resourceLocation = itemStack.getItem().arch$registryName();
+        //ResourceLocation resourceLocation = itemStack.getItem().arch$registryName();
 
         // TODO: What is the correct group
-        registrationDelegate.registerRecipe(resourceLocation, shapedRecipe, RecipeType.CRAFTING);
+        //registrationDelegate.registerRecipe(resourceLocation, shapedRecipe, RecipeType.CRAFTING);
     }
 
 
@@ -78,8 +80,8 @@ public final class VanillaRecipes {
         itemStack.setCount(Recipes.tryGetCount(recipe));
 
         ShapelessRecipe shapelessRecipe = new ShapelessRecipe("", CraftingBookCategory.EQUIPMENT, itemStack, ingredients);
-        ResourceLocation resourceLocation = itemStack.getItem().arch$registryName();
-        registrationDelegate.registerRecipe(resourceLocation, shapelessRecipe, RecipeType.CRAFTING);
+        //ResourceLocation resourceLocation = itemStack.getItem().arch$registryName();
+        //registrationDelegate.registerRecipe(resourceLocation, shapelessRecipe, RecipeType.CRAFTING);
     }
 
     private static void addFurnaceRecipe(RecipeRegistrationDelegate registrationDelegate, ItemStack itemStack, Config recipe) {
@@ -87,8 +89,8 @@ public final class VanillaRecipes {
         itemStack.setCount(Recipes.tryGetCount(recipe));
         
         SmeltingRecipe smeltingRecipe = new SmeltingRecipe("", CookingBookCategory.MISC, input, itemStack, 0.0f, 200);
-        ResourceLocation resourceLocation = itemStack.getItem().arch$registryName();
-        registrationDelegate.registerRecipe(resourceLocation, smeltingRecipe, RecipeType.SMELTING);
+        //ResourceLocation resourceLocation = itemStack.getItem().arch$registryName();
+        //registrationDelegate.registerRecipe(resourceLocation, smeltingRecipe, RecipeType.SMELTING);
     }
 
 }

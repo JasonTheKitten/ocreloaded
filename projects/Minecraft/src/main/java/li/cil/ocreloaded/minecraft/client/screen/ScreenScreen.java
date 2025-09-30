@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.client.screen;
 
+import javax.annotation.Nonnull;
+
 import org.lwjgl.glfw.GLFW;
 
 import com.mojang.blaze3d.platform.InputConstants;
@@ -37,7 +39,7 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
     }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(@Nonnull GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
         ScreenBlockEntity blockEntity = this.menu.getBlockEntity();
         TextModeBuffer textModeBuffer = blockEntity.getScreenBuffer();
         int[] resolution = textModeBuffer.viewport();
@@ -64,7 +66,7 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(@Nonnull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
 
         ScreenBlockEntity blockEntity = this.menu.getBlockEntity();
@@ -74,6 +76,7 @@ public class ScreenScreen extends AbstractContainerScreen<ScreenMenu> {
     }
 
     @Override
+    @SuppressWarnings("null") // Linter being not smart
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == InputConstants.KEY_ESCAPE) {
             this.onClose();

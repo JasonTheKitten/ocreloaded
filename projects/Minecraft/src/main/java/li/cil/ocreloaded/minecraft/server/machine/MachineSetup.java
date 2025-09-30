@@ -36,20 +36,20 @@ public class MachineSetup {
     }
 
     private static void registerLuaStartCode(MinecraftServer server) {
-        ResourceLocation resourceLocation = new ResourceLocation(OCReloadedCommon.MOD_ID, "lua/machine.lua");
+        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, "lua/machine.lua");
         Supplier<Optional<InputStream>> supplier = createCodeSupplier(server, resourceLocation);
         MachineCodeRegistry.getDefaultInstance().registerMachineCode("Lua 5.2", supplier);
         MachineCodeRegistry.getDefaultInstance().registerMachineCode("Lua 5.3", supplier);
     }
 
     private static void registerLuaBiosCode(MinecraftServer server) {
-        ResourceLocation resourceLocation = new ResourceLocation(OCReloadedCommon.MOD_ID, "lua/bios.lua");
+        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, "lua/bios.lua");
         Supplier<Optional<InputStream>> supplier = createCodeSupplier(server, resourceLocation);
         MachineCodeRegistry.getDefaultInstance().registerBiosCode("lua", supplier);
     }
 
     private static void registerFilesystemSuppliers(MinecraftServer server) {
-        ResourceLocation resourceLocation = new ResourceLocation(OCReloadedCommon.MOD_ID, "loot");
+        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, "loot");
         FileSystemSupplierRegistry.getDefaultInstance().register("loot", (uuid, data) -> LootFileSystemSupplier.createLootFS(server, resourceLocation, data));
         FileSystemSupplierRegistry.getDefaultInstance().register("localfs", (uuid, data) -> LocalFileSystemSupplier.createLocalFS(server, uuid));
     }

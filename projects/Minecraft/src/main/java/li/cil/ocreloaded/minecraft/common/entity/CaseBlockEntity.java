@@ -10,9 +10,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
+import javax.annotation.Nonnull;
+
+import li.cil.ocreloaded.minecraft.common.network.packets.SoundPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import commonnetwork.api.Dispatcher;
 import io.netty.buffer.Unpooled;
 import li.cil.ocreloaded.core.component.ComputerComponent;
 import li.cil.ocreloaded.core.component.FileSystemComponent;
@@ -35,13 +39,12 @@ import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
 import li.cil.ocreloaded.minecraft.common.item.ComponentItem;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
-import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
-import li.cil.ocreloaded.minecraft.common.network.sound.SoundNetworkMessage;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import li.cil.ocreloaded.minecraft.common.util.ItemList;
 import li.cil.ocreloaded.minecraft.common.util.ItemList.ItemChangeListener;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -83,35 +86,34 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     }
 
     @Override
-    public void load(CompoundTag compoundTag) {
-        super.load(compoundTag);
-        ContainerHelper.loadAllItems(compoundTag, this.items);
+    public void loadAdditional(@Nonnull CompoundTag compoundTag, @Nonnull HolderLookup.Provider registries) {
+        super.loadAdditional(compoundTag, registries);
+        ContainerHelper.loadAllItems(compoundTag, this.items, registries);
         load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
         updateBlockState();
     }
 
     @Override
-    public void saveAdditional(CompoundTag compoundTag) {
-        super.saveAdditional(compoundTag);
-        ContainerHelper.saveAllItems(compoundTag, this.items);
+    public void saveAdditional(@Nonnull CompoundTag compoundTag, @Nonnull HolderLookup.Provider registries) {
+        super.saveAdditional(compoundTag, registries);
+        ContainerHelper.saveAllItems(compoundTag, this.items, registries);
         save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag compoundTag = super.getUpdateTag();
+    public CompoundTag getUpdateTag(@Nonnull HolderLookup.Provider registries) {
+        CompoundTag compoundTag = super.getUpdateTag(registries);
         compoundTag.putBoolean(TAG_POWERED, this.powered);
 
         return compoundTag;
     }
 
     @Override
-    public void setLevel(Level level) {
+    public void setLevel(@Nonnull Level level) {
         super.setLevel(level);
-        if (level == null) return;
 
         if (!level.isClientSide()) {
-            this.level.addBlockEntityTicker(new BlockEntityTicker(this));
+            level.addBlockEntityTicker(new BlockEntityTicker(this));
         }
     }
 
@@ -133,7 +135,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     }
 
     @Override
-    protected void setItems(NonNullList<ItemStack> var1) {
+    protected void setItems(@Nonnull NonNullList<ItemStack> var1) {
         assert var1.size() == 10;
         for (int i = 0; i < 10; i++) {
             this.items.set(i, var1.get(i));
@@ -146,13 +148,14 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     }
 
     @Override
-    protected AbstractContainerMenu createMenu(int windowId, Inventory playerInventory) {
+    protected AbstractContainerMenu createMenu(int windowId, @Nonnull Inventory playerInventory) {
         FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
         writeData(data);
         return new CaseMenu(windowId, playerInventory, data);
     }
 
     @Override
+    @SuppressWarnings("null") // Linting being not smart
     public void onItemChange(int slot, ItemStack oldStack, ItemStack newStack) {
         if (level == null || level.isClientSide) return;
         NetworkNode oldNode = loadedComponents.remove(oldStack);
@@ -198,6 +201,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
         updateBlockState();
     }
 
+    @SuppressWarnings("null") // Linting being not smart
     private void updateBlockState() {
         if (this.level == null || level.isClientSide) return;
         if (!(this.level.isLoaded(this.worldPosition) && this.getBlockState().getBlock() instanceof CaseBlock)) return;
@@ -249,9 +253,12 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
         if (!networkNode.component().isPresent()) return;
         Component component = networkNode.component().get();
 
-        CompoundTag tag = itemStack.getOrCreateTag();
+        // TODO: Better way to save and load (needs to save on shutdown too)
+        CompoundTag tag = itemStack.get(CommonRegistered.NBT_DATA_TYPE.get());
+        if (tag == null) tag = new CompoundTag();
         component.load(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
         component.save(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
+        itemStack.set(CommonRegistered.NBT_DATA_TYPE.get(), tag);
         // TODO: Reset component on fresh boot if tmp is not persistant
 
         components.put(itemStack, networkNode);
@@ -277,12 +284,13 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
                 .flatMap(entry -> entry.createMachine(parameters));
     }
 
+    @SuppressWarnings("null") // Linting being not smart
     private void beep(short frequency, short duration) {
+        if (level == null) return;
         ChunkPos chunkPos = new ChunkPos(worldPosition);
-        List<ServerPlayer> chunkTrackingPlayers = ((ServerLevel) level).getPlayers(
-            player -> player.getChunkTrackingView().contains(chunkPos)
-        );
-        NetworkUtil.getInstance().messageManyClients(SoundNetworkMessage.createBeepMessage(worldPosition, frequency, duration), chunkTrackingPlayers);
+        List<ServerPlayer> chunkTrackingPlayers = ((ServerLevel) level).getPlayers(player -> player.getChunkTrackingView().contains(chunkPos));
+
+        Dispatcher.sendToClients(SoundPacket.createBeepMessage(worldPosition, frequency, duration), chunkTrackingPlayers);
     }
     
 }

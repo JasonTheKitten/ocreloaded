@@ -3,6 +3,7 @@ package li.cil.ocreloaded.neoforge.common;
 
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import li.cil.ocreloaded.minecraft.server.CommonServerHooks;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
@@ -13,7 +14,7 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 public class OCReloaded {
     public static final String MOD_ID = "ocreloaded";
 
-    public OCReloaded() {
+    public OCReloaded(IEventBus bus) {
         CommonRegistered.initialize();
     }
 

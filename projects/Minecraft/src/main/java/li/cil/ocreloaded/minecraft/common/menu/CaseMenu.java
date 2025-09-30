@@ -1,18 +1,11 @@
 package li.cil.ocreloaded.minecraft.common.menu;
 
-import java.util.List;
-
+import commonnetwork.api.Dispatcher;
 import li.cil.ocreloaded.minecraft.common.assets.SharedTextures;
 import li.cil.ocreloaded.minecraft.common.container.BasicContainer;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
-import li.cil.ocreloaded.minecraft.common.item.CPUItem;
-import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
-import li.cil.ocreloaded.minecraft.common.item.EepromItem;
-import li.cil.ocreloaded.minecraft.common.item.FloppyDiskItem;
-import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
-import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
-import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
-import li.cil.ocreloaded.minecraft.common.network.power.PowerNetworkMessage;
+import li.cil.ocreloaded.minecraft.common.item.*;
+import li.cil.ocreloaded.minecraft.common.network.packets.PowerPacket;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -25,6 +18,10 @@ import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
+
+import javax.annotation.Nonnull;
 
 public class CaseMenu extends AbstractContainerMenu {
 
@@ -94,12 +91,12 @@ public class CaseMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@Nonnull Player player) {
         return inventory.stillValid(player);
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int index) {
+    public ItemStack quickMoveStack(@Nonnull Player player, int index) {
         return ComponentQuickMove.quickMoveStack(slots, player, index);
     }
 
@@ -119,7 +116,7 @@ public class CaseMenu extends AbstractContainerMenu {
 
     public void sendServerPowerState() {
         BlockPos targetBlockPos = blockEntity.getBlockPos();
-        NetworkUtil.getInstance().messageServer(new PowerNetworkMessage(targetBlockPos, power.get() == 1));
+        Dispatcher.sendToServer(new PowerPacket(targetBlockPos, power.get() == 1));
     }
 
     private void addContainerSlots() {

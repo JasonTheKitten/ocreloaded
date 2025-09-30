@@ -4,10 +4,12 @@ package li.cil.ocreloaded.minecraft.server.machine.lua;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +53,7 @@ public class LuaCFactory {
             && tempDir != null
             && (resource = getResource(architecture)).isPresent();
 
-        if (isAvailable) {
+        if (isAvailable && resource != null) {
             LOGGER.trace("LuaJIT native library available for this platform: " + resource.get());
         } else {
             LOGGER.error("LuaJIT native library not available for this platform.");
@@ -81,7 +83,7 @@ public class LuaCFactory {
     }
 
     private Optional<Resource> getResource(String architecture) {
-        ResourceLocation resourceLocation = new ResourceLocation(OCReloadedCommon.MOD_ID, "libs/" + architecture + "/" + executableName);
+        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, "libs/" + architecture + "/" + executableName);
         return server.getResourceManager().getResource(resourceLocation);
     }
 
@@ -143,7 +145,10 @@ public class LuaCFactory {
 
         try (InputStream in = resource.get().open();) {
             Files.copy(in, new File(tempName).toPath());
-            LOGGER.trace("Copied LuaJIT native library to temporary directory: " + tempName + ".");
+            LOGGER.trace("Copied LuaJIT native library to temporary directory: {}.", tempName);
+            return true;
+        } catch (FileAlreadyExistsException e) {
+            LOGGER.trace("The native libraries already exist, and their handles are locked. This is a windows thing, and nothing won't happen if we won't copy them over once more (probably)");
             return true;
         } catch (Exception e) {
             LOGGER.error("Failed to copy LuaJIT native library to temporary directory.", e);

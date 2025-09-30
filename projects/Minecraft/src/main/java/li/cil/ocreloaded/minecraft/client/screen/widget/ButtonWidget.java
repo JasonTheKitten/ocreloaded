@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.client.screen.widget;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -36,13 +38,13 @@ public class ButtonWidget extends AbstractButton {
     }
 
     @Override
-    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+    protected void updateWidgetNarration(@Nonnull NarrationElementOutput narrationElementOutput) {
         // TODO Auto-generated method stub
         // throw new UnsupportedOperationException("Unimplemented method 'updateWidgetNarration'");
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(@Nonnull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if (!this.isPressed() && !this.isHovered) {
             guiGraphics.blit(texture, this.x, this.y, 0, 0, this.width, this.height, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         } else if (!this.isPressed() && this.isHovered) {

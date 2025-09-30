@@ -9,7 +9,6 @@ public final class Colors {
     public static final int CYAN = 0x66FFFF;
     public static final int MAGENTA = 0xC354CD;
 
-    
     private Colors() {}
 
 }
