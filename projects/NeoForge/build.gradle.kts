@@ -26,6 +26,8 @@ dependencies {
 
     "additionalRuntimeClasspath"(libs.typesafeConfig)
     "additionalRuntimeClasspath"(files("../../libs/OpenComputers-JNLua.jar", "../../libs/OpenComputers-LuaJ.jar"))
+    jarJar(libs.typesafeConfig)
+    jarJar(files("../../libs/OpenComputers-JNLua.jar", "../../libs/OpenComputers-LuaJ.jar"))
 
     implementation("mysticdrew:common-networking-neoforge:1.0.20-1.21.1")
 }
