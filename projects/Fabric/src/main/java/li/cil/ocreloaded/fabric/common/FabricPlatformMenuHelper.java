@@ -14,7 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
 public class FabricPlatformMenuHelper implements IPlatformMenuHelper {
-
     @Override
     public void openExtendedMenu(ServerPlayer serverPlayer, MenuProvider menuProvider, Consumer<FriendlyByteBuf> byteBufConsumer) {
         serverPlayer.openMenu(new ExtendedScreenHandlerFactory<FriendlyByteBuf>() {

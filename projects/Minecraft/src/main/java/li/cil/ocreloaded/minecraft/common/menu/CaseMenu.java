@@ -1,11 +1,11 @@
 package li.cil.ocreloaded.minecraft.common.menu;
 
+import commonnetwork.api.Dispatcher;
 import li.cil.ocreloaded.minecraft.common.assets.SharedTextures;
 import li.cil.ocreloaded.minecraft.common.container.BasicContainer;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
 import li.cil.ocreloaded.minecraft.common.item.*;
-import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
-import li.cil.ocreloaded.minecraft.common.network.power.PowerNetworkMessage;
+import li.cil.ocreloaded.minecraft.common.network.packets.PowerPacket;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -116,7 +116,7 @@ public class CaseMenu extends AbstractContainerMenu {
 
     public void sendServerPowerState() {
         BlockPos targetBlockPos = blockEntity.getBlockPos();
-        NetworkUtil.getInstance().messageServer(new PowerNetworkMessage(targetBlockPos, power.get() == 1));
+        Dispatcher.sendToServer(new PowerPacket(targetBlockPos, power.get() == 1));
     }
 
     private void addContainerSlots() {

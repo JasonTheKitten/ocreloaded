@@ -23,8 +23,11 @@ neoForge {
 
 dependencies {
     implementation(project(":Minecraft"))
+
     "additionalRuntimeClasspath"(libs.typesafeConfig)
     "additionalRuntimeClasspath"(files("../../libs/OpenComputers-JNLua.jar", "../../libs/OpenComputers-LuaJ.jar"))
+
+    implementation("mysticdrew:common-networking-neoforge:1.0.20-1.21.1")
 }
 
 sourceSets.main {

@@ -23,9 +23,6 @@ import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
 import li.cil.ocreloaded.minecraft.common.menu.ScreenMenu;
 import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
-import li.cil.ocreloaded.minecraft.common.network.power.PowerNetworkHandler;
-import li.cil.ocreloaded.minecraft.common.network.screen.ScreenNetworkHandler;
-import li.cil.ocreloaded.minecraft.common.network.sound.SoundNetworkHandler;
 import li.cil.ocreloaded.minecraft.registration.RegistrationProvider;
 import li.cil.ocreloaded.minecraft.registration.RegistryObject;
 import net.minecraft.core.component.DataComponentType;
@@ -41,6 +38,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
+@SuppressWarnings("unused")
 public class CommonRegistered {
 
     private static final RegistrationProvider<Block> BLOCKS = RegistrationProvider.get(Registries.BLOCK, OCReloadedCommon.MOD_ID);
@@ -53,9 +51,11 @@ public class CommonRegistered {
     private static final List<RegistryObject<Item, Item>> CREATIVE_TAB_ITEMS = new ArrayList<>();
 
     public static void initialize() {
-        NetworkUtil.getInstance().registerHandler("ocreloaded:power", new PowerNetworkHandler());
+        NetworkUtil.initialize();
+
+        /*NetworkUtil.getInstance().registerHandler("ocreloaded:power", new PowerNetworkHandler());
         NetworkUtil.getInstance().registerHandler("ocreloaded:screen", new ScreenNetworkHandler());
-        NetworkUtil.getInstance().registerHandler("ocreloaded:sound", new SoundNetworkHandler());
+        NetworkUtil.getInstance().registerHandler("ocreloaded:sound", new SoundNetworkHandler());*/
     }
 
     // Creative mode tabs
