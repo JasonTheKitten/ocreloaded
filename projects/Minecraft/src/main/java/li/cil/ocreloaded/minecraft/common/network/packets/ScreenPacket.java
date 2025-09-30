@@ -32,9 +32,10 @@ public record ScreenPacket(BlockPos pos, int channel, byte[] deltaBuffer) {
     public static void handle(PacketContext<ScreenPacket> ctx) {
         ScreenPacket packet = ctx.message();
 
-        Player player;
-        if (ctx.side().equals(Side.CLIENT)) player = Minecraft.getInstance().player;
-        else player = ctx.sender();
+        Player player = ctx.side().equals(Side.CLIENT) ?
+            Minecraft.getInstance().player :
+            ctx.sender();
+        if (player == null) return;
 
         Level level = player.level();
 

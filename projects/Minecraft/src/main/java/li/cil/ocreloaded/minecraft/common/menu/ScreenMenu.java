@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.common.menu;
 
+import javax.annotation.Nonnull;
+
 import commonnetwork.api.Dispatcher;
 import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
@@ -10,7 +12,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 public class ScreenMenu extends AbstractContainerMenu {
 
@@ -25,12 +26,12 @@ public class ScreenMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public @NotNull ItemStack quickMoveStack(@NotNull Player var1, int var2) {
+    public @Nonnull ItemStack quickMoveStack(@Nonnull Player var1, int var2) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean stillValid(@NotNull Player var1) {
+    public boolean stillValid(@Nonnull Player var1) {
         return inventory.stillValid(var1);
     }
 

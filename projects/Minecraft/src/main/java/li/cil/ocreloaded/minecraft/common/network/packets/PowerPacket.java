@@ -41,7 +41,9 @@ public record PowerPacket(BlockPos pos, boolean powerState) {
         PowerPacket packet = ctx.message();
 
         BlockPos position = packet.pos;
-        Level level = Minecraft.getInstance().player.level();
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        Level level = player.level();
 
         if (!level.isLoaded(position)) return;
         if (level.getBlockEntity(position) instanceof CaseBlockEntity entity) entity.setPowered(packet.powerState);

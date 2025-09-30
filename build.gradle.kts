@@ -1,5 +1,7 @@
 plugins {
     id("com.matyrobbrt.mc.registrationutils") version "1.21.0-0.2.2"
+    id("oc-common")
+    id("com.gradleup.shadow")
 }
 
 registrationUtils {

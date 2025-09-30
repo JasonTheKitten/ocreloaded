@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.common.network.packets;
 
+import java.nio.ByteBuffer;
+
 import commonnetwork.networking.data.PacketContext;
 import commonnetwork.networking.data.Side;
 import io.netty.buffer.ByteBuf;
@@ -15,9 +17,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-
-import java.nio.ByteBuffer;
 
 public record SoundPacket(BlockPos pos, int channel, byte[] deltaBuffer) {
     public static final ResourceLocation CHANNEL = ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, "sound_packet");
@@ -36,11 +37,13 @@ public record SoundPacket(BlockPos pos, int channel, byte[] deltaBuffer) {
     }
 
     public static void handle(PacketContext<SoundPacket> ctx) {
-        if (!ctx.side().equals(Side.CLIENT))
-            return;
-        SoundPacket packet = ctx.message();
+        if (!ctx.side().equals(Side.CLIENT)) return;
 
-        Level level = Minecraft.getInstance().player.level();
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+
+        SoundPacket packet = ctx.message();
+        Level level = player.level();
         if (!level.isLoaded(packet.pos)) return;
 
         if (packet.channel != BEEP_CHANNEL) {

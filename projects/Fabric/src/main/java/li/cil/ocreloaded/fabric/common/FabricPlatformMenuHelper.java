@@ -24,6 +24,7 @@ public class FabricPlatformMenuHelper implements IPlatformMenuHelper {
             }
 
             @Override
+            @SuppressWarnings("null") // TODO: Figure this out later
             public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
                 return menuProvider.createMenu(containerId, playerInventory, player);
             }

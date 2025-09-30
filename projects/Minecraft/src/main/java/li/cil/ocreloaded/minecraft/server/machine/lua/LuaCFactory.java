@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +64,7 @@ public class LuaCFactory {
     public Optional<LuaCStateFactory> createFactory(String architecture) {
         if (!isAvailable(architecture)) return Optional.empty();
         if (!ensureResourceCopied(architecture)) return Optional.empty();
+        LoggerFactory.getLogger(getClass()).info("Loading arch {}", architecture);
         switch (architecture) {
             case "lua52":
                 NativeSupport.getInstance().setLoader(() -> System.load(getTempName(architecture)));
