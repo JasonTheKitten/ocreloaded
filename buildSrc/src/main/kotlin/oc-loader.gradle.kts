@@ -16,3 +16,13 @@ tasks.withType<ProcessResources> {
         expand(properties)
     }
 }
+
+tasks.named<Copy>("processResources") {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(rootProject.file("libs/lua53")) {
+        into("data/ocreloaded/libs/lua53")
+    }
+    from(rootProject.file("libs/lua52")) {
+        into("data/ocreloaded/libs/lua52")
+    }
+}

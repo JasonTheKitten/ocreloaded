@@ -253,10 +253,12 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
         if (!networkNode.component().isPresent()) return;
         Component component = networkNode.component().get();
 
-        // TODO: COMEBACK
-        // CompoundTag tag = itemStack.getOrCreateTag();
-        // component.load(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
-        // component.save(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
+        // TODO: Better way to save and load (needs to save on shutdown too)
+        CompoundTag tag = itemStack.get(CommonRegistered.NBT_DATA_TYPE.get());
+        if (tag == null) tag = new CompoundTag();
+        component.load(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
+        component.save(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
+        itemStack.set(CommonRegistered.NBT_DATA_TYPE.get(), tag);
         // TODO: Reset component on fresh boot if tmp is not persistant
 
         components.put(itemStack, networkNode);

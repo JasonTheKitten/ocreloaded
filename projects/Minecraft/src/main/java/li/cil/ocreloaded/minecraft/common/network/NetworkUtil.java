@@ -19,12 +19,11 @@ public class NetworkUtil {
     
     private NetworkUtil() {}
 
-    // TODO: COMEBACK
     public void messageClient(NetworkMessage message, Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             ResourceLocation location = ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, message.getType());
             FriendlyByteBuf buffer = encodeMessage(message);
-            //NetworkManager.sendToPlayer(serverPlayer, location, buffer);
+            IPlatformNetworkHelper.INSTANCE.sendToPlayer(serverPlayer, location, buffer);
         } else {
             throw new IllegalArgumentException("Player is not a server player.");
         }
@@ -33,13 +32,13 @@ public class NetworkUtil {
     public void messageServer(NetworkMessage message) {
         ResourceLocation location = ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, message.getType());
         FriendlyByteBuf buffer = encodeMessage(message);
-        //NetworkManager.sendToServer(location, buffer);
+        IPlatformNetworkHelper.INSTANCE.sendToServer(location, buffer);
     }
 
     public void messageManyClients(NetworkMessage message, List<ServerPlayer> players) {
         ResourceLocation location = ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, message.getType());
         FriendlyByteBuf buffer = encodeMessage(message);
-        //NetworkManager.sendToPlayers(players, location, buffer);
+        IPlatformNetworkHelper.INSTANCE.sendToPlayers(players, location, buffer);
     }
 
     @SuppressWarnings("unchecked")
@@ -47,7 +46,7 @@ public class NetworkUtil {
         HANDLERS.put(type, handler);
 
         ResourceLocation location = ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, handler.getType());
-        /*NetworkManager.registerReceiver(NetworkManager.Side.S2C, location, (buffer, context) -> {
+        IPlatformNetworkHelper.INSTANCE.registerReceiver(IPlatformNetworkHelper.Side.S2C, location, (buffer, context) -> {
             context.queue(() -> {
                 NetworkHandler<NetworkMessage> messageHandler = (NetworkHandler<NetworkMessage>) HANDLERS.get(location.toString());
                 if (messageHandler == null) {
@@ -59,7 +58,7 @@ public class NetworkUtil {
             });
         });
 
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, location, (buffer, context) -> {
+        IPlatformNetworkHelper.INSTANCE.registerReceiver(IPlatformNetworkHelper.Side.C2S, location, (buffer, context) -> {
             context.queue(() -> {
                 NetworkHandler<NetworkMessage> messageHandler = (NetworkHandler<NetworkMessage>) HANDLERS.get(location.toString());
                 if (messageHandler == null) {
@@ -69,7 +68,7 @@ public class NetworkUtil {
                 NetworkMessage message = messageHandler.decode(buffer);
                 messageHandler.handleServer(message, new ServerNetworkMessageContext(context.getPlayer()));
             });
-        });*/
+        });
     }
 
     @SuppressWarnings("unchecked")

@@ -28,7 +28,9 @@ import li.cil.ocreloaded.minecraft.common.network.screen.ScreenNetworkHandler;
 import li.cil.ocreloaded.minecraft.common.network.sound.SoundNetworkHandler;
 import li.cil.ocreloaded.minecraft.registration.RegistrationProvider;
 import li.cil.ocreloaded.minecraft.registration.RegistryObject;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
@@ -39,13 +41,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
-@SuppressWarnings("unused") // Used in recipes, I think.
 public class CommonRegistered {
 
     private static final RegistrationProvider<Block> BLOCKS = RegistrationProvider.get(Registries.BLOCK, OCReloadedCommon.MOD_ID);
     private static final RegistrationProvider<Item> ITEMS = RegistrationProvider.get(Registries.ITEM, OCReloadedCommon.MOD_ID);
     private static final RegistrationProvider<MenuType<?>> MENUS = RegistrationProvider.get(Registries.MENU, OCReloadedCommon.MOD_ID);
     private static final RegistrationProvider<BlockEntityType<?>> BLOCK_ENTITIES = RegistrationProvider.get(Registries.BLOCK_ENTITY_TYPE, OCReloadedCommon.MOD_ID);
+    private static final RegistrationProvider<DataComponentType<?>> DATA_COMPONENT_TYPES = RegistrationProvider.get(Registries.DATA_COMPONENT_TYPE, OCReloadedCommon.MOD_ID);
     private static final RegistrationProvider<CreativeModeTab> CREATIVE_TABS = RegistrationProvider.get(Registries.CREATIVE_MODE_TAB, OCReloadedCommon.MOD_ID);
 
     private static final List<RegistryObject<Item, Item>> CREATIVE_TAB_ITEMS = new ArrayList<>();
@@ -154,6 +156,9 @@ public class CommonRegistered {
     public static final RegistryObject<BlockEntityType<?>, BlockEntityType<CaseBlockEntity>> CASE_BLOCK_ENTITY = BLOCK_ENTITIES.register("case", () -> IPlatformRegistryHelper.INSTANCE.createBlockEntityType(CaseBlockEntity::new, CASE_BLOCK_TIER_1.get(), CASE_BLOCK_TIER_2.get(), CASE_BLOCK_TIER_3.get(), CASE_BLOCK_CREATIVE.get()));
     public static final RegistryObject<BlockEntityType<?>, BlockEntityType<ScreenBlockEntity>> SCREEN_BLOCK_ENTITY = BLOCK_ENTITIES.register("screen", () -> IPlatformRegistryHelper.INSTANCE.createBlockEntityType(ScreenBlockEntity::new, SCREEN_BLOCK_TIER_1.get(), SCREEN_BLOCK_TIER_2.get(), SCREEN_BLOCK_TIER_3.get()));
     public static final RegistryObject<BlockEntityType<?>, BlockEntityType<KeyboardBlockEntity>> KEYBOARD_BLOCK_ENTITY = BLOCK_ENTITIES.register("keyboard", () -> IPlatformRegistryHelper.INSTANCE.createBlockEntityType(KeyboardBlockEntity::new, KEYBOARD_BLOCK.get()));
+
+    // Data component types
+    public static final RegistryObject<DataComponentType<?>, DataComponentType<CompoundTag>> NBT_DATA_TYPE = DATA_COMPONENT_TYPES.register("custom_nbt", () -> DataComponentType.<CompoundTag>builder().persistent(CompoundTag.CODEC).build());
 
     private static RegistryObject<Item, Item> registerItem(String name, Supplier<? extends Item> supplier) {
         RegistryObject<Item, Item> registryObject = ITEMS.register(name, supplier);
