@@ -1,0 +1,84 @@
+package li.cil.ocreloaded.minecraft.client.renderer.entity.screen;
+
+import javax.annotation.Nonnull;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+
+import li.cil.ocreloaded.core.graphics.TextModeBuffer;
+import li.cil.ocreloaded.minecraft.client.renderer.entity.screen.ScreenDisplayRenderer.PositionScale;
+import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
+import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.properties.AttachFace;
+
+public class ScreenRenderer implements BlockEntityRenderer<ScreenBlockEntity> {
+
+    private static final float SCREEN_MARGIN = 2f / 16f;
+
+    public ScreenRenderer(BlockEntityRendererProvider.Context context) {}
+
+    @Override
+    public void render(
+        @Nonnull ScreenBlockEntity blockEntity, float partialTick, @Nonnull PoseStack poseStack,
+        @Nonnull MultiBufferSource bufferSource, int combinedLight, int combinedOverlay
+    ) {
+        int[] bufferSize = blockEntity.getScreenBuffer().viewport();
+        float totalWidth = bufferSize[0] * ScreenDisplayRenderer.CELL_WIDTH;
+        float totalHeight = bufferSize[1] * ScreenDisplayRenderer.CELL_HEIGHT;
+        float postMarginWidth = 1 - SCREEN_MARGIN * 2;
+        float scaleValue = Math.min(postMarginWidth / totalWidth, postMarginWidth / totalHeight);
+        float translateX = (1 - totalWidth * scaleValue) / 2;
+        float translateY = (1 - totalHeight * scaleValue) / 2;
+        
+        poseStack.pushPose();
+        orientForFace(poseStack, blockEntity);
+        poseStack.mulPose(Axis.ZP.rotationDegrees(180));
+        poseStack.translate(-1 + translateX, -1 + translateY, -.002);
+        poseStack.scale(scaleValue, scaleValue, 1);
+
+        TextModeBuffer textModeBuffer = blockEntity.getScreenBuffer();
+        DrawingContext drawingContext = new MultiBufferSourceDrawingContext(bufferSource, poseStack.last().pose());
+        PositionScale positionScale = new PositionScale(0, 0, 1.0f);
+        
+        ScreenDisplayRenderer.renderDisplay(drawingContext, positionScale, textModeBuffer);
+
+        poseStack.popPose();
+    }
+
+    private void orientForFace(PoseStack poseStack, BlockEntity blockEntity) {
+        Direction screenDirection = blockEntity.getBlockState().getValue(ScreenBlock.FACING);
+        AttachFace attachFace = blockEntity.getBlockState().getValue(ScreenBlock.ATTACH_FACE);
+
+        // Block origin
+        poseStack.translate(.5, .5, .5);
+
+        // Next, rotate to front
+        switch (screenDirection) {
+            case NORTH -> poseStack.mulPose(Axis.YP.rotationDegrees(0));
+            case EAST -> poseStack.mulPose(Axis.YP.rotationDegrees(270));
+            case SOUTH -> poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            case WEST -> poseStack.mulPose(Axis.YP.rotationDegrees(90));
+            default -> poseStack.mulPose(Axis.YP.rotationDegrees(0));
+        }
+
+        // Rotate to side
+        if (attachFace == AttachFace.WALL) {
+            poseStack.mulPose(Axis.YP.rotationDegrees(0));
+        } else {
+            poseStack.mulPose(Axis.XP.rotationDegrees(attachFace == AttachFace.FLOOR ? 90 : 270));
+        }
+
+        if (attachFace == AttachFace.CEILING) {
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180));
+        }
+
+        // Untranslate
+        poseStack.translate(-.5, -.5, -.5);
+    }
+    
+}
