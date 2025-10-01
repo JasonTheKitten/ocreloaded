@@ -55,7 +55,7 @@ public class CaseScreen extends AbstractContainerScreen<CaseMenu> {
         }
         this.renderTooltip(guiGraphics, mouseX, mouseY);
         if (this.powerButton.isHovered() && this.menu.getPower().get() == 0) {
-            guiGraphics.renderComponentTooltip(this.font, List.of(Component.translatable("gui.ocreloaded.case.power_on")), mouseX, mouseY);
+            guiGraphics.renderComponentTooltip(this.font, List.of(Component.translatable("gui.ocreloaded.case.power_on"), Component.translatable("gui.ocreloaded.case.power_on_line2")), mouseX, mouseY);
         } else if (this.powerButton.isHovered() && this.menu.getPower().get() == 1) {
             guiGraphics.renderComponentTooltip(this.font, List.of(Component.translatable("gui.ocreloaded.case.power_off")), mouseX, mouseY);
         }
