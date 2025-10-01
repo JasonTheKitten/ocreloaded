@@ -2,9 +2,9 @@ package li.cil.ocreloaded.minecraft.common.menu;
 
 import javax.annotation.Nonnull;
 
-import commonnetwork.api.Dispatcher;
 import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
+import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper;
 import li.cil.ocreloaded.minecraft.common.network.packets.screen.ScreenNetworkInputMessages;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import net.minecraft.network.FriendlyByteBuf;
@@ -40,31 +40,31 @@ public class ScreenMenu extends AbstractContainerMenu {
     }
 
     public void onKeyPressed(int charCode, int keyCode) {
-        Dispatcher.sendToServer(ScreenNetworkInputMessages.createKeyPressedMessage(blockEntity.getBlockPos(), charCode, keyCode));
+        IPlatformNetworkHelper.INSTANCE.sendToServer(ScreenNetworkInputMessages.createKeyPressedMessage(blockEntity.getBlockPos(), charCode, keyCode));
     }
 
     public void onKeyReleased(int keyCode) {
-        Dispatcher.sendToServer(ScreenNetworkInputMessages.createKeyReleasedMessage(blockEntity.getBlockPos(), keyCode));
+        IPlatformNetworkHelper.INSTANCE.sendToServer(ScreenNetworkInputMessages.createKeyReleasedMessage(blockEntity.getBlockPos(), keyCode));
     }
 
     public void onMousePressed(int button, double x, double y) {
         if (!allowMouseEvents()) return;
-        Dispatcher.sendToServer(ScreenNetworkInputMessages.createMouseMessage(ScreenNetworkInputMessages.MOUSE_PRESSED, blockEntity.getBlockPos(), button, x, y));
+        IPlatformNetworkHelper.INSTANCE.sendToServer(ScreenNetworkInputMessages.createMouseMessage(ScreenNetworkInputMessages.MOUSE_PRESSED, blockEntity.getBlockPos(), button, x, y));
     }
 
     public void onMouseReleased(int button, double x, double y) {
         if (!allowMouseEvents()) return;
-        Dispatcher.sendToServer(ScreenNetworkInputMessages.createMouseMessage(ScreenNetworkInputMessages.MOUSE_RELEASED, blockEntity.getBlockPos(), button, x, y));
+        IPlatformNetworkHelper.INSTANCE.sendToServer(ScreenNetworkInputMessages.createMouseMessage(ScreenNetworkInputMessages.MOUSE_RELEASED, blockEntity.getBlockPos(), button, x, y));
     }
 
     public void onMouseDragged(int button, double x, double y) {
         if (!allowMouseEvents()) return;
-        Dispatcher.sendToServer(ScreenNetworkInputMessages.createMouseMessage(ScreenNetworkInputMessages.MOUSE_DRAGGED, blockEntity.getBlockPos(), button, x, y));
+        IPlatformNetworkHelper.INSTANCE.sendToServer(ScreenNetworkInputMessages.createMouseMessage(ScreenNetworkInputMessages.MOUSE_DRAGGED, blockEntity.getBlockPos(), button, x, y));
     }
 
     public void onMouseScrolled(int button, double x, double y) {
         if (!allowMouseEvents()) return;
-        Dispatcher.sendToServer(ScreenNetworkInputMessages.createMouseMessage(ScreenNetworkInputMessages.MOUSE_SCROLLED, blockEntity.getBlockPos(), button, x, y));
+        IPlatformNetworkHelper.INSTANCE.sendToServer(ScreenNetworkInputMessages.createMouseMessage(ScreenNetworkInputMessages.MOUSE_SCROLLED, blockEntity.getBlockPos(), button, x, y));
     }
 
     private boolean allowMouseEvents() {
@@ -72,6 +72,6 @@ public class ScreenMenu extends AbstractContainerMenu {
     }
 
     public void onKeyboardClipboard(String clipboard) {
-        Dispatcher.sendToServer(ScreenNetworkInputMessages.createClipboardPasteMessage(blockEntity.getBlockPos(), clipboard));
+        IPlatformNetworkHelper.INSTANCE.sendToServer(ScreenNetworkInputMessages.createClipboardPasteMessage(blockEntity.getBlockPos(), clipboard));
     }
 }

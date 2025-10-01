@@ -1,10 +1,19 @@
 package li.cil.ocreloaded.minecraft.common.menu;
 
-import commonnetwork.api.Dispatcher;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import li.cil.ocreloaded.minecraft.common.assets.SharedTextures;
 import li.cil.ocreloaded.minecraft.common.container.BasicContainer;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
-import li.cil.ocreloaded.minecraft.common.item.*;
+import li.cil.ocreloaded.minecraft.common.item.CPUItem;
+import li.cil.ocreloaded.minecraft.common.item.EepromItem;
+import li.cil.ocreloaded.minecraft.common.item.FloppyDiskItem;
+import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
+import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
+import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
+import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper;
 import li.cil.ocreloaded.minecraft.common.network.packets.PowerPacket;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import net.minecraft.core.BlockPos;
@@ -18,10 +27,6 @@ import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.List;
-
-import javax.annotation.Nonnull;
 
 public class CaseMenu extends AbstractContainerMenu {
 
@@ -116,7 +121,7 @@ public class CaseMenu extends AbstractContainerMenu {
 
     public void sendServerPowerState() {
         BlockPos targetBlockPos = blockEntity.getBlockPos();
-        Dispatcher.sendToServer(new PowerPacket(targetBlockPos, power.get() == 1));
+        IPlatformNetworkHelper.INSTANCE.sendToServer(new PowerPacket(targetBlockPos, power.get() == 1));
     }
 
     private void addContainerSlots() {

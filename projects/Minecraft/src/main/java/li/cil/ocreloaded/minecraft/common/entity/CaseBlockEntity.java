@@ -12,11 +12,9 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
-import li.cil.ocreloaded.minecraft.common.network.packets.SoundPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import commonnetwork.api.Dispatcher;
 import io.netty.buffer.Unpooled;
 import li.cil.ocreloaded.core.component.ComputerComponent;
 import li.cil.ocreloaded.core.component.FileSystemComponent;
@@ -39,6 +37,8 @@ import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
 import li.cil.ocreloaded.minecraft.common.item.ComponentItem;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
+import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper;
+import li.cil.ocreloaded.minecraft.common.network.packets.SoundPacket;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import li.cil.ocreloaded.minecraft.common.util.ItemList;
@@ -290,7 +290,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
         ChunkPos chunkPos = new ChunkPos(worldPosition);
         List<ServerPlayer> chunkTrackingPlayers = ((ServerLevel) level).getPlayers(player -> player.getChunkTrackingView().contains(chunkPos));
 
-        Dispatcher.sendToClients(SoundPacket.createBeepMessage(worldPosition, frequency, duration), chunkTrackingPlayers);
+        IPlatformNetworkHelper.INSTANCE.sendToClients(SoundPacket.createBeepMessage(worldPosition, frequency, duration), chunkTrackingPlayers);
     }
     
 }

@@ -30,12 +30,9 @@ repositories {
 }
 
 dependencies {
-    shadeApi(project(":Minecraft"))
-
     "additionalRuntimeClasspath"(files(project.configurations.getByName("shade")))
     "additionalRuntimeClasspath"(files(project.configurations.getByName("shadeApi")))
-
-    implementation("mysticdrew:common-networking-neoforge:1.0.20-1.21.1")
+    shadeApi(project(":Minecraft"))
 }
 
 sourceSets.main {

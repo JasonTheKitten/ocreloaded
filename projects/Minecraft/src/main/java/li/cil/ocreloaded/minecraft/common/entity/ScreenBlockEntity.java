@@ -3,8 +3,7 @@ package li.cil.ocreloaded.minecraft.common.entity;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import commonnetwork.api.Dispatcher;
-import li.cil.ocreloaded.minecraft.common.network.packets.ScreenPacket;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +18,8 @@ import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
 import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
+import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper;
+import li.cil.ocreloaded.minecraft.common.network.packets.ScreenPacket;
 import li.cil.ocreloaded.minecraft.common.network.packets.screen.NetworkedTextModeBufferProxy;
 import li.cil.ocreloaded.minecraft.common.network.packets.screen.ScreenNetworkInputMessages;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
@@ -110,7 +111,7 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
         NetworkedTextModeBufferProxy proxy = (NetworkedTextModeBufferProxy) screenBuffer;
         if (!proxy.hasChanges()) return;
         ByteBuf changeBuffer = proxy.getBuffer();
-        Dispatcher.sendToClients(new ScreenPacket(worldPosition, ScreenPacket.TEXT_MODE_BUFFER_CHANNEL, changeBuffer.array()), chunkTrackingPlayers);
+        IPlatformNetworkHelper.INSTANCE.sendToClients(new ScreenPacket(worldPosition, ScreenPacket.TEXT_MODE_BUFFER_CHANNEL, changeBuffer.array()), chunkTrackingPlayers);
     }
 
     public void onKeyPressed(int charCode, int keyCode, Player player) {
