@@ -17,7 +17,6 @@ dependencies {
     })
     modImplementation("net.fabricmc:fabric-loader:${libs.versions.fabricLoader.get()}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${libs.versions.fabricApi.get()}")
-    modImplementation("mysticdrew:common-networking-fabric:1.0.20-1.21.1")
 
     shadeApi(project(":Minecraft"))
 }

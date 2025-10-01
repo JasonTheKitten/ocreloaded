@@ -1,11 +1,11 @@
 package li.cil.ocreloaded.minecraft.common.network.packets;
 
-import commonnetwork.api.Dispatcher;
-import commonnetwork.networking.data.PacketContext;
-import commonnetwork.networking.data.Side;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
 import li.cil.ocreloaded.minecraft.common.WorldUtil;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
+import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper;
+import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper.PacketContext;
+import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper.Side;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -31,10 +31,11 @@ public record PowerPacket(BlockPos pos, boolean powerState) {
     }
 
     public static void handle(PacketContext<PowerPacket> ctx) {
-        if (ctx.side().equals(Side.CLIENT))
+        if (ctx.side().equals(Side.S2C)) {
             handleClient(ctx);
-        else
+        } else {
             handleServer(ctx);
+        }
     }
 
     private static void handleClient(PacketContext<PowerPacket> ctx) {
@@ -60,7 +61,7 @@ public record PowerPacket(BlockPos pos, boolean powerState) {
 
         if (level.getBlockEntity(packet.pos) instanceof CaseBlockEntity entity) {
             entity.setPowered(packet.powerState);
-            Dispatcher.sendToClientsInLevel(packet, (ServerLevel) level);
+            IPlatformNetworkHelper.INSTANCE.sendToClientsInLevel(packet, (ServerLevel) level);
         }
     }
 }

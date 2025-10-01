@@ -2,11 +2,11 @@ package li.cil.ocreloaded.minecraft.common.network.packets;
 
 import java.nio.ByteBuffer;
 
-import commonnetwork.networking.data.PacketContext;
-import commonnetwork.networking.data.Side;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
+import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper.PacketContext;
+import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper.Side;
 import li.cil.ocreloaded.minecraft.common.network.NetworkUtil;
 import li.cil.ocreloaded.minecraft.common.registry.ClientBridge;
 import li.cil.ocreloaded.minecraft.common.sound.SoundPlayerProvider;
@@ -37,7 +37,7 @@ public record SoundPacket(BlockPos pos, int channel, byte[] deltaBuffer) {
     }
 
     public static void handle(PacketContext<SoundPacket> ctx) {
-        if (!ctx.side().equals(Side.CLIENT)) return;
+        if (!ctx.side().equals(Side.S2C)) return;
 
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
