@@ -1,6 +1,5 @@
 plugins {
-    id("java-library")
-    id("com.gradleup.shadow")
+    id("oc-base")
 }
 
 configurations {
@@ -17,6 +16,3 @@ repositories {
         name = "BlameJared's maven"
     }
 }
-
-val shade by configurations.creating
-configurations["implementation"].extendsFrom(shade)

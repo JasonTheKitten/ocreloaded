@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id("oc-common")
 }
@@ -25,4 +27,20 @@ tasks.named<Copy>("processResources") {
     from(rootProject.file("libs/lua52")) {
         into("data/ocreloaded/libs/lua52")
     }
+}
+
+tasks.withType<ShadowJar> {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    configurations = listOf(
+        project.configurations.getByName("shade"),
+        project.configurations.getByName("shadeApi")
+    )
+
+    from(sourceSets.main.get().output)
+    from(project(":Core").sourceSets.main.get().output)
+    from(project(":Minecraft").sourceSets.main.get().output)
+
+    relocate("com.typesafe.config", "li.cil.ocreloaded.lib.config")
+    archiveClassifier.set("all")
 }

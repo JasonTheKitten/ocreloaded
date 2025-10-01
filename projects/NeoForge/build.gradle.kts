@@ -1,5 +1,5 @@
 import com.matyrobbrt.registrationutils.gradle.RegExtension;
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar;
 
 plugins {
     id("oc-neo-based")
@@ -30,36 +30,18 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":Minecraft"))
+    shadeApi(project(":Minecraft"))
 
-    "additionalRuntimeClasspath"(libs.typesafeConfig)
-    "additionalRuntimeClasspath"(files("../../libs/OpenComputers-JNLua.jar", "../../libs/OpenComputers-LuaJ.jar"))
-    jarJar(libs.typesafeConfig)
-    jarJar(files("../../libs/OpenComputers-JNLua.jar", "../../libs/OpenComputers-LuaJ.jar"))
+    "additionalRuntimeClasspath"(files(project.configurations.getByName("shade")))
+    "additionalRuntimeClasspath"(files(project.configurations.getByName("shadeApi")))
 
     implementation("mysticdrew:common-networking-neoforge:1.0.20-1.21.1")
-    
-    shade(libs.typesafeConfig)
-    shade(files("../../libs/OpenComputers-JNLua.jar", "../../libs/OpenComputers-LuaJ.jar"))
 }
 
 sourceSets.main {
     resources {
         srcDir(project(":Minecraft").sourceSets.main.get().resources.srcDirs)
     }
-}
-
-tasks.withType<ShadowJar> {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-    configurations = listOf(project.configurations.getByName("shade"))
-
-    from(sourceSets.main.get().output)
-    from(project(":Core").sourceSets.main.get().output)
-    from(project(":Minecraft").sourceSets.main.get().output)
-
-    relocate("com.typesafe.config", "li.cil.ocreloaded.lib.config")
-    archiveClassifier.set("all")
 }
 
 afterEvaluate {

@@ -14,7 +14,7 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 public class OCReloaded {
     public static final String MOD_ID = "ocreloaded";
 
-    public OCReloaded(IEventBus bus) {
+    public OCReloaded(IEventBus bus) throws ClassNotFoundException {
         CommonRegistered.initialize();
     }
 
@@ -22,4 +22,5 @@ public class OCReloaded {
     public static void serverStarted(ServerStartedEvent event) {
         CommonServerHooks.setup(event.getServer());
     }
+
 }

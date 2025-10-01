@@ -1,5 +1,5 @@
 plugins {
-    id("java-library")
+    id("oc-base")
 }
 
 repositories {
@@ -9,6 +9,6 @@ repositories {
 dependencies {
     compileOnly(libs.slf4j)
 
-    api(libs.typesafeConfig)
-    api(files("../../libs/OpenComputers-JNLua.jar", "../../libs/OpenComputers-LuaJ.jar"))
+    shadeApi(libs.typesafeConfig)
+    shadeApi(files("../../libs/OpenComputers-JNLua.jar", "../../libs/OpenComputers-LuaJ.jar"))
 }
