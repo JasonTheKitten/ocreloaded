@@ -39,3 +39,8 @@ tasks.build {
 afterEvaluate {
     extensions.getByType<RegExtension>().configureJarTask(tasks.shadowJar.get())
 }
+
+// TODO: Figure out how to declare this in :Minecraft instead
+tasks.named("processResources") {
+	dependsOn(project(":Minecraft").tasks.named("processResources"))
+}
