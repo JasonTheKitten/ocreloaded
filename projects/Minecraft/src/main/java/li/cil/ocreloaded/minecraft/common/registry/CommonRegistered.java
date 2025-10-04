@@ -11,6 +11,7 @@ import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
 import li.cil.ocreloaded.minecraft.common.entity.KeyboardBlockEntity;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
+import li.cil.ocreloaded.minecraft.common.item.APUItem;
 import li.cil.ocreloaded.minecraft.common.item.CPUItem;
 import li.cil.ocreloaded.minecraft.common.item.DataCardItem;
 import li.cil.ocreloaded.minecraft.common.item.EepromItem;
@@ -52,10 +53,6 @@ public class CommonRegistered {
 
     public static void initialize() {
         NetworkUtil.initialize();
-
-        /*NetworkUtil.getInstance().registerHandler("ocreloaded:power", new PowerNetworkHandler());
-        NetworkUtil.getInstance().registerHandler("ocreloaded:screen", new ScreenNetworkHandler());
-        NetworkUtil.getInstance().registerHandler("ocreloaded:sound", new SoundNetworkHandler());*/
     }
 
     // Creative mode tabs
@@ -118,6 +115,10 @@ public class CommonRegistered {
 
     public static final RegistryObject<Item, Item> TRANSISTOR = registerItem("transistor", () -> new Item(DEFAULT_ITEM_PROPERTIES));
     public static final RegistryObject<Item, Item> MANUAL = registerItem("manual", () -> new ManualItem(DEFAULT_ITEM_PROPERTIES));
+
+    public static final RegistryObject<Item, Item> APU_TIER_1 = registerItem("apu1", () -> new APUItem(DEFAULT_ITEM_PROPERTIES, 2));
+    public static final RegistryObject<Item, Item> APU_TIER_2 = registerItem("apu2", () -> new APUItem(DEFAULT_ITEM_PROPERTIES, 3));
+    public static final RegistryObject<Item, Item> APU_TIER_3 = registerItem("apucreative", () -> new APUItem(DEFAULT_ITEM_PROPERTIES, 3));
 
     public static final RegistryObject<Item, Item> CPU_TIER_1 = registerItem("cpu1", () -> new CPUItem(DEFAULT_ITEM_PROPERTIES, 1));
     public static final RegistryObject<Item, Item> CPU_TIER_2 = registerItem("cpu2", () -> new CPUItem(DEFAULT_ITEM_PROPERTIES, 2));

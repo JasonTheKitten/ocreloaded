@@ -8,7 +8,7 @@ import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.server.machine.fssup.FileSystemSupplierRegistry;
 import net.minecraft.world.item.Item;
 
-public class HardDiskItem extends Item implements TieredItem, ComponentItem {
+public class HardDiskItem extends Item implements SlotItem, TieredItem, ComponentItem {
 
     private static FileSystemSupplierRegistry fileSystemFactory = FileSystemSupplierRegistry.getDefaultInstance();
 

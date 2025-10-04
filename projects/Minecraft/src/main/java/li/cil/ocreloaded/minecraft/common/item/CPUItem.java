@@ -2,7 +2,7 @@ package li.cil.ocreloaded.minecraft.common.item;
 
 import net.minecraft.world.item.Item;
 
-public class CPUItem extends Item implements TieredItem {
+public class CPUItem extends Item implements ProcessorProviderItem {
 
     private final int tier;
 

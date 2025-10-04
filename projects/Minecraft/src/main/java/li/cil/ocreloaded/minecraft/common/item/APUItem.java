@@ -6,7 +6,7 @@ import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import net.minecraft.world.item.Item;
 
-public class GraphicsCardItem extends Item implements CardItem {
+public class APUItem extends Item implements ProcessorProviderItem, ComponentItem {
 
     //TODO: Move this to a conifg
     public static int[][] TIER_RESOLUTIONS = new int[][] {
@@ -19,7 +19,7 @@ public class GraphicsCardItem extends Item implements CardItem {
 
     private final int tier;
 
-    public GraphicsCardItem(Properties properties, int tier) {
+    public APUItem(Properties properties, int tier) {
         super(properties);
         this.tier = tier;
     }

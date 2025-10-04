@@ -11,7 +11,7 @@ import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.server.machine.fssup.FileSystemSupplierRegistry;
 import net.minecraft.world.item.Item;
 
-public class FloppyDiskItem extends Item implements ComponentItem {
+public class FloppyDiskItem extends Item implements SlotItem, ComponentItem {
 
     private static FileSystemSupplierRegistry fileSystemFactory = FileSystemSupplierRegistry.getDefaultInstance();
 
