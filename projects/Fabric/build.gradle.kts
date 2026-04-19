@@ -1,6 +1,5 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar;
-import net.fabricmc.loom.task.RemapJarTask;
-import com.matyrobbrt.registrationutils.gradle.RegExtension;
+import com.matyrobbrt.registrationutils.gradle.RegExtension
+import net.fabricmc.loom.task.RemapJarTask
 
 evaluationDependsOn(":Minecraft")
 
@@ -38,8 +37,4 @@ tasks.build {
 
 afterEvaluate {
     extensions.getByType<RegExtension>().configureJarTask(tasks.shadowJar.get())
-}
-
-tasks.named("processResources") {
-	dependsOn(project(":Minecraft").tasks.named("processResources"))
 }
