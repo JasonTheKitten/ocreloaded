@@ -9,3 +9,4 @@ projects/*/bin
 .vscode
 .idea
 .eclipse
+buildSrc/.kotlin

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import li.cil.ocreloaded.core.machine.architecture.luac.LuaCStateFactory;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
+import li.cil.repack.com.naef.jnlua.CustomLoader;
 import li.cil.repack.com.naef.jnlua.LuaState;
 import li.cil.repack.com.naef.jnlua.LuaState.Library;
 import li.cil.repack.com.naef.jnlua.LuaStateFiveThree;
@@ -67,14 +68,14 @@ public class LuaCFactory {
         LoggerFactory.getLogger(getClass()).info("Loading arch {}", architecture);
         switch (architecture) {
             case "lua52":
-                NativeSupport.getInstance().setLoader(() -> System.load(getTempName(architecture)));
+                NativeSupport.getInstance().setLoader(() -> CustomLoader.load(getTempName(architecture)));
                 return loaded(() -> new LuaState(), LIBRARIES_52);
             case "lua53":
                 // Lua53 still needs Lua52 libs
                 if (createFactory("lua52").isEmpty()) return Optional.empty();
                 NativeSupport.getInstance().setLoader(() -> {
-                    System.load(getTempName("lua52"));
-                    System.load(getTempName(architecture));
+                    CustomLoader.load(getTempName("lua52"));
+                    CustomLoader.load(getTempName(architecture));
                 });
                 return loaded(() -> new LuaStateFiveThree(), LIBRARIES_53);
             default:

@@ -27,8 +27,9 @@ sourceSets.main {
 }
 
 tasks.withType<RemapJarTask> {
+    dependsOn(tasks.shadowJar)
     inputFile.set(tasks.shadowJar.get().archiveFile)
-    archiveClassifier.set("")
+    archiveClassifier.set("mod")
 }
 
 tasks.build {
