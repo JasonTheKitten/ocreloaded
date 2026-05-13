@@ -30,6 +30,8 @@ repositories {
 }
 
 dependencies {
+    jarJar(files(project.configurations.getByName("shade")))
+    jarJar(files(project.configurations.getByName("shadeApi")))
     "additionalRuntimeClasspath"(files(project.configurations.getByName("shade")))
     "additionalRuntimeClasspath"(files(project.configurations.getByName("shadeApi")))
     shadeApi(project(":Minecraft"))
