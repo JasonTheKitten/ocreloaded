@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "bbb",
+    "bbb",
+    "bbb"
+  ],
+  "key": {
+    "b": { "tag": "minecraft:buttons" }
+  },
+  "result": {
+    "id": "ocreloaded:numpad"
+  }
+}

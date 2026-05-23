@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ici",
+    "fhf",
+    "ibi"
+  ],
+  "key": {
+    "i": { "item": "minecraft:gold_ingot" },
+    "f": { "item": "minecraft:iron_bars" },
+    "h": { "item": "minecraft:chest" },
+    "b": { "item": "ocreloaded:printed_circuit_board" },
+    "c": { "item": "ocreloaded:chip2" }
+  },
+  "result": {
+    "id": "ocreloaded:case2"
+  }
+}

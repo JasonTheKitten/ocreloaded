@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iti",
+    "pcp",
+    "ihi"
+  ],
+  "key": {
+    "i": { "item": "minecraft:gold_nugget" },
+    "p": { "item": "minecraft:paper" },
+    "h": { "item": "minecraft:redstone_torch" },
+    "t": { "item": "ocreloaded:transistor" },
+    "c": { "item": "ocreloaded:chip1" }
+  },
+  "result": {
+    "id": "ocreloaded:eeprom"
+  }
+}

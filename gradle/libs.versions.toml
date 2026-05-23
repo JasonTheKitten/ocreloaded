@@ -9,7 +9,7 @@ neoForge = "21.1.209"
 neoForm = "1.21.1-20240808.144430"
 
 # Fabric
-fabricLoader = "0.16.0"
+fabricLoader = "0.16.3"
 fabricApi = "0.116.5+1.21.1"
 loom = "1.11-SNAPSHOT"
 

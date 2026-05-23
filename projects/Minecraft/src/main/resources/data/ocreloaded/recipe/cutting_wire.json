@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "sis"
+  ],
+  "key": {
+    "i": { "item": "minecraft:iron_nugget" },
+    "s": { "item": "minecraft:stick" }
+  },
+  "result": {
+    "id": "ocreloaded:cutting_wire"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "ocreloaded:eeprom" },
+    { "item": "ocreloaded:manual" }
+  ],
+  "result": {
+    "id": "ocreloaded:eeprom_lua",
+    "count": 1
+  }
+}

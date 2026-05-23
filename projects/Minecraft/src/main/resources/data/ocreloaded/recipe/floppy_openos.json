@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "ocreloaded:floppy" },
+    { "item": "ocreloaded:manual" }
+  ],
+  "result": {
+    "id": "ocreloaded:floppy_openos",
+    "count": 1
+  }
+}

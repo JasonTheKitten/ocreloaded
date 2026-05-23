@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iac",
+    " r "
+  ],
+  "key": {
+    "i": { "item": "minecraft:gold_nugget" },
+    "a": { "item": "ocreloaded:cpu1" },
+    "c": { "item": "ocreloaded:chip3" },
+    "r": { "item": "ocreloaded:card" }
+  },
+  "result": {
+    "id": "ocreloaded:datacard2"
+  }
+}

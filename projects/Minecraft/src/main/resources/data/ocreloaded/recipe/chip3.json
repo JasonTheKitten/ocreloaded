@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iii",
+    "rtr",
+    "iii"
+  ],
+  "key": {
+    "i": { "item": "ocreloaded:chip_diamond" },
+    "r": { "item": "minecraft:redstone" },
+    "t": { "item": "ocreloaded:transistor" }
+  },
+  "result": {
+    "id": "ocreloaded:chip3",
+    "count": 2
+  }
+}

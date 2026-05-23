@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "i  ",
+    "ic ",
+    "ig "
+  ],
+  "key": {
+    "i": { "item": "minecraft:iron_ingot" },
+    "g": { "item": "minecraft:gold_nugget" },
+    "c": { "item": "ocreloaded:printed_circuit_board" }
+  },
+  "result": {
+    "id": "ocreloaded:card"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "ocreloaded:chip1" },
+    { "item": "minecraft:book" }
+  ],
+  "result": {
+    "id": "ocreloaded:manual",
+    "count": 1
+  }
+}
