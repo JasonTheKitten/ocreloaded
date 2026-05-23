@@ -44,3 +44,7 @@ tasks.withType<ShadowJar> {
     relocate("com.typesafe.config", "li.cil.ocreloaded.lib.config")
     archiveClassifier.set("all")
 }
+
+tasks.named("processResources") {
+    dependsOn(project(":Minecraft").tasks.named("processResources"))
+}

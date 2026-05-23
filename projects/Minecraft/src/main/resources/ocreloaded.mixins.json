@@ -1,6 +1,6 @@
 {
     "required": true,
-    "package": "oc.cil.ocreloaded.mixin",
+    "package": "li.cil.ocreloaded.mixin",
     "compatibilityLevel": "JAVA_21",
     "minVersion": "0.8",
     "client": [

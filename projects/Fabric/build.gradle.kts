@@ -1,6 +1,5 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar;
-import net.fabricmc.loom.task.RemapJarTask;
-import com.matyrobbrt.registrationutils.gradle.RegExtension;
+import com.matyrobbrt.registrationutils.gradle.RegExtension
+import net.fabricmc.loom.task.RemapJarTask
 
 evaluationDependsOn(":Minecraft")
 
@@ -28,8 +27,9 @@ sourceSets.main {
 }
 
 tasks.withType<RemapJarTask> {
+    dependsOn(tasks.shadowJar)
     inputFile.set(tasks.shadowJar.get().archiveFile)
-    archiveClassifier.set("")
+    archiveClassifier.set("mod")
 }
 
 tasks.build {
