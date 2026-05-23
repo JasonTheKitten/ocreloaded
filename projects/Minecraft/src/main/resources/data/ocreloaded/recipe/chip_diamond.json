@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "ocreloaded:cutting_wire" },
+    { "item": "minecraft:diamond" }
+  ],
+  "result": {
+    "id": "ocreloaded:chip_diamond",
+    "count": 6
+  }
+}

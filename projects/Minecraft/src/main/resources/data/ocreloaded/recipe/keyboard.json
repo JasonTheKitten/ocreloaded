@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "bbb",
+    "ban"
+  ],
+  "key": {
+    "b": { "item": "ocreloaded:button_group" },
+    "a": { "item": "ocreloaded:arrow_keys" },
+    "n": { "item": "ocreloaded:numpad" }
+  },
+  "result": {
+    "id": "ocreloaded:keyboard"
+  }
+}

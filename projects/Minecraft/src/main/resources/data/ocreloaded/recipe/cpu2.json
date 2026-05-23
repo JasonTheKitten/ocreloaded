@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iri",
+    "cuc",
+    "iai"
+  ],
+  "key": {
+    "i": { "item": "minecraft:gold_nugget" },
+    "r": { "item": "minecraft:redstone" },
+    "u": { "item": "ocreloaded:cu" },
+    "a": { "item": "ocreloaded:alu" },
+    "c": { "item": "ocreloaded:chip2" }
+  },
+  "result": {
+    "id": "ocreloaded:cpu2"
+  }
+}

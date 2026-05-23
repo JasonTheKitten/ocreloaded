@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iac",
+    " r "
+  ],
+  "key": {
+    "i": { "item": "ocreloaded:chip_diamond" },
+    "a": { "item": "ocreloaded:cpu2" },
+    "c": { "item": "ocreloaded:memory3" },
+    "r": { "item": "ocreloaded:card" }
+  },
+  "result": {
+    "id": "ocreloaded:datacard3"
+  }
+}

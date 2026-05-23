@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iri",
+    "tct",
+    "iti"
+  ],
+  "key": {
+    "i": { "item": "minecraft:gold_nugget" },
+    "r": { "item": "minecraft:redstone" },
+    "t": { "item": "ocreloaded:transistor" },
+    "c": { "item": "minecraft:clock" }
+  },
+  "result": {
+    "id": "ocreloaded:cu"
+  }
+}

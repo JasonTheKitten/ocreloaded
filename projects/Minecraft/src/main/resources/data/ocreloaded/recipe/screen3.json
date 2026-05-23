@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iri",
+    "rcg",
+    "iri"
+  ],
+  "key": {
+    "i": { "item": "minecraft:obsidian" },
+    "g": { "item": "minecraft:glass" },
+    "r": { "item": "minecraft:yellow_dye" },
+    "c": { "item": "ocreloaded:chip3" }
+  },
+  "result": {
+    "id": "ocreloaded:screen3"
+  }
+}

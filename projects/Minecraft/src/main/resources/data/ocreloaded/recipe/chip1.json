@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iii",
+    "rtr",
+    "iii"
+  ],
+  "key": {
+    "i": { "item": "minecraft:iron_ingot" },
+    "r": { "item": "minecraft:redstone" },
+    "t": { "item": "ocreloaded:transistor" }
+  },
+  "result": {
+    "id": "ocreloaded:chip1",
+    "count": 8
+  }
+}
