@@ -24,6 +24,8 @@ public interface Network {
 
     void sendToNeighbors(NetworkNode source, NetworkMessage message);
 
+    EnergyDistributor energy();
+
     void debug();
 
 }

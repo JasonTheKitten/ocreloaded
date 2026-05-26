@@ -14,6 +14,7 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import li.cil.ocreloaded.core.energy.EnergyConstants;
 import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.MachineParameters;
 import li.cil.ocreloaded.core.machine.MachineResult;
@@ -23,7 +24,6 @@ import li.cil.ocreloaded.core.network.NetworkNode;
 public class ArchitectureMachine implements Machine {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ArchitectureMachine.class);
-
     private final Architecture architecture;
     private final MachineParameters parameters;
 
@@ -50,6 +50,10 @@ public class ArchitectureMachine implements Machine {
         }
     }
 
+    @Override
+    public boolean isRunning() {
+        return state.peek() != State.STOPPED && state.peek() != State.STOPPING;
+    }
 
     @Override
     public void stop() {
@@ -74,6 +78,12 @@ public class ArchitectureMachine implements Machine {
         }
 
         if (state.peek() == State.STOPPED || state.peek() == State.STOPPING) return;
+
+        if (parameters.networkNode().network().energy().changeEnergy(-EnergyConstants.COMPUTER_ENERGY_PER_TICK) > -EnergyConstants.COMPUTER_ENERGY_PER_TICK) {
+            handleMachineResult(new MachineResult.Stop(false));
+            return;
+        }
+
         uptime++;
 
         if (state.peek() == State.WAIT || state.peek() == State.PAUSED) {
@@ -156,6 +166,7 @@ public class ArchitectureMachine implements Machine {
     private boolean startInternal() {
         Optional<InputStream> codeStream = parameters.codeStreamSupplier().get();
         if (codeStream.isEmpty()) return false;
+        if (parameters.networkNode().network().energy().getEnergyStored() < EnergyConstants.COMPUTER_ENERGY_PER_TICK) return false;
 
         this.state.clear();
         this.state.push(State.STARTING);

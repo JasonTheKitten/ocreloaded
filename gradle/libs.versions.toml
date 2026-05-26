@@ -11,6 +11,7 @@ neoForm = "1.21.1-20240808.144430"
 # Fabric
 fabricLoader = "0.16.0"
 fabricApi = "0.116.5+1.21.1"
+teamRebornEnergy = "4.1.0"
 loom = "1.11-SNAPSHOT"
 
 # Parchment
@@ -32,6 +33,7 @@ modDevGradle = { module = "net.neoforged.moddev:net.neoforged.moddev.gradle.plug
 shadow = { module = "com.gradleup.shadow:com.gradleup.shadow.gradle.plugin", version.ref = "shadow" }
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 typesafeConfig = { module = "com.typesafe:config", version.ref = "typesafeConfig" }
+teamRebornEnergy = { module = "teamreborn:energy", version.ref = "teamRebornEnergy" }
 
 [plugins]
 loom = { id = "fabric-loom", version.ref = "loom" }

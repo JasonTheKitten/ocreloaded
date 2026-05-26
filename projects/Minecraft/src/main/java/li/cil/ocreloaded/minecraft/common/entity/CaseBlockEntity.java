@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import io.netty.buffer.Unpooled;
 import li.cil.ocreloaded.core.component.ComputerComponent;
 import li.cil.ocreloaded.core.component.FileSystemComponent;
+import li.cil.ocreloaded.core.energy.EnergyConstants;
+import li.cil.ocreloaded.core.energy.SimpleEnergyBuffer;
 import li.cil.ocreloaded.core.filesystem.InMemoryFileSystem;
 import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
@@ -35,15 +38,18 @@ import li.cil.ocreloaded.minecraft.common.SettingsConstants;
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
+import li.cil.ocreloaded.minecraft.common.energy.EnergyAccess;
 import li.cil.ocreloaded.minecraft.common.item.ComponentItem;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
 import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper;
+import li.cil.ocreloaded.minecraft.common.network.packets.PowerPacket;
 import li.cil.ocreloaded.minecraft.common.network.packets.SoundPacket;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import li.cil.ocreloaded.minecraft.common.util.ItemList;
 import li.cil.ocreloaded.minecraft.common.util.ItemList.ItemChangeListener;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -65,10 +71,12 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     private static final net.minecraft.network.chat.Component MENU_NAME = net.minecraft.network.chat.Component.translatable("gui.ocreloaded.case");
 
     private static final String TAG_POWERED = "ocreloaded:powered";
+    private static final String TAG_ENERGY = "ocreloaded:energy";
     private Optional<Machine> machine = Optional.empty();
 
+    private final SimpleEnergyBuffer energyBuffer = new SimpleEnergyBuffer(EnergyConstants.CASE_ENERGY_CAPACITY);
     private final ItemList items = ItemList.withSize(10, this);
-    private final NetworkNode networkNode = new ComponentNetworkNode(node -> new ComputerComponent(node, () -> machine), Visibility.NETWORK);
+    private final NetworkNode networkNode = new ComponentNetworkNode(node -> new ComputerComponent(node, () -> machine), Optional.of(energyBuffer), Visibility.NETWORK);
     private final NetworkNode tmpFsNode = new ComponentNetworkNode(node -> new FileSystemComponent(node, () -> new InMemoryFileSystem(), Label.create()), Visibility.NEIGHBORS);
     private final MachineProcessorImp processor = new MachineProcessorImp(MachineRegistry.getDefaultInstance());
 
@@ -127,6 +135,14 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     @Override
     public void tick() {
         machine.ifPresent(Machine::runSync);
+        if (machine.isPresent() && !machine.get().isRunning()) {
+            machine = Optional.empty();
+            if (powered) {
+                powered = false;
+                setChanged();
+                updateBlockState();
+            }
+        }
     }
 
     @Override
@@ -175,12 +191,14 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     public void save(PersistenceHolder holder) {
         networkNode.save(holder);
         holder.storeBool(TAG_POWERED, this.powered);
+        holder.storeDouble(TAG_ENERGY, energyBuffer.getEnergy());
     }
 
     @Override
     public void load(PersistenceHolder holder) {
         networkNode.load(holder);
         this.powered = holder.loadBool(TAG_POWERED);
+        energyBuffer.setEnergy(holder.loadDouble(TAG_ENERGY));
         for (ItemStack itemStack : this.items) {
             loadComponent(itemStack, loadedComponents);
         }
@@ -193,6 +211,10 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
 
     public boolean isPowered() {
         return this.powered;
+    }
+
+    public Optional<EnergyAccess> energyAccess(@Nullable Direction side) {
+        return Optional.of(EnergyAccess.receiveOnly(energyBuffer, this::setChanged));
     }
 
     public void setPowered(boolean b) {
@@ -209,6 +231,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
 
         BlockState newBlockState = level.getBlockState(this.worldPosition).setValue(CaseBlock.RUNNING, this.powered);
         level.setBlock(this.worldPosition, newBlockState, 3);
+        IPlatformNetworkHelper.INSTANCE.sendToClientsInLevel(new PowerPacket(worldPosition, powered), (ServerLevel) level);
 
         if (this.powered && this.machine.isEmpty()) {
             this.machine = createMachine();
@@ -216,6 +239,9 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
             boolean started = this.machine.map(Machine::start).orElse(false);
             if (!started) {
                 this.powered = false;
+                this.machine = Optional.empty();
+                setChanged();
+                updateBlockState();
                 LOGGER.error("Failed to start machine for case at {}.", this.worldPosition);
                 // TODO: Indicate that the machine could not be started.
             }

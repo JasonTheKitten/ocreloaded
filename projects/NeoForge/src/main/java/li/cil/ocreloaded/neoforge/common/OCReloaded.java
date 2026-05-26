@@ -1,6 +1,6 @@
 package li.cil.ocreloaded.neoforge.common;
 
-
+import li.cil.ocreloaded.minecraft.common.energy.IPlatformEnergyHelper;
 import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import li.cil.ocreloaded.minecraft.server.CommonServerHooks;
@@ -17,9 +17,11 @@ public class OCReloaded {
     public static final String MOD_ID = "ocreloaded";
 
     private final NeoPlatformNetworkHelper networkHelper = (NeoPlatformNetworkHelper) IPlatformNetworkHelper.INSTANCE;
+    private final NeoPlatformEnergyHelper energyHelper = (NeoPlatformEnergyHelper) IPlatformEnergyHelper.INSTANCE;
 
     public OCReloaded(IEventBus bus) throws ClassNotFoundException {
         bus.register(networkHelper);
+        bus.addListener(energyHelper::registerCapabilities);
 
         CommonRegistered.initialize();
     }

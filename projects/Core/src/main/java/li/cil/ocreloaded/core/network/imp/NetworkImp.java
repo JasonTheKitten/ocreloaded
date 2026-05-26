@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 import org.slf4j.LoggerFactory;
 
+import li.cil.ocreloaded.core.energy.EnergyBuffer;
+import li.cil.ocreloaded.core.network.EnergyDistributor;
 import li.cil.ocreloaded.core.network.Network;
 import li.cil.ocreloaded.core.network.NetworkMessage;
 import li.cil.ocreloaded.core.network.NetworkNode;
@@ -22,9 +24,15 @@ public class NetworkImp implements Network {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(NetworkImp.class);
 
     private final Map<UUID, Set<NetworkNode>> connections = new HashMap<>();
+    private final EnergyDistributor energyDistributor = new NetworkEnergyDistributor();
 
     public NetworkImp(NetworkNode firstNode) {
         addNewNode(firstNode);
+    }
+
+    @Override
+    public EnergyDistributor energy() {
+        return energyDistributor;
     }
 
     @Override
@@ -219,6 +227,51 @@ public class NetworkImp implements Network {
             group.add(node);
             connections.getOrDefault(node.id(), Set.of()).forEach(neighbor -> exploreGroup(neighbor, group, visited));
         }
+    }
+
+    private class NetworkEnergyDistributor implements EnergyDistributor {
+
+        @Override
+        public double getEnergyStored() {
+            return allNodes().stream()
+                .flatMap(node -> node.energyBuffer().stream())
+                .mapToDouble(buffer -> buffer.getEnergy())
+                .sum();
+        }
+
+        @Override
+        public double getEnergyCapacity() {
+            return allNodes().stream()
+                .flatMap(node -> node.energyBuffer().stream())
+                .mapToDouble(buffer -> buffer.getCapacity())
+                .sum();
+        }
+
+        @Override
+        public double changeEnergy(double delta) {
+            if (delta == 0) return 0;
+            double remaining = delta;
+            List<EnergyBuffer> buffers = allNodes().stream()
+                .flatMap(node -> node.energyBuffer().stream())
+                .toList();
+
+            if (delta > 0) {
+                for (EnergyBuffer buffer : buffers) {
+                    remaining -= buffer.insert(remaining);
+                    if (remaining <= 0) break;
+                }
+            } else {
+                double toExtract = -delta;
+                for (EnergyBuffer buffer : buffers) {
+                    double extracted = buffer.extract(toExtract);
+                    remaining += extracted;
+                    toExtract -= extracted;
+                    if (toExtract <= 0) break;
+                }
+            }
+            return delta - remaining;
+        }
+
     }
 
     @Override

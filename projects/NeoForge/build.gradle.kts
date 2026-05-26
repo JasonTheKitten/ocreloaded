@@ -41,6 +41,10 @@ sourceSets.main {
     }
 }
 
+tasks.named("processResources") {
+    dependsOn(project(":Minecraft").tasks.named("processResources"))
+}
+
 afterEvaluate {
     extensions.getByType<RegExtension>().configureJarTask(tasks.shadowJar.get())
 }

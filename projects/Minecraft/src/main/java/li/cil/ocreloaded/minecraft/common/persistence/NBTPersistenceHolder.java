@@ -36,6 +36,11 @@ public class NBTPersistenceHolder implements PersistenceHolder {
     }
 
     @Override
+    public void storeDouble(String key, double val) {
+        tag.putDouble(prefix + key, val);
+    }
+
+    @Override
     public void storeShort(String key, short val) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'storeShort'");
@@ -72,6 +77,11 @@ public class NBTPersistenceHolder implements PersistenceHolder {
     @Override
     public long loadLong(String key) {
         return tag.getLong(prefix + key);
+    }
+
+    @Override
+    public double loadDouble(String key) {
+        return tag.getDouble(prefix + key);
     }
 
     @Override

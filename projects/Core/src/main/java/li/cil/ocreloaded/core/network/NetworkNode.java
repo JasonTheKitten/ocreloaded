@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import li.cil.ocreloaded.core.energy.EnergyBuffer;
 import li.cil.ocreloaded.core.machine.PersistenceHolder;
 import li.cil.ocreloaded.core.machine.component.Component;
 
@@ -16,6 +17,8 @@ public interface NetworkNode {
     Visibility visibility();
 
     Optional<Component> component();
+
+    Optional<EnergyBuffer> energyBuffer();
 
     void onConnect(NetworkNode otherNode);
 

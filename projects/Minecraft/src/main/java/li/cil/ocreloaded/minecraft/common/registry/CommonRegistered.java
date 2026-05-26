@@ -5,15 +5,22 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
+import li.cil.ocreloaded.core.energy.EnergyConstants;
+import li.cil.ocreloaded.minecraft.common.block.CapacitorBlock;
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
 import li.cil.ocreloaded.minecraft.common.block.KeyboardBlock;
+import li.cil.ocreloaded.minecraft.common.block.PowerConverterBlock;
 import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
+import li.cil.ocreloaded.minecraft.common.energy.IPlatformEnergyHelper;
+import li.cil.ocreloaded.minecraft.common.entity.CapacitorBlockEntity;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
 import li.cil.ocreloaded.minecraft.common.entity.KeyboardBlockEntity;
+import li.cil.ocreloaded.minecraft.common.entity.PowerConverterBlockEntity;
 import li.cil.ocreloaded.minecraft.common.entity.ScreenBlockEntity;
 import li.cil.ocreloaded.minecraft.common.item.CPUItem;
 import li.cil.ocreloaded.minecraft.common.item.DataCardItem;
 import li.cil.ocreloaded.minecraft.common.item.EepromItem;
+import li.cil.ocreloaded.minecraft.common.item.EnergyBlockItem;
 import li.cil.ocreloaded.minecraft.common.item.FloppyDiskItem;
 import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
 import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
@@ -52,6 +59,14 @@ public class CommonRegistered {
 
     public static void initialize() {
         NetworkUtil.initialize();
+        IPlatformEnergyHelper.INSTANCE.registerBlockEntityEnergy(
+            CommonRegistered.CASE_BLOCK_ENTITY::get,
+            CaseBlockEntity::energyAccess
+        );
+        IPlatformEnergyHelper.INSTANCE.registerBlockEntityEnergy(
+            CommonRegistered.POWER_CONVERTER_BLOCK_ENTITY::get,
+            PowerConverterBlockEntity::receiveOnlyEnergyAccess
+        );
 
         /*NetworkUtil.getInstance().registerHandler("ocreloaded:power", new PowerNetworkHandler());
         NetworkUtil.getInstance().registerHandler("ocreloaded:screen", new ScreenNetworkHandler());
@@ -82,15 +97,24 @@ public class CommonRegistered {
     public static final RegistryObject<Block, ScreenBlock> SCREEN_BLOCK_TIER_1 = BLOCKS.register("screen1", () -> new ScreenBlock(DEFAULT_BLOCK_PROPERTIES, 1));
     public static final RegistryObject<Block, ScreenBlock> SCREEN_BLOCK_TIER_2 = BLOCKS.register("screen2", () -> new ScreenBlock(DEFAULT_BLOCK_PROPERTIES, 2));
     public static final RegistryObject<Block, ScreenBlock> SCREEN_BLOCK_TIER_3 = BLOCKS.register("screen3", () -> new ScreenBlock(DEFAULT_BLOCK_PROPERTIES, 3));
+    public static final RegistryObject<Block, CapacitorBlock> CAPACITOR_BLOCK = BLOCKS.register("capacitor", () -> new CapacitorBlock(DEFAULT_BLOCK_PROPERTIES));
+    public static final RegistryObject<Block, PowerConverterBlock> POWER_CONVERTER_BLOCK = BLOCKS.register("powerconverter", () -> new PowerConverterBlock(DEFAULT_BLOCK_PROPERTIES));
     public static final RegistryObject<Block, KeyboardBlock> KEYBOARD_BLOCK = BLOCKS.register("keyboard", () -> new KeyboardBlock(DEFAULT_BLOCK_PROPERTIES.noCollission()));
 
     // Items
-    public static final RegistryObject<Item, Item> CASE_BLOCK_ITEM_TIER_1 = registerItem("case1", () -> new BlockItem(CASE_BLOCK_TIER_1.get(), DEFAULT_ITEM_PROPERTIES));
-    public static final RegistryObject<Item, Item> CASE_BLOCK_ITEM_TIER_2 = registerItem("case2", () -> new BlockItem(CASE_BLOCK_TIER_2.get(), DEFAULT_ITEM_PROPERTIES));
-    public static final RegistryObject<Item, Item> CASE_BLOCK_ITEM_TIER_3 = registerItem("case3", () -> new BlockItem(CASE_BLOCK_TIER_3.get(), DEFAULT_ITEM_PROPERTIES));
-    public static final RegistryObject<Item, Item> CASE_BLOCK_ITEM_CREATIVE = registerItem("casecreative", () -> new BlockItem(CASE_BLOCK_CREATIVE.get(), DEFAULT_ITEM_PROPERTIES));
+    public static final RegistryObject<Item, Item> CASE_BLOCK_ITEM_TIER_1 = registerItem("case1", () -> caseBlockItem(CASE_BLOCK_TIER_1.get()));
+    public static final RegistryObject<Item, Item> CASE_BLOCK_ITEM_TIER_2 = registerItem("case2", () -> caseBlockItem(CASE_BLOCK_TIER_2.get()));
+    public static final RegistryObject<Item, Item> CASE_BLOCK_ITEM_TIER_3 = registerItem("case3", () -> caseBlockItem(CASE_BLOCK_TIER_3.get()));
+    public static final RegistryObject<Item, Item> CASE_BLOCK_ITEM_CREATIVE = registerItem("casecreative", () -> caseBlockItem(CASE_BLOCK_CREATIVE.get()));
 
     public static final RegistryObject<Item, Item> KEYBOARD_BLOCK_ITEM = registerItem("keyboard", () -> new BlockItem(KEYBOARD_BLOCK.get(), DEFAULT_ITEM_PROPERTIES));
+    public static final RegistryObject<Item, Item> CAPACITOR_BLOCK_ITEM = registerItem("capacitor", () -> new EnergyBlockItem(CAPACITOR_BLOCK.get(), DEFAULT_ITEM_PROPERTIES, () -> List.of(
+        EnergyBlockItem.tooltip("tooltip.ocreloaded.energy.capacity", EnergyConstants.CAPACITOR_ENERGY_CAPACITY)
+    )));
+    public static final RegistryObject<Item, Item> POWER_CONVERTER_BLOCK_ITEM = registerItem("powerconverter", () -> new EnergyBlockItem(POWER_CONVERTER_BLOCK.get(), DEFAULT_ITEM_PROPERTIES, () -> List.of(
+        EnergyBlockItem.tooltip("tooltip.ocreloaded.energy.capacity", EnergyConstants.POWER_CONVERTER_ENERGY_CAPACITY),
+        EnergyBlockItem.tooltip("tooltip.ocreloaded.powerconverter")
+    )));
 
     public static final RegistryObject<Item, Item> SCREEN_BLOCK_ITEM_TIER_1 = registerItem("screen1", () -> new BlockItem(SCREEN_BLOCK_TIER_1.get(), DEFAULT_ITEM_PROPERTIES));
     public static final RegistryObject<Item, Item> SCREEN_BLOCK_ITEM_TIER_2 = registerItem("screen2", () -> new BlockItem(SCREEN_BLOCK_TIER_2.get(), DEFAULT_ITEM_PROPERTIES));
@@ -156,6 +180,8 @@ public class CommonRegistered {
     public static final RegistryObject<BlockEntityType<?>, BlockEntityType<CaseBlockEntity>> CASE_BLOCK_ENTITY = BLOCK_ENTITIES.register("case", () -> IPlatformRegistryHelper.INSTANCE.createBlockEntityType(CaseBlockEntity::new, CASE_BLOCK_TIER_1.get(), CASE_BLOCK_TIER_2.get(), CASE_BLOCK_TIER_3.get(), CASE_BLOCK_CREATIVE.get()));
     public static final RegistryObject<BlockEntityType<?>, BlockEntityType<ScreenBlockEntity>> SCREEN_BLOCK_ENTITY = BLOCK_ENTITIES.register("screen", () -> IPlatformRegistryHelper.INSTANCE.createBlockEntityType(ScreenBlockEntity::new, SCREEN_BLOCK_TIER_1.get(), SCREEN_BLOCK_TIER_2.get(), SCREEN_BLOCK_TIER_3.get()));
     public static final RegistryObject<BlockEntityType<?>, BlockEntityType<KeyboardBlockEntity>> KEYBOARD_BLOCK_ENTITY = BLOCK_ENTITIES.register("keyboard", () -> IPlatformRegistryHelper.INSTANCE.createBlockEntityType(KeyboardBlockEntity::new, KEYBOARD_BLOCK.get()));
+    public static final RegistryObject<BlockEntityType<?>, BlockEntityType<CapacitorBlockEntity>> CAPACITOR_BLOCK_ENTITY = BLOCK_ENTITIES.register("capacitor", () -> IPlatformRegistryHelper.INSTANCE.createBlockEntityType(CapacitorBlockEntity::new, CAPACITOR_BLOCK.get()));
+    public static final RegistryObject<BlockEntityType<?>, BlockEntityType<PowerConverterBlockEntity>> POWER_CONVERTER_BLOCK_ENTITY = BLOCK_ENTITIES.register("powerconverter", () -> IPlatformRegistryHelper.INSTANCE.createBlockEntityType(PowerConverterBlockEntity::new, POWER_CONVERTER_BLOCK.get()));
 
     // Data component types
     public static final RegistryObject<DataComponentType<?>, DataComponentType<CompoundTag>> NBT_DATA_TYPE = DATA_COMPONENT_TYPES.register("custom_nbt", () -> DataComponentType.<CompoundTag>builder().persistent(CompoundTag.CODEC).build());
@@ -164,6 +190,13 @@ public class CommonRegistered {
         RegistryObject<Item, Item> registryObject = ITEMS.register(name, supplier);
         CREATIVE_TAB_ITEMS.add(registryObject);
         return registryObject;
+    }
+
+    private static EnergyBlockItem caseBlockItem(Block block) {
+        return new EnergyBlockItem(block, DEFAULT_ITEM_PROPERTIES, () -> List.of(
+            EnergyBlockItem.tooltip("tooltip.ocreloaded.energy.capacity", EnergyConstants.CASE_ENERGY_CAPACITY),
+            EnergyBlockItem.tooltip("tooltip.ocreloaded.case.energy_cost", EnergyConstants.COMPUTER_ENERGY_PER_TICK)
+        ));
     }
 
 }

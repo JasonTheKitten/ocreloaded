@@ -1,0 +1,8 @@
+{
+    "parent": "block/cube_bottom_top",
+    "textures": {
+        "bottom": "ocreloaded:block/generic_top",
+        "top": "ocreloaded:block/capacitor_top",
+        "side": "ocreloaded:block/capacitor_side"
+    }
+}

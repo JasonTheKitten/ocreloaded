@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
+import li.cil.ocreloaded.core.energy.EnergyBuffer;
 import li.cil.ocreloaded.core.machine.PersistenceHolder;
 import li.cil.ocreloaded.core.machine.component.Component;
 import li.cil.ocreloaded.core.network.Network;
@@ -14,17 +15,28 @@ public class ComponentNetworkNode implements NetworkNode {
 
     private final Optional<Component> component;
     private final Visibility visibility;
+    private final Optional<EnergyBuffer> energyBuffer;
     private Network network;
     private UUID id = UUID.randomUUID();
 
     public ComponentNetworkNode(Optional<Component> component, Visibility visibility) {
+        this(component, Optional.empty(), visibility);
+    }
+
+    public ComponentNetworkNode(Optional<Component> component, Optional<EnergyBuffer> energyBuffer, Visibility visibility) {
         this.component = component;
+        this.energyBuffer = energyBuffer;
         this.visibility = visibility;
         this.network = new NetworkImp(this);
     }
 
     public ComponentNetworkNode(Function<NetworkNode, Component> componentFactory, Visibility visibility) {
+        this(componentFactory, Optional.empty(), visibility);
+    }
+
+    public ComponentNetworkNode(Function<NetworkNode, Component> componentFactory, Optional<EnergyBuffer> energyBuffer, Visibility visibility) {
         this.component = Optional.ofNullable(componentFactory.apply(this));
+        this.energyBuffer = energyBuffer;
         this.visibility = visibility;
         this.network = new NetworkImp(this);
     }
@@ -47,6 +59,11 @@ public class ComponentNetworkNode implements NetworkNode {
     @Override
     public Optional<Component> component() {
         return component;
+    }
+
+    @Override
+    public Optional<EnergyBuffer> energyBuffer() {
+        return energyBuffer;
     }
 
     @Override

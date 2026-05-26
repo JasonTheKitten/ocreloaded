@@ -17,6 +17,8 @@ dependencies {
     })
     modImplementation("net.fabricmc:fabric-loader:${libs.versions.fabricLoader.get()}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${libs.versions.fabricApi.get()}")
+    modImplementation(libs.teamRebornEnergy)
+    include(libs.teamRebornEnergy)
 
     shadeApi(project(":Minecraft"))
 }

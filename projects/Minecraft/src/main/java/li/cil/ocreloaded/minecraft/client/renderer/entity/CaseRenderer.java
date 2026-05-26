@@ -31,7 +31,7 @@ public class CaseRenderer implements BlockEntityRenderer<CaseBlockEntity> {
         applyBlockRotation(poseStack, direction);
         poseStack.translate(0, 0, .505);
 
-        if (blockEntity.isPowered()) {
+        if (blockEntity.getBlockState().getValue(CaseBlock.RUNNING)) {
             RenderUtil.renderOverlayTexture(poseStack, bufferSource, ClientTextures.CASE_FRONT_RUNNING);
         }
 

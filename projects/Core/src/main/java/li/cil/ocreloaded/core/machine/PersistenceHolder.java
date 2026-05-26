@@ -6,6 +6,7 @@ public interface PersistenceHolder {
     void storeBool(String key, boolean val);
     void storeInt(String key, int val);
     void storeLong(String key, long val);
+    void storeDouble(String key, double val);
     void storeShort(String key, short val);
     void storeByte(String key, byte val);
     void storeString(String key, String val);
@@ -14,6 +15,7 @@ public interface PersistenceHolder {
     boolean loadBool(String key);
     int loadInt(String key);
     long loadLong(String key);
+    double loadDouble(String key);
     short loadShort(String key);
     byte loadByte(String key);
     String loadString(String key);

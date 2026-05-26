@@ -4,6 +4,8 @@ public interface Machine {
     
     boolean start();
 
+    boolean isRunning();
+
     void stop();
 
     void runSync();
