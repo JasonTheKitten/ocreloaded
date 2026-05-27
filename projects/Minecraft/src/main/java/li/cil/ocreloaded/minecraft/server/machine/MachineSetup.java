@@ -9,7 +9,7 @@ import com.google.common.base.Supplier;
 import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
 import li.cil.ocreloaded.core.machine.MachineRegistry;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
-import li.cil.ocreloaded.minecraft.server.machine.fssup.FileSystemSupplierRegistry;
+import li.cil.ocreloaded.core.machine.filesystem.FileSystemSupplierRegistry;
 import li.cil.ocreloaded.minecraft.server.machine.fssup.LocalFileSystemSupplier;
 import li.cil.ocreloaded.minecraft.server.machine.fssup.LootFileSystemSupplier;
 import li.cil.ocreloaded.minecraft.server.machine.lua.LuaMachineRegistryEntry;

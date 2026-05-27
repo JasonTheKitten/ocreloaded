@@ -13,7 +13,7 @@ import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
 import li.cil.ocreloaded.core.machine.component.Component;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
-import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
+import li.cil.ocreloaded.core.network.NetworkNodes;
 
 public class LuaEepromItem extends EepromItem {
     private static final Logger LOGGER = LoggerFactory.getLogger(LuaEepromItem.class);
@@ -24,7 +24,7 @@ public class LuaEepromItem extends EepromItem {
 
     @Override
     public NetworkNode newNetworkNode(UUID id) {
-        return new ComponentNetworkNode(id, this::initComponent, Visibility.NEIGHBORS);
+        return NetworkNodes.component(id, this::initComponent, Visibility.NEIGHBORS);
     }
 
     private Component initComponent(NetworkNode node) {

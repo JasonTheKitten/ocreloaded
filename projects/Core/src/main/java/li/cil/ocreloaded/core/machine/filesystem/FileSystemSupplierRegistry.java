@@ -1,15 +1,11 @@
-package li.cil.ocreloaded.minecraft.server.machine.fssup;
+package li.cil.ocreloaded.core.machine.filesystem;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import li.cil.ocreloaded.core.machine.filesystem.FileSystem;
-
 public class FileSystemSupplierRegistry {
-    
     private static final FileSystemSupplierRegistry INSTANCE = new FileSystemSupplierRegistry();
-
     private final Map<String, FileSystemSupplier> suppliers = new HashMap<>();
 
     private FileSystemSupplierRegistry() {}
@@ -35,10 +31,7 @@ public class FileSystemSupplierRegistry {
         return INSTANCE;
     }
 
-    public static interface FileSystemSupplier {
-        
+    public interface FileSystemSupplier {
         FileSystem createFileSystem(UUID uuid, String tag);
-
     }
-
 }

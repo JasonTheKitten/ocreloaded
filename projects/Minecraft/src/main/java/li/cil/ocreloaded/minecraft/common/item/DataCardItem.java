@@ -5,7 +5,7 @@ import java.util.UUID;
 import li.cil.ocreloaded.core.component.DataCardComponent;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
-import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
+import li.cil.ocreloaded.core.network.NetworkNodes;
 import net.minecraft.world.item.Item;
 
 public class DataCardItem extends Item implements TieredItem, ComponentItem {
@@ -23,6 +23,6 @@ public class DataCardItem extends Item implements TieredItem, ComponentItem {
 
     @Override
     public NetworkNode newNetworkNode(UUID id) {
-        return new ComponentNetworkNode(id, DataCardComponent::new, Visibility.NEIGHBORS);
+        return NetworkNodes.component(id, DataCardComponent::new, Visibility.NEIGHBORS);
     }
 }

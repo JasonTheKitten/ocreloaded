@@ -13,11 +13,11 @@ import li.cil.ocreloaded.core.graphics.TextModeBuffer;
 import li.cil.ocreloaded.core.network.NetworkMessage;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
+import li.cil.ocreloaded.core.network.NetworkNodes;
 import li.cil.ocreloaded.minecraft.common.SettingsConstants;
 import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
-import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
-import li.cil.ocreloaded.minecraft.common.component.LazyNetworkNode;
+import li.cil.ocreloaded.core.network.LazyNetworkNode;
 import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
 import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper;
 import li.cil.ocreloaded.minecraft.common.network.packets.ScreenPacket;
@@ -41,8 +41,8 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScreenBlockEntity.class);
 
-    private final LazyNetworkNode networkNode = new LazyNetworkNode(
-        id -> new ComponentNetworkNode(
+    private final LazyNetworkNode networkNode = NetworkNodes.lazy(
+        id -> NetworkNodes.component(
             id,
             node -> new ScreenComponentBase(node, this::getScreenBuffer),
             Visibility.NETWORK

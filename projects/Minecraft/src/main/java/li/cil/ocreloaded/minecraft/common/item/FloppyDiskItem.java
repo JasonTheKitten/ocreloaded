@@ -6,8 +6,8 @@ import li.cil.ocreloaded.core.component.FileSystemComponent;
 import li.cil.ocreloaded.core.misc.Label;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
-import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
-import li.cil.ocreloaded.minecraft.server.machine.fssup.FileSystemSupplierRegistry;
+import li.cil.ocreloaded.core.network.NetworkNodes;
+import li.cil.ocreloaded.core.machine.filesystem.FileSystemSupplierRegistry;
 import net.minecraft.world.item.Item;
 
 public class FloppyDiskItem extends Item implements ComponentItem {
@@ -27,7 +27,7 @@ public class FloppyDiskItem extends Item implements ComponentItem {
 
     @Override
     public NetworkNode newNetworkNode(UUID id) {
-        return new ComponentNetworkNode(id, node_ -> new FileSystemComponent(
+        return NetworkNodes.component(id, node_ -> new FileSystemComponent(
             node_,
             () -> fileSystemFactory.createFileSystem(tag, node_.id()),
             Label.create()), Visibility.NEIGHBORS);

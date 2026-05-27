@@ -5,10 +5,10 @@ import javax.annotation.Nonnull;
 import li.cil.ocreloaded.core.component.KeyboardComponent;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
+import li.cil.ocreloaded.core.network.NetworkNodes;
 import li.cil.ocreloaded.minecraft.common.SettingsConstants;
-import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
-import li.cil.ocreloaded.minecraft.common.component.LazyNetworkNode;
+import li.cil.ocreloaded.core.network.LazyNetworkNode;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import net.minecraft.core.BlockPos;
@@ -20,8 +20,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class KeyboardBlockEntity extends BlockEntity implements TickableEntity, ComponentTileEntity {
 
-    private final LazyNetworkNode networkNode = new LazyNetworkNode(
-        id -> new ComponentNetworkNode(id, KeyboardComponent::new, Visibility.NETWORK));
+    private final LazyNetworkNode networkNode = NetworkNodes.lazy(
+        id -> NetworkNodes.component(id, KeyboardComponent::new, Visibility.NETWORK));
 
     private boolean initialized = false;
 

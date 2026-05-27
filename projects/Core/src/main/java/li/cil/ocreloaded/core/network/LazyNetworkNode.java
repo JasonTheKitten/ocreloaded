@@ -1,10 +1,9 @@
-package li.cil.ocreloaded.minecraft.common.component;
+package li.cil.ocreloaded.core.network;
 
 import java.util.UUID;
 import java.util.function.Function;
 
 import li.cil.ocreloaded.core.machine.PersistenceHolder;
-import li.cil.ocreloaded.core.network.NetworkNode;
 
 public final class LazyNetworkNode {
 

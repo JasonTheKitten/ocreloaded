@@ -33,7 +33,7 @@ public class ComputerComponent extends AnnotatedComponent {
                 return ComponentCallResult.failure("invalid frequency, must be in [20, 2000]");
             }
             double duration = arguments.optionalDouble(1, 0.1);
-            int durationInMs = Math.max(50, Math.min(5000, (int) (duration * 1000)));
+            int durationInMs = Math.clamp((int) (duration * 1000), 50, 5000);
             context.pause(durationInMs / 1000.0);
             machineSupplier.get().ifPresent(machine -> machine.parameters().actions()
                 .beep((short) frequency, (short) durationInMs));

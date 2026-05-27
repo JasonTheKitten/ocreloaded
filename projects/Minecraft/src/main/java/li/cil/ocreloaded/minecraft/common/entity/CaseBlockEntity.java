@@ -31,12 +31,12 @@ import li.cil.ocreloaded.core.machine.imp.MachineProcessorImp;
 import li.cil.ocreloaded.core.misc.Label;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
+import li.cil.ocreloaded.core.network.NetworkNodes;
 import li.cil.ocreloaded.minecraft.common.SettingsConstants;
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
-import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
-import li.cil.ocreloaded.minecraft.common.component.LazyNetworkNode;
-import li.cil.ocreloaded.minecraft.common.component.NetworkNodePersistence;
+import li.cil.ocreloaded.core.network.LazyNetworkNode;
+import li.cil.ocreloaded.core.network.NetworkNodePersistence;
 import li.cil.ocreloaded.minecraft.common.item.ComponentItem;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
 import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper;
@@ -72,10 +72,10 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     private final ItemList items = ItemList.withSize(10, this);
     private final MachineProcessorImp processor = new MachineProcessorImp(MachineRegistry.getDefaultInstance());
 
-    private final LazyNetworkNode networkNode = new LazyNetworkNode(
-        id -> new ComponentNetworkNode(id, node -> new ComputerComponent(node, () -> machine), Visibility.NETWORK));
-    private final LazyNetworkNode tmpFsNode = new LazyNetworkNode(
-        id -> new ComponentNetworkNode(id, node -> new FileSystemComponent(node, InMemoryFileSystem::new, Label.create()), Visibility.NEIGHBORS));
+    private final LazyNetworkNode networkNode = NetworkNodes.lazy(
+        id -> NetworkNodes.component(id, node -> new ComputerComponent(node, () -> machine), Visibility.NETWORK));
+    private final LazyNetworkNode tmpFsNode = NetworkNodes.lazy(
+        id -> NetworkNodes.component(id, node -> new FileSystemComponent(node, InMemoryFileSystem::new, Label.create()), Visibility.NEIGHBORS));
     private boolean internalNodesConnected;
     private Map<ItemStack, NetworkNode> loadedComponents = new HashMap<>();
     private boolean powered;

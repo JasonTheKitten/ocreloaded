@@ -1,4 +1,4 @@
-package li.cil.ocreloaded.minecraft.common.component;
+package li.cil.ocreloaded.core.network.imp;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -8,7 +8,7 @@ import li.cil.ocreloaded.core.machine.PersistenceHolder;
 import li.cil.ocreloaded.core.machine.component.Component;
 import li.cil.ocreloaded.core.network.Network;
 import li.cil.ocreloaded.core.network.NetworkNode;
-import li.cil.ocreloaded.core.network.imp.NetworkImp;
+import li.cil.ocreloaded.core.network.NetworkNodePersistence;
 
 import javax.annotation.Nullable;
 
@@ -21,7 +21,6 @@ public class ComponentNetworkNode implements NetworkNode {
 
     public ComponentNetworkNode(UUID id, Function<NetworkNode, Component> componentFactory, Visibility visibility) {
         this.id = id;
-        // TODO: Replace this attach-after-network-init path with an explicit factory/builder.
         this.component = null;
         this.visibility = visibility;
         this.network = new NetworkImp(this);
