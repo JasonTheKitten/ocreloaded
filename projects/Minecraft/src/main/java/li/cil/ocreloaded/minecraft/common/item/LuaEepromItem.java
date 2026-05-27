@@ -2,6 +2,7 @@ package li.cil.ocreloaded.minecraft.common.item;
 
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import org.slf4j.Logger;
@@ -15,7 +16,6 @@ import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 
 public class LuaEepromItem extends EepromItem {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(LuaEepromItem.class);
     
     public LuaEepromItem(Properties properties) {
@@ -23,13 +23,13 @@ public class LuaEepromItem extends EepromItem {
     }
 
     @Override
-    public NetworkNode newNetworkNode() {
-        return new ComponentNetworkNode(this::initComponent, Visibility.NEIGHBORS);
+    public NetworkNode newNetworkNode(UUID id) {
+        return new ComponentNetworkNode(id, this::initComponent, Visibility.NEIGHBORS);
     }
 
     private Component initComponent(NetworkNode node) {
         Optional<Supplier<Optional<InputStream>>> supplier = MachineCodeRegistry.getDefaultInstance().getBiosCodeSupplier("lua");
-        if (!supplier.isPresent()) {
+        if (supplier.isEmpty()) {
             LOGGER.error("Failed to load Lua BIOS code.");
             return new EepromComponent(node, "");
         }
@@ -48,5 +48,4 @@ public class LuaEepromItem extends EepromItem {
 
         return new EepromComponent(node, code);
     }
-    
 }

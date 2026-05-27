@@ -1,5 +1,7 @@
 package li.cil.ocreloaded.minecraft.common.item;
 
+import java.util.UUID;
+
 import li.cil.ocreloaded.core.component.FileSystemComponent;
 import li.cil.ocreloaded.core.misc.Label;
 import li.cil.ocreloaded.core.network.NetworkNode;
@@ -9,7 +11,6 @@ import li.cil.ocreloaded.minecraft.server.machine.fssup.FileSystemSupplierRegist
 import net.minecraft.world.item.Item;
 
 public class HardDiskItem extends Item implements TieredItem, ComponentItem {
-
     private static FileSystemSupplierRegistry fileSystemFactory = FileSystemSupplierRegistry.getDefaultInstance();
 
     private final int tier;
@@ -25,12 +26,10 @@ public class HardDiskItem extends Item implements TieredItem, ComponentItem {
     }
 
     @Override
-    public NetworkNode newNetworkNode() {
-        NetworkNode node = new ComponentNetworkNode(node_ -> new FileSystemComponent(
+    public NetworkNode newNetworkNode(UUID id) {
+        return new ComponentNetworkNode(id, node_ -> new FileSystemComponent(
             node_,
             () -> fileSystemFactory.createFileSystem("localfs", node_.id()),
             Label.create()), Visibility.NEIGHBORS);
-
-        return node;
     }
 }

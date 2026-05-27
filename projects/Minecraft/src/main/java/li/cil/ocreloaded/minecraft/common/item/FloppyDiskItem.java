@@ -1,7 +1,6 @@
 package li.cil.ocreloaded.minecraft.common.item;
 
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 import li.cil.ocreloaded.core.component.FileSystemComponent;
 import li.cil.ocreloaded.core.misc.Label;
@@ -27,15 +26,11 @@ public class FloppyDiskItem extends Item implements ComponentItem {
     }
 
     @Override
-    public NetworkNode newNetworkNode() {
-        AtomicReference<UUID> nodeID = new AtomicReference<>();
-        NetworkNode node = new ComponentNetworkNode(node_ -> new FileSystemComponent(
+    public NetworkNode newNetworkNode(UUID id) {
+        return new ComponentNetworkNode(id, node_ -> new FileSystemComponent(
             node_,
             () -> fileSystemFactory.createFileSystem(tag, node_.id()),
             Label.create()), Visibility.NEIGHBORS);
-        nodeID.set(node.id());
-
-        return node;
     }
 
 }

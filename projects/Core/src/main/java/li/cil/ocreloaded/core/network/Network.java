@@ -12,8 +12,6 @@ public interface Network {
 
     void remove(NetworkNode node);
 
-    void rename(UUID oldName, UUID newName);
-
     boolean reachable(NetworkNode source, NetworkNode target);
 
     Set<NetworkNode> reachableNodes(NetworkNode source);

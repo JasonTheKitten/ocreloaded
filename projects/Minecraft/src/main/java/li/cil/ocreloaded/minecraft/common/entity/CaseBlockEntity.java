@@ -35,6 +35,8 @@ import li.cil.ocreloaded.minecraft.common.SettingsConstants;
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
+import li.cil.ocreloaded.minecraft.common.component.LazyNetworkNode;
+import li.cil.ocreloaded.minecraft.common.component.NetworkNodePersistence;
 import li.cil.ocreloaded.minecraft.common.item.ComponentItem;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
 import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper;
@@ -68,21 +70,24 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     private Optional<Machine> machine = Optional.empty();
 
     private final ItemList items = ItemList.withSize(10, this);
-    private final NetworkNode networkNode = new ComponentNetworkNode(node -> new ComputerComponent(node, () -> machine), Visibility.NETWORK);
-    private final NetworkNode tmpFsNode = new ComponentNetworkNode(node -> new FileSystemComponent(node, () -> new InMemoryFileSystem(), Label.create()), Visibility.NEIGHBORS);
     private final MachineProcessorImp processor = new MachineProcessorImp(MachineRegistry.getDefaultInstance());
 
+    private final LazyNetworkNode networkNode = new LazyNetworkNode(
+        id -> new ComponentNetworkNode(id, node -> new ComputerComponent(node, () -> machine), Visibility.NETWORK));
+    private final LazyNetworkNode tmpFsNode = new LazyNetworkNode(
+        id -> new ComponentNetworkNode(id, node -> new FileSystemComponent(node, InMemoryFileSystem::new, Label.create()), Visibility.NEIGHBORS));
+    private boolean internalNodesConnected;
     private Map<ItemStack, NetworkNode> loadedComponents = new HashMap<>();
     private boolean powered;
 
     public CaseBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(CommonRegistered.CASE_BLOCK_ENTITY.get(), blockPos, blockState);
-        networkNode.connect(tmpFsNode);
     }
 
     @Override
     public NetworkNode networkNode() {
-        return this.networkNode;
+        ensureInternalNodesConnected();
+        return this.networkNode.get();
     }
 
     @Override
@@ -121,7 +126,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     public void setRemoved() {
         super.setRemoved();
         this.machine.ifPresent(Machine::stop);
-        networkNode.remove();
+        networkNode().remove();
     }
 
     @Override
@@ -173,13 +178,14 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
 
     @Override
     public void save(PersistenceHolder holder) {
-        networkNode.save(holder);
+        networkNode.saveId(holder);
         holder.storeBool(TAG_POWERED, this.powered);
     }
 
     @Override
     public void load(PersistenceHolder holder) {
-        networkNode.load(holder);
+        networkNode.loadId(holder);
+        ensureInternalNodesConnected();
         this.powered = holder.loadBool(TAG_POWERED);
         for (ItemStack itemStack : this.items) {
             loadComponent(itemStack, loadedComponents);
@@ -239,7 +245,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
         }
 
         for (Entry<ItemStack, NetworkNode> entry : loadedComponents.entrySet()) {
-            this.networkNode.disconnect(entry.getValue());
+            this.networkNode().disconnect(entry.getValue());
         }
 
         this.loadedComponents = components;
@@ -249,20 +255,22 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
         if (itemStack.isEmpty()) return;
         if (!(itemStack.getItem() instanceof ComponentItem componentHolder)) return;
 
-        NetworkNode networkNode = componentHolder.newNetworkNode();
+        CompoundTag tag = itemStack.get(CommonRegistered.NBT_DATA_TYPE.get());
+        if (tag == null) tag = new CompoundTag();
+        NBTPersistenceHolder holder = new NBTPersistenceHolder(tag, SettingsConstants.namespace);
+
+        NetworkNode networkNode = componentHolder.newNetworkNode(NetworkNodePersistence.loadIdOrRandom(holder));
         if (!networkNode.component().isPresent()) return;
         Component component = networkNode.component().get();
 
         // TODO: Better way to save and load (needs to save on shutdown too)
-        CompoundTag tag = itemStack.get(CommonRegistered.NBT_DATA_TYPE.get());
-        if (tag == null) tag = new CompoundTag();
-        component.load(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
-        component.save(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
+        component.load(holder);
+        component.save(holder);
         itemStack.set(CommonRegistered.NBT_DATA_TYPE.get(), tag);
         // TODO: Reset component on fresh boot if tmp is not persistant
 
         components.put(itemStack, networkNode);
-        this.networkNode.connect(networkNode);
+        this.networkNode().connect(networkNode);
     }
 
     private Optional<Machine> createMachine() {
@@ -275,7 +283,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
 
         ExecutorService threadService = Executors.newCachedThreadPool(); // TODO: Custom thread pool
         MachineParameters parameters = new MachineParameters(
-            networkNode, tmpFsNode, codeStreamSupplier.get(), threadService, processor,
+            networkNode(), tmpFsNode(), codeStreamSupplier.get(), threadService, processor,
             this::beep);
 
         return
@@ -291,6 +299,18 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
         List<ServerPlayer> chunkTrackingPlayers = ((ServerLevel) level).getPlayers(player -> player.getChunkTrackingView().contains(chunkPos));
 
         IPlatformNetworkHelper.INSTANCE.sendToClients(SoundPacket.createBeepMessage(worldPosition, frequency, duration), chunkTrackingPlayers);
+    }
+
+    private void ensureInternalNodesConnected() {
+        if (internalNodesConnected) return;
+
+        networkNode.get().connect(tmpFsNode.get());
+        internalNodesConnected = true;
+    }
+
+    private NetworkNode tmpFsNode() {
+        ensureInternalNodesConnected();
+        return tmpFsNode.get();
     }
     
 }

@@ -92,13 +92,6 @@ public class NetworkImp implements Network {
     }
 
     @Override
-    public void rename(UUID oldName, UUID newName) {
-        if (!connections.containsKey(oldName)) throw new IllegalArgumentException("Node is not in this network.");
-
-        connections.put(newName, connections.remove(oldName));
-    }
-
-    @Override
     public boolean reachable(NetworkNode source, NetworkNode target) {
         if (source == target) return false;
         if (source.network() != this) return false;
@@ -199,6 +192,7 @@ public class NetworkImp implements Network {
 
         for (Set<NetworkNode> subgraph : subGraphs) {
             NetworkImp newNetwork = new NetworkImp(subgraph.iterator().next());
+            // TODO: Notify subgraph nodes via onNetworkChange when split networks are created.
             subgraph.forEach(newNetwork::addNewNode);
         };
 

@@ -3,6 +3,8 @@ package li.cil.ocreloaded.minecraft.common.persistence;
 import li.cil.ocreloaded.core.machine.PersistenceHolder;
 import net.minecraft.nbt.CompoundTag;
 
+import java.util.UUID;
+
 public class NBTPersistenceHolder implements PersistenceHolder {
 
     private final CompoundTag tag;
@@ -15,6 +17,7 @@ public class NBTPersistenceHolder implements PersistenceHolder {
 
     @Override
     public void storeSubHolder(String key, PersistenceHolder val) {
+        // tag.getAllKeys().stream().filter(s -> s.startsWith(((NBTPersistenceHolder)val).prefix()));
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'storeSubHolder'");
     }
@@ -26,8 +29,7 @@ public class NBTPersistenceHolder implements PersistenceHolder {
 
     @Override
     public void storeInt(String key, int val) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'storeInt'");
+        tag.putInt(prefix + key, val);
     }
 
     @Override
@@ -37,19 +39,22 @@ public class NBTPersistenceHolder implements PersistenceHolder {
 
     @Override
     public void storeShort(String key, short val) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'storeShort'");
+        tag.putShort(prefix + key, val);
     }
 
     @Override
     public void storeByte(String key, byte val) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'storeByte'");
+        tag.putByte(prefix + key, val);
     }
 
     @Override
     public void storeString(String key, String val) {
         tag.putString(prefix + key, val);
+    }
+
+    @Override
+    public void storeUUID(String key, UUID val) {
+        tag.putUUID(prefix + key, val);
     }
 
     @Override
@@ -65,8 +70,7 @@ public class NBTPersistenceHolder implements PersistenceHolder {
 
     @Override
     public int loadInt(String key) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'loadInt'");
+        return tag.getInt(prefix + key);
     }
 
     @Override
@@ -76,14 +80,12 @@ public class NBTPersistenceHolder implements PersistenceHolder {
 
     @Override
     public short loadShort(String key) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'loadShort'");
+        return tag.getShort(prefix + key);
     }
 
     @Override
     public byte loadByte(String key) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'loadByte'");
+        return tag.getByte(prefix + key);
     }
 
     @Override
@@ -92,8 +94,16 @@ public class NBTPersistenceHolder implements PersistenceHolder {
     }
 
     @Override
+    public UUID loadUUID(String key) {
+        return tag.getUUID(prefix + key);
+    }
+
+    @Override
     public boolean hasKey(String key) {
         return tag.contains(prefix + key);
     }
-    
+
+    String prefix() {
+        return prefix;
+    }
 }

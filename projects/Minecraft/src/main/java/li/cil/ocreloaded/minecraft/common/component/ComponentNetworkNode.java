@@ -10,21 +10,27 @@ import li.cil.ocreloaded.core.network.Network;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.imp.NetworkImp;
 
+import javax.annotation.Nullable;
+
 public class ComponentNetworkNode implements NetworkNode {
 
-    private final Optional<Component> component;
+    private @Nullable Component component;
     private final Visibility visibility;
+    private final UUID id;
     private Network network;
-    private UUID id = UUID.randomUUID();
 
-    public ComponentNetworkNode(Optional<Component> component, Visibility visibility) {
-        this.component = component;
+    public ComponentNetworkNode(UUID id, Function<NetworkNode, Component> componentFactory, Visibility visibility) {
+        this.id = id;
+        // TODO: Replace this attach-after-network-init path with an explicit factory/builder.
+        this.component = null;
         this.visibility = visibility;
         this.network = new NetworkImp(this);
+        this.component = componentFactory.apply(this);
     }
 
-    public ComponentNetworkNode(Function<NetworkNode, Component> componentFactory, Visibility visibility) {
-        this.component = Optional.ofNullable(componentFactory.apply(this));
+    public ComponentNetworkNode(UUID id, @Nullable Component component, Visibility visibility) {
+        this.id = id;
+        this.component = component;
         this.visibility = visibility;
         this.network = new NetworkImp(this);
     }
@@ -46,17 +52,21 @@ public class ComponentNetworkNode implements NetworkNode {
 
     @Override
     public Optional<Component> component() {
-        return component;
+        return Optional.ofNullable(component);
     }
 
     @Override
     public void onConnect(NetworkNode otherNode) {
-        component.ifPresent(c -> c.onConnect(otherNode));
+        if (component != null) {
+            component.onConnect(otherNode);
+        }
     }
 
     @Override
     public void onDisconnect(NetworkNode otherNode) {
-        component.ifPresent(c -> c.onDisconnect(otherNode));
+        if (component != null) {
+            component.onDisconnect(otherNode);
+        }
     }
 
     @Override
@@ -66,22 +76,6 @@ public class ComponentNetworkNode implements NetworkNode {
 
     @Override
     public void save(PersistenceHolder persistenceHolder) {
-        persistenceHolder.storeLong("INTERNAL_ID1", id.getMostSignificantBits());
-        persistenceHolder.storeLong("INTERNAL_ID2", id.getLeastSignificantBits());
+        NetworkNodePersistence.saveId(persistenceHolder, id);
     }
-
-    @Override
-    public void load(PersistenceHolder persistenceHolder) {
-        UUID oldId = id;
-        if (!(persistenceHolder.hasKey("INTERNAL_ID1") && persistenceHolder.hasKey("INTERNAL_ID2"))) {
-            if (id == null) id = UUID.randomUUID();
-        } else {
-            id = new UUID(
-                persistenceHolder.loadLong("INTERNAL_ID1"),
-                persistenceHolder.loadLong("INTERNAL_ID2")
-            );
-        }
-        network.rename(oldId, id);
-    }
-    
 }

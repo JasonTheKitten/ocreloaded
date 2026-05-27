@@ -8,6 +8,7 @@ import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
 import li.cil.ocreloaded.minecraft.common.SettingsConstants;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
+import li.cil.ocreloaded.minecraft.common.component.LazyNetworkNode;
 import li.cil.ocreloaded.minecraft.common.persistence.NBTPersistenceHolder;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
 import net.minecraft.core.BlockPos;
@@ -19,7 +20,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class KeyboardBlockEntity extends BlockEntity implements TickableEntity, ComponentTileEntity {
 
-    private final NetworkNode networkNode = new ComponentNetworkNode(KeyboardComponent::new, Visibility.NETWORK);
+    private final LazyNetworkNode networkNode = new LazyNetworkNode(
+        id -> new ComponentNetworkNode(id, KeyboardComponent::new, Visibility.NETWORK));
 
     private boolean initialized = false;
 
@@ -29,25 +31,26 @@ public class KeyboardBlockEntity extends BlockEntity implements TickableEntity, 
 
     @Override
     public NetworkNode networkNode() {
-        return networkNode;
+        return networkNode.get();
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        networkNode.remove();
+        networkNode().remove();
     }
 
     @Override
     public void loadAdditional(@Nonnull CompoundTag compoundTag, @Nonnull HolderLookup.Provider registries) {
         super.loadAdditional(compoundTag, registries);
-        networkNode.load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
+        networkNode.loadId(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
+        networkNode.get();
     }
 
     @Override
     public void saveAdditional(@Nonnull CompoundTag compoundTag, @Nonnull HolderLookup.Provider registries) {
         super.saveAdditional(compoundTag, registries);
-        networkNode.save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
+        networkNode.saveId(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 
     // TODO: Find a simpler way to do this than needing both setLevel and a ticker
