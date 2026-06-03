@@ -13,7 +13,7 @@ public interface MachineProcessor {
     boolean setArchitecture(String architecture);
 
     public static MachineProcessor create() {
-        return new MachineProcessorImp(MachineRegistry.getDefaultInstance());
+        return new MachineProcessorImp(MachineBuilder.getDefaultInstance());
     }
 
 }

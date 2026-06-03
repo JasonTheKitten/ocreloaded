@@ -1,6 +1,5 @@
 package li.cil.ocreloaded.minecraft.common.entity;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +7,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
@@ -20,10 +18,7 @@ import li.cil.ocreloaded.core.component.ComputerComponent;
 import li.cil.ocreloaded.core.component.FileSystemComponent;
 import li.cil.ocreloaded.core.filesystem.InMemoryFileSystem;
 import li.cil.ocreloaded.core.machine.Machine;
-import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
-import li.cil.ocreloaded.core.machine.MachineParameters;
-import li.cil.ocreloaded.core.machine.MachineRegistry;
-import li.cil.ocreloaded.core.machine.MachineRegistryEntry;
+import li.cil.ocreloaded.core.machine.MachineBuilder;
 import li.cil.ocreloaded.core.machine.Persistable;
 import li.cil.ocreloaded.core.machine.PersistenceHolder;
 import li.cil.ocreloaded.core.machine.component.Component;
@@ -70,7 +65,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     private Optional<Machine> machine = Optional.empty();
 
     private final ItemList items = ItemList.withSize(10, this);
-    private final MachineProcessorImp processor = new MachineProcessorImp(MachineRegistry.getDefaultInstance());
+    private final MachineProcessorImp processor = new MachineProcessorImp(MachineBuilder.getDefaultInstance());
 
     private final LazyNetworkNode networkNode = NetworkNodes.lazy(
         id -> NetworkNodes.component(id, node -> new ComputerComponent(node, () -> machine), Visibility.NETWORK));
@@ -274,22 +269,14 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     }
 
     private Optional<Machine> createMachine() {
-        String architecture = processor.getArchitecture();
-        Optional<Supplier<Optional<InputStream>>> codeStreamSupplier = MachineCodeRegistry
-            .getDefaultInstance()
-            .getMachineCodeSupplier(architecture);
-
-        if (codeStreamSupplier.isEmpty()) return Optional.empty();
-
         ExecutorService threadService = Executors.newCachedThreadPool(); // TODO: Custom thread pool
-        MachineParameters parameters = new MachineParameters(
-            networkNode(), tmpFsNode(), codeStreamSupplier.get(), threadService, processor,
+        return MachineBuilder.getDefaultInstance().createMachine(
+            processor.getArchitecture(),
+            networkNode(),
+            tmpFsNode(),
+            threadService,
+            processor,
             this::beep);
-
-        return
-            MachineRegistry.getDefaultInstance().getEntry(architecture)
-                .filter(MachineRegistryEntry::isSupported)
-                .flatMap(entry -> entry.createMachine(parameters));
     }
 
     @SuppressWarnings("null") // Linting being not smart
@@ -312,5 +299,4 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
         ensureInternalNodesConnected();
         return tmpFsNode.get();
     }
-    
 }

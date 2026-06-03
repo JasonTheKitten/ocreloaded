@@ -3,16 +3,14 @@ package li.cil.ocreloaded.minecraft.server.machine;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.function.Supplier;
 
-import com.google.common.base.Supplier;
-
-import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
-import li.cil.ocreloaded.core.machine.MachineRegistry;
+import li.cil.ocreloaded.core.machine.MachineBuilder;
 import li.cil.ocreloaded.minecraft.common.OCReloadedCommon;
 import li.cil.ocreloaded.core.machine.filesystem.FileSystemSupplierRegistry;
 import li.cil.ocreloaded.minecraft.server.machine.fssup.LocalFileSystemSupplier;
 import li.cil.ocreloaded.minecraft.server.machine.fssup.LootFileSystemSupplier;
-import li.cil.ocreloaded.minecraft.server.machine.lua.LuaMachineRegistryEntry;
+import li.cil.ocreloaded.minecraft.server.machine.lua.LuaMachineArchitecture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 
@@ -20,32 +18,20 @@ public class MachineSetup {
 
     public static void setup(MinecraftServer server) {
         registerArchitectures(server);
-        registerStartCode(server);
         registerFilesystemSuppliers(server);
     }
 
     private static void registerArchitectures(MinecraftServer server) {
-        MachineRegistry registry = MachineRegistry.getDefaultInstance();
-        registry.register("Lua 5.2", new LuaMachineRegistryEntry(server, "lua52"));
-        registry.register("Lua 5.3", new LuaMachineRegistryEntry(server, "lua53"));
-    }
+        MachineBuilder builder = MachineBuilder.getDefaultInstance();
+        Supplier<Optional<InputStream>> luaStartCode = createCodeSupplier(
+            server,
+            ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, "lua/machine.lua"));
 
-    private static void registerStartCode(MinecraftServer server) {
-        registerLuaStartCode(server);
-        registerLuaBiosCode(server);
-    }
+        LuaMachineArchitecture lua52 = new LuaMachineArchitecture(server, "lua52");
+        builder.registerArchitecture("Lua 5.2", luaStartCode, lua52::createMachine, lua52::isSupported);
 
-    private static void registerLuaStartCode(MinecraftServer server) {
-        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, "lua/machine.lua");
-        Supplier<Optional<InputStream>> supplier = createCodeSupplier(server, resourceLocation);
-        MachineCodeRegistry.getDefaultInstance().registerMachineCode("Lua 5.2", supplier);
-        MachineCodeRegistry.getDefaultInstance().registerMachineCode("Lua 5.3", supplier);
-    }
-
-    private static void registerLuaBiosCode(MinecraftServer server) {
-        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(OCReloadedCommon.MOD_ID, "lua/bios.lua");
-        Supplier<Optional<InputStream>> supplier = createCodeSupplier(server, resourceLocation);
-        MachineCodeRegistry.getDefaultInstance().registerBiosCode("lua", supplier);
+        LuaMachineArchitecture lua53 = new LuaMachineArchitecture(server, "lua53");
+        builder.registerArchitecture("Lua 5.3", luaStartCode, lua53::createMachine, lua53::isSupported);
     }
 
     private static void registerFilesystemSuppliers(MinecraftServer server) {
@@ -55,16 +41,13 @@ public class MachineSetup {
     }
 
     private static Supplier<Optional<InputStream>> createCodeSupplier(MinecraftServer server, ResourceLocation resourceLocation) {
-        return () -> {
-            return server.getResourceManager().getResource(resourceLocation)
-                .flatMap(resource -> {
-                    try {
-                        return Optional.of(resource.open());
-                    } catch (IOException e) {
-                        return Optional.empty();
-                    }
-                });
-        };
+        return () -> server.getResourceManager().getResource(resourceLocation)
+            .flatMap(resource -> {
+                try {
+                    return Optional.of(resource.open());
+                } catch (IOException e) {
+                    return Optional.empty();
+                }
+            });
     }
-    
 }

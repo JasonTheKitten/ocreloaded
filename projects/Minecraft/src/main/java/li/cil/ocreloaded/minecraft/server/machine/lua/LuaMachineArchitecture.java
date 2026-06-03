@@ -5,24 +5,22 @@ import java.util.function.Function;
 
 import li.cil.ocreloaded.core.machine.Machine;
 import li.cil.ocreloaded.core.machine.MachineParameters;
-import li.cil.ocreloaded.core.machine.MachineRegistryEntry;
 import li.cil.ocreloaded.core.machine.architecture.Architecture;
 import li.cil.ocreloaded.core.machine.architecture.ArchitectureMachine;
 import li.cil.ocreloaded.core.machine.architecture.luac.LuaCArchitecture;
 import li.cil.ocreloaded.core.machine.architecture.luac.LuaCStateFactory;
 import net.minecraft.server.MinecraftServer;
 
-public class LuaMachineRegistryEntry implements MachineRegistryEntry {
+public class LuaMachineArchitecture {
 
     private final MinecraftServer minecraftServer;
     private final String architecture;
 
-    public LuaMachineRegistryEntry(MinecraftServer minecraftServer, String architecture) {
+    public LuaMachineArchitecture(MinecraftServer minecraftServer, String architecture) {
         this.architecture = architecture;
         this.minecraftServer = minecraftServer;
     }
 
-    @Override
     public Optional<Machine> createMachine(MachineParameters parameters) {
         Optional<LuaCStateFactory> luaCStateFactory = new LuaCFactory(minecraftServer).createFactory(architecture);
         if (luaCStateFactory.isEmpty()) return Optional.empty();
@@ -31,7 +29,6 @@ public class LuaMachineRegistryEntry implements MachineRegistryEntry {
         return Optional.of(new ArchitectureMachine(architectureFactory, parameters));
     }
 
-    @Override
     public boolean isSupported() {
         return new LuaCFactory(minecraftServer).isAvailable(architecture);
     }
