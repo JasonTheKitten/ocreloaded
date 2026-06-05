@@ -1,6 +1,5 @@
 package li.cil.ocreloaded.minecraft.common.entity;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +7,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
@@ -20,10 +18,7 @@ import li.cil.ocreloaded.core.component.ComputerComponent;
 import li.cil.ocreloaded.core.component.FileSystemComponent;
 import li.cil.ocreloaded.core.filesystem.InMemoryFileSystem;
 import li.cil.ocreloaded.core.machine.Machine;
-import li.cil.ocreloaded.core.machine.MachineCodeRegistry;
-import li.cil.ocreloaded.core.machine.MachineParameters;
-import li.cil.ocreloaded.core.machine.MachineRegistry;
-import li.cil.ocreloaded.core.machine.MachineRegistryEntry;
+import li.cil.ocreloaded.core.machine.MachineBuilder;
 import li.cil.ocreloaded.core.machine.Persistable;
 import li.cil.ocreloaded.core.machine.PersistenceHolder;
 import li.cil.ocreloaded.core.machine.component.Component;
@@ -31,10 +26,12 @@ import li.cil.ocreloaded.core.machine.imp.MachineProcessorImp;
 import li.cil.ocreloaded.core.misc.Label;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
+import li.cil.ocreloaded.core.network.NetworkNodes;
 import li.cil.ocreloaded.minecraft.common.SettingsConstants;
 import li.cil.ocreloaded.minecraft.common.block.CaseBlock;
-import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
+import li.cil.ocreloaded.core.network.LazyNetworkNode;
+import li.cil.ocreloaded.core.network.NetworkNodePersistence;
 import li.cil.ocreloaded.minecraft.common.item.ComponentItem;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
 import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper;
@@ -68,21 +65,24 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     private Optional<Machine> machine = Optional.empty();
 
     private final ItemList items = ItemList.withSize(10, this);
-    private final NetworkNode networkNode = new ComponentNetworkNode(node -> new ComputerComponent(node, () -> machine), Visibility.NETWORK);
-    private final NetworkNode tmpFsNode = new ComponentNetworkNode(node -> new FileSystemComponent(node, () -> new InMemoryFileSystem(), Label.create()), Visibility.NEIGHBORS);
-    private final MachineProcessorImp processor = new MachineProcessorImp(MachineRegistry.getDefaultInstance());
+    private final MachineProcessorImp processor = new MachineProcessorImp(MachineBuilder.getDefaultInstance());
 
+    private final LazyNetworkNode networkNode = NetworkNodes.lazy(
+        id -> NetworkNodes.component(id, node -> new ComputerComponent(node, () -> machine), Visibility.NETWORK));
+    private final LazyNetworkNode tmpFsNode = NetworkNodes.lazy(
+        id -> NetworkNodes.component(id, node -> new FileSystemComponent(node, InMemoryFileSystem::new, Label.create()), Visibility.NEIGHBORS));
+    private boolean internalNodesConnected;
     private Map<ItemStack, NetworkNode> loadedComponents = new HashMap<>();
     private boolean powered;
 
     public CaseBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(CommonRegistered.CASE_BLOCK_ENTITY.get(), blockPos, blockState);
-        networkNode.connect(tmpFsNode);
     }
 
     @Override
     public NetworkNode networkNode() {
-        return this.networkNode;
+        ensureInternalNodesConnected();
+        return this.networkNode.get();
     }
 
     @Override
@@ -121,7 +121,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
     public void setRemoved() {
         super.setRemoved();
         this.machine.ifPresent(Machine::stop);
-        networkNode.remove();
+        networkNode().remove();
     }
 
     @Override
@@ -173,13 +173,14 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
 
     @Override
     public void save(PersistenceHolder holder) {
-        networkNode.save(holder);
+        networkNode.saveId(holder);
         holder.storeBool(TAG_POWERED, this.powered);
     }
 
     @Override
     public void load(PersistenceHolder holder) {
-        networkNode.load(holder);
+        networkNode.loadId(holder);
+        ensureInternalNodesConnected();
         this.powered = holder.loadBool(TAG_POWERED);
         for (ItemStack itemStack : this.items) {
             loadComponent(itemStack, loadedComponents);
@@ -239,7 +240,7 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
         }
 
         for (Entry<ItemStack, NetworkNode> entry : loadedComponents.entrySet()) {
-            this.networkNode.disconnect(entry.getValue());
+            this.networkNode().disconnect(entry.getValue());
         }
 
         this.loadedComponents = components;
@@ -249,39 +250,33 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
         if (itemStack.isEmpty()) return;
         if (!(itemStack.getItem() instanceof ComponentItem componentHolder)) return;
 
-        NetworkNode networkNode = componentHolder.newNetworkNode();
+        CompoundTag tag = itemStack.get(CommonRegistered.NBT_DATA_TYPE.get());
+        if (tag == null) tag = new CompoundTag();
+        NBTPersistenceHolder holder = new NBTPersistenceHolder(tag, SettingsConstants.namespace);
+
+        NetworkNode networkNode = componentHolder.newNetworkNode(NetworkNodePersistence.loadIdOrRandom(holder));
         if (!networkNode.component().isPresent()) return;
         Component component = networkNode.component().get();
 
         // TODO: Better way to save and load (needs to save on shutdown too)
-        CompoundTag tag = itemStack.get(CommonRegistered.NBT_DATA_TYPE.get());
-        if (tag == null) tag = new CompoundTag();
-        component.load(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
-        component.save(new NBTPersistenceHolder(tag, SettingsConstants.namespace));
+        component.load(holder);
+        component.save(holder);
         itemStack.set(CommonRegistered.NBT_DATA_TYPE.get(), tag);
         // TODO: Reset component on fresh boot if tmp is not persistant
 
         components.put(itemStack, networkNode);
-        this.networkNode.connect(networkNode);
+        this.networkNode().connect(networkNode);
     }
 
     private Optional<Machine> createMachine() {
-        String architecture = processor.getArchitecture();
-        Optional<Supplier<Optional<InputStream>>> codeStreamSupplier = MachineCodeRegistry
-            .getDefaultInstance()
-            .getMachineCodeSupplier(architecture);
-
-        if (codeStreamSupplier.isEmpty()) return Optional.empty();
-
         ExecutorService threadService = Executors.newCachedThreadPool(); // TODO: Custom thread pool
-        MachineParameters parameters = new MachineParameters(
-            networkNode, tmpFsNode, codeStreamSupplier.get(), threadService, processor,
+        return MachineBuilder.getDefaultInstance().createMachine(
+            processor.getArchitecture(),
+            networkNode(),
+            tmpFsNode(),
+            threadService,
+            processor,
             this::beep);
-
-        return
-            MachineRegistry.getDefaultInstance().getEntry(architecture)
-                .filter(MachineRegistryEntry::isSupported)
-                .flatMap(entry -> entry.createMachine(parameters));
     }
 
     @SuppressWarnings("null") // Linting being not smart
@@ -292,5 +287,16 @@ public class CaseBlockEntity extends RandomizableContainerBlockEntity implements
 
         IPlatformNetworkHelper.INSTANCE.sendToClients(SoundPacket.createBeepMessage(worldPosition, frequency, duration), chunkTrackingPlayers);
     }
-    
+
+    private void ensureInternalNodesConnected() {
+        if (internalNodesConnected) return;
+
+        networkNode.get().connect(tmpFsNode.get());
+        internalNodesConnected = true;
+    }
+
+    private NetworkNode tmpFsNode() {
+        ensureInternalNodesConnected();
+        return tmpFsNode.get();
+    }
 }

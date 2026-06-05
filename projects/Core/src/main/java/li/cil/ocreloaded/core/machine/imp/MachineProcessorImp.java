@@ -1,25 +1,23 @@
 package li.cil.ocreloaded.core.machine.imp;
 
 import java.util.List;
-import java.util.Optional;
 
+import li.cil.ocreloaded.core.machine.MachineBuilder;
 import li.cil.ocreloaded.core.machine.MachineProcessor;
-import li.cil.ocreloaded.core.machine.MachineRegistry;
-import li.cil.ocreloaded.core.machine.MachineRegistryEntry;
 
 public class MachineProcessorImp implements MachineProcessor {
     
-    private final MachineRegistry registry;
+    private final MachineBuilder builder;
 
     private String architecture = "Lua 5.3";
 
-    public MachineProcessorImp(MachineRegistry registry) {
-        this.registry = registry;
+    public MachineProcessorImp(MachineBuilder builder) {
+        this.builder = builder;
     }
 
     @Override
     public List<String> supportedArchitectures() {
-        return registry.getSupportedEntries();
+        return builder.supportedArchitectures();
     }
 
     @Override
@@ -29,8 +27,7 @@ public class MachineProcessorImp implements MachineProcessor {
 
     @Override
     public boolean setArchitecture(String architecture) {
-        Optional<MachineRegistryEntry> definition = registry.getEntry(architecture);
-        if (definition.isEmpty() || !definition.get().isSupported()) {
+        if (!builder.isSupportedArchitecture(architecture)) {
             return false;
         }
 

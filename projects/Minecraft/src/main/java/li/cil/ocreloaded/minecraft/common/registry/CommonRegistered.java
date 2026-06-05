@@ -17,7 +17,6 @@ import li.cil.ocreloaded.minecraft.common.item.EepromItem;
 import li.cil.ocreloaded.minecraft.common.item.FloppyDiskItem;
 import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
 import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
-import li.cil.ocreloaded.minecraft.common.item.LuaEepromItem;
 import li.cil.ocreloaded.minecraft.common.item.ManualItem;
 import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
@@ -146,7 +145,7 @@ public class CommonRegistered {
     public static final RegistryObject<Item, Item> FLOPPY_OPENOS = registerItem("floppy_openos", () -> new FloppyDiskItem(DEFAULT_ITEM_PROPERTIES, "loot:openos"));
     public static final RegistryObject<Item, Item> FLOPPY_PLAN9K = registerItem("floppy_plan9k", () -> new FloppyDiskItem(DEFAULT_ITEM_PROPERTIES, "loot:plan9k"));
 
-    public static final RegistryObject<Item, Item> EEPROM_LUA = registerItem("eeprom_lua", () -> new LuaEepromItem(DEFAULT_ITEM_PROPERTIES));
+    public static final RegistryObject<Item, Item> EEPROM_LUA = registerItem("eeprom_lua", () -> new EepromItem(DEFAULT_ITEM_PROPERTIES, EepromItem.read("data/ocreloaded/lua/bios.lua")));
 
     // Menu types
     public static final RegistryObject<MenuType<?>, MenuType<CaseMenu>> CASE_MENU_TYPE = MENUS.register("case", () -> IPlatformRegistryHelper.INSTANCE.registerMenuType(CaseMenu::new));

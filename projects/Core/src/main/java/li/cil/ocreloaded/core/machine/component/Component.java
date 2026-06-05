@@ -50,15 +50,6 @@ public interface Component extends Persistable {
     default void onDisconnect(NetworkNode node) {}
 
     /**
-     * Load component data from a persistent data store.
-     * @param holder The persistence holder to store persistent data.
-     */
-    @Override
-    default void load(PersistenceHolder holder) {
-        getNetworkNode().load(holder);
-    };
-
-    /**
      * Store component data into a persistent data store.
      * @param holder The persistence holder to store persistent data.
      */

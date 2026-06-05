@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 public interface IPlatformRegistryHelper {
-
     IPlatformRegistryHelper INSTANCE = ServiceLoader.load(IPlatformRegistryHelper.class).findFirst().orElseThrow();
 
     CreativeModeTab.Builder constructTabBuilder();
@@ -31,5 +30,4 @@ public interface IPlatformRegistryHelper {
     interface TypedMenuConstructor<T extends AbstractContainerMenu> {
         T createMenu(int containerId, Inventory playerInventory, FriendlyByteBuf buf);
     }
-    
 }

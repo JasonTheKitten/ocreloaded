@@ -13,10 +13,11 @@ import li.cil.ocreloaded.core.graphics.TextModeBuffer;
 import li.cil.ocreloaded.core.network.NetworkMessage;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
+import li.cil.ocreloaded.core.network.NetworkNodes;
 import li.cil.ocreloaded.minecraft.common.SettingsConstants;
 import li.cil.ocreloaded.minecraft.common.block.ScreenBlock;
-import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
 import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkUtil;
+import li.cil.ocreloaded.core.network.LazyNetworkNode;
 import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
 import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper;
 import li.cil.ocreloaded.minecraft.common.network.packets.ScreenPacket;
@@ -40,9 +41,12 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScreenBlockEntity.class);
 
-    private final NetworkNode networkNode = new ComponentNetworkNode(
-        node -> new ScreenComponentBase(node, this::getScreenBuffer), Visibility.NETWORK
-    );
+    private final LazyNetworkNode networkNode = NetworkNodes.lazy(
+        id -> NetworkNodes.component(
+            id,
+            node -> new ScreenComponentBase(node, this::getScreenBuffer),
+            Visibility.NETWORK
+        ));
 
     private boolean initialized = false;
     private TextModeBuffer screenBuffer;
@@ -53,13 +57,13 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
 
     @Override
     public NetworkNode networkNode() {
-        return networkNode;
+        return networkNode.get();
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        networkNode.remove();
+        networkNode().remove();
     }
 
     @Override
@@ -82,7 +86,8 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
     @SuppressWarnings("null") // Linting being not smart
     public void loadAdditional(@Nonnull CompoundTag compoundTag, @Nonnull HolderLookup.Provider registries) {
         super.loadAdditional(compoundTag, registries);
-        networkNode.load(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
+        networkNode.loadId(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
+        networkNode.get();
 
         if (this.level == null || level.isClientSide) return;
         ComponentNetworkUtil.connectToNeighbors(level, worldPosition);
@@ -91,7 +96,7 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
     @Override
     public void saveAdditional(@Nonnull CompoundTag compoundTag, @Nonnull HolderLookup.Provider registries) {
         super.saveAdditional(compoundTag, registries);
-        networkNode.save(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
+        networkNode.saveId(new NBTPersistenceHolder(compoundTag, SettingsConstants.namespace));
     }
 
     @Override
@@ -115,15 +120,15 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
     }
 
     public void onKeyPressed(int charCode, int keyCode, Player player) {
-        networkNode.sendToNeighbors(new NetworkMessage("keyboard.keyDown", player.getName().getString(), charCode, keyCode));
+        networkNode().sendToNeighbors(new NetworkMessage("keyboard.keyDown", player.getName().getString(), charCode, keyCode));
     }
 
     public void onKeyReleased(int keyCode, Player player) {
-        networkNode.sendToNeighbors(new NetworkMessage("keyboard.keyUp", player.getName().getString(), keyCode));
+        networkNode().sendToNeighbors(new NetworkMessage("keyboard.keyUp", player.getName().getString(), keyCode));
     }
 
     public void onClipboardPaste(String text, Player player) {
-        networkNode.sendToNeighbors(new NetworkMessage("keyboard.clipboard", player.getName().getString(), text));
+        networkNode().sendToNeighbors(new NetworkMessage("keyboard.clipboard", player.getName().getString(), text));
     }
 
     public void onMouseInput(int type, int button, double x, double y, Player player) {
@@ -141,11 +146,11 @@ public class ScreenBlockEntity extends BlockEntity implements TickableEntity, Co
         }
 
         // TODO: Include player name
-        boolean isPrecise = networkNode.component().map(c -> ((ScreenComponentBase) c).isPrecise()).orElse(false);
+        boolean isPrecise = networkNode().component().map(c -> ((ScreenComponentBase) c).isPrecise()).orElse(false);
         if (isPrecise) {
-            networkNode.sendToNeighbors(new NetworkMessage("computer.checked_signal", player, name, x, y, button));
+            networkNode().sendToNeighbors(new NetworkMessage("computer.checked_signal", player, name, x, y, button));
         } else {
-            networkNode.sendToNeighbors(new NetworkMessage("computer.checked_signal", player, name, (int) (x + 1), (int) (y + 1), button));
+            networkNode().sendToNeighbors(new NetworkMessage("computer.checked_signal", player, name, (int) (x + 1), (int) (y + 1), button));
         }
     }
 

@@ -39,6 +39,7 @@ val moddedLuaJ by tasks.registering(Jar::class) {
 
 dependencies {
     compileOnly(libs.slf4j)
+    compileOnly(libs.jsr305)
 
     shadeApi(libs.typesafeConfig)
     shadeApi(files(moddedJNLua))
