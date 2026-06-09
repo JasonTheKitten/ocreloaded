@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ccc",
+    "ibi"
+  ],
+  "key": {
+    "i": { "item": "ocreloaded:chip2" },
+    "b": { "item": "ocreloaded:printed_circuit_board" },
+    "c": { "item": "ocreloaded:chip3" }
+  },
+  "result": {
+    "id": "ocreloaded:memory3_5"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "cdi",
+    "bdp",
+    "cdi"
+  ],
+  "key": {
+    "i": { "item": "minecraft:diamond" },
+    "p": { "item": "minecraft:piston" },
+    "c": { "item": "ocreloaded:chip3" },
+    "b": { "item": "ocreloaded:printed_circuit_board" },
+    "d": { "item": "ocreloaded:disk" }
+  },
+  "result": {
+    "id": "ocreloaded:harddiskdrive3"
+  }
+}

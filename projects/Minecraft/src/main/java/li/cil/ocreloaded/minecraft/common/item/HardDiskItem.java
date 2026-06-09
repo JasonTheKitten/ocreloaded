@@ -1,11 +1,13 @@
 package li.cil.ocreloaded.minecraft.common.item;
 
+import java.util.UUID;
+
 import li.cil.ocreloaded.core.component.FileSystemComponent;
 import li.cil.ocreloaded.core.misc.Label;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
-import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
-import li.cil.ocreloaded.minecraft.server.machine.fssup.FileSystemSupplierRegistry;
+import li.cil.ocreloaded.core.network.NetworkNodes;
+import li.cil.ocreloaded.core.machine.filesystem.FileSystemSupplierRegistry;
 import net.minecraft.world.item.Item;
 
 public class HardDiskItem extends Item implements SlotItem, TieredItem, ComponentItem {
@@ -25,12 +27,10 @@ public class HardDiskItem extends Item implements SlotItem, TieredItem, Componen
     }
 
     @Override
-    public NetworkNode newNetworkNode() {
-        NetworkNode node = new ComponentNetworkNode(node_ -> new FileSystemComponent(
+    public NetworkNode newNetworkNode(UUID id) {
+        return NetworkNodes.component(id, node_ -> new FileSystemComponent(
             node_,
             () -> fileSystemFactory.createFileSystem("localfs", node_.id()),
             Label.create()), Visibility.NEIGHBORS);
-
-        return node;
     }
 }

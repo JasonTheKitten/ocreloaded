@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.LoggerFactory;
 
+import li.cil.ocreloaded.core.machine.component.Component;
 import li.cil.ocreloaded.core.network.Network;
 import li.cil.ocreloaded.core.network.NetworkMessage;
 import li.cil.ocreloaded.core.network.NetworkNode;
@@ -25,6 +26,9 @@ public class NetworkImp implements Network {
 
     public NetworkImp(NetworkNode firstNode) {
         addNewNode(firstNode);
+    }
+
+    private NetworkImp() {
     }
 
     @Override
@@ -92,13 +96,6 @@ public class NetworkImp implements Network {
     }
 
     @Override
-    public void rename(UUID oldName, UUID newName) {
-        if (!connections.containsKey(oldName)) throw new IllegalArgumentException("Node is not in this network.");
-
-        connections.put(newName, connections.remove(oldName));
-    }
-
-    @Override
     public boolean reachable(NetworkNode source, NetworkNode target) {
         if (source == target) return false;
         if (source.network() != this) return false;
@@ -137,11 +134,10 @@ public class NetworkImp implements Network {
     }
 
     private void addNode(NetworkNode reference, NetworkNode node) {
-        if (!(node.network() instanceof NetworkImp)) {
+        if (!(node.network() instanceof NetworkImp otherNetwork)) {
             throw new UnsupportedOperationException("Can currently only merge similar network types.");
         }
 
-        NetworkImp otherNetwork = (NetworkImp) node.network();
         Set<NetworkNode> currentNetworkNodes = allNodes();
         Set<NetworkNode> otherNetworkNodes = otherNetwork.allNodes();
 
@@ -191,16 +187,21 @@ public class NetworkImp implements Network {
     }
 
     private void createSubgraphNetworks(List<Set<NetworkNode>> subGraphs) {
+        Map<UUID, Set<NetworkNode>> oldConnections = copyConnections();
         List<Set<NetworkNode>> visibleNodes = subGraphs.stream()
             .map(group -> group.stream()
                 .filter(n -> n.visibility() == Visibility.NETWORK)
                 .collect(Collectors.toSet()))
             .toList();
 
-        for (Set<NetworkNode> subgraph : subGraphs) {
-            NetworkImp newNetwork = new NetworkImp(subgraph.iterator().next());
-            subgraph.forEach(newNetwork::addNewNode);
-        };
+        connections.clear();
+        addSubgraph(subGraphs.getFirst(), oldConnections);
+        for (int i = 1; i < subGraphs.size(); i++) {
+            Set<NetworkNode> subgraph = subGraphs.get(i);
+            NetworkImp newNetwork = new NetworkImp();
+            newNetwork.addSubgraph(subgraph, oldConnections);
+            subgraph.forEach(node -> node.onNetworkChange(this, newNetwork));
+        }
 
         for (int i = 0; i < subGraphs.size(); i++) {
             Set<NetworkNode> nodesA = subGraphs.get(i);
@@ -211,6 +212,21 @@ public class NetworkImp implements Network {
                 visibleA.forEach(node -> nodesB.forEach(n -> n.onDisconnect(node)));
                 visibleB.forEach(node -> nodesA.forEach(n -> n.onDisconnect(node)));
             }
+        }
+    }
+
+    private Map<UUID, Set<NetworkNode>> copyConnections() {
+        return connections.entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, entry -> new HashSet<>(entry.getValue())));
+    }
+
+    private void addSubgraph(Set<NetworkNode> subgraph, Map<UUID, Set<NetworkNode>> oldConnections) {
+        for (NetworkNode node : subgraph) {
+            Set<NetworkNode> nodeConnections = oldConnections.getOrDefault(node.id(), Set.of()).stream()
+                .filter(subgraph::contains)
+                .collect(Collectors.toCollection(HashSet::new));
+            nodeConnections.add(node);
+            connections.put(node.id(), nodeConnections);
         }
     }
 
@@ -227,7 +243,7 @@ public class NetworkImp implements Network {
         for (Map.Entry<UUID, Set<NetworkNode>> entry : connections.entrySet()) {
             builder.append(entry.getKey()).append(" -> ");
             for (NetworkNode node : entry.getValue()) {
-                builder.append(node.id()).append(":").append(node.component().map(c -> c.getType()).orElse("null")).append(", ");
+                builder.append(node.id()).append(":").append(node.component().map(Component::getType).orElse("null")).append(", ");
             }
             builder.append("\n");
         }

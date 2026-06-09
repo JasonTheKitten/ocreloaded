@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ili",
+    "pdp",
+    "ipi"
+  ],
+  "key": {
+    "i": { "item": "minecraft:iron_nugget" },
+    "p": { "item": "minecraft:paper" },
+    "l": { "item": "minecraft:lever" },
+    "d": { "item": "ocreloaded:disk" }
+  },
+  "result": {
+    "id": "ocreloaded:floppy"
+  }
+}

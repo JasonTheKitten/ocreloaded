@@ -25,8 +25,6 @@ public interface NetworkNode {
 
     void save(PersistenceHolder persistenceHolder);
 
-    void load(PersistenceHolder persistenceHolder);
-
     default void connect(NetworkNode otherNode) {
         network().connect(this, otherNode);
     }

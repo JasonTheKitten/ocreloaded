@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iri",
+    "ecg",
+    "ibi"
+  ],
+  "key": {
+    "i": { "item": "minecraft:gold_ingot" },
+    "g": { "item": "minecraft:glass" },
+    "r": { "item": "minecraft:red_dye" },
+    "e": { "item": "minecraft:green_dye" },
+    "b": { "item": "minecraft:blue_dye" },
+    "c": { "item": "ocreloaded:chip2" }
+  },
+  "result": {
+    "id": "ocreloaded:screen2"
+  }
+}

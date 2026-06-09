@@ -1,13 +1,14 @@
 package li.cil.ocreloaded.minecraft.common.item;
 
+import java.util.UUID;
+
 import li.cil.ocreloaded.core.component.DataCardComponent;
 import li.cil.ocreloaded.core.network.NetworkNode;
 import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
-import li.cil.ocreloaded.minecraft.common.component.ComponentNetworkNode;
+import li.cil.ocreloaded.core.network.NetworkNodes;
 import net.minecraft.world.item.Item;
 
 public class DataCardItem extends Item implements TieredItem, ComponentItem {
-
     private final int tier;
 
     public DataCardItem(Properties properties, int tier) {
@@ -21,8 +22,7 @@ public class DataCardItem extends Item implements TieredItem, ComponentItem {
     }
 
     @Override
-    public NetworkNode newNetworkNode() {
-        return new ComponentNetworkNode(DataCardComponent::new, Visibility.NEIGHBORS);
+    public NetworkNode newNetworkNode(UUID id) {
+        return NetworkNodes.component(id, DataCardComponent::new, Visibility.NEIGHBORS);
     }
-    
 }

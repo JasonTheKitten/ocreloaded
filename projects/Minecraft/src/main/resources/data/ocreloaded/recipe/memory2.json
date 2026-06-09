@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "cic",
+    " b "
+  ],
+  "key": {
+    "i": { "item": "minecraft:iron_ingot" },
+    "b": { "item": "ocreloaded:printed_circuit_board" },
+    "c": { "item": "ocreloaded:chip2" }
+  },
+  "result": {
+    "id": "ocreloaded:memory2"
+  }
+}

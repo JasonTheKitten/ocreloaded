@@ -18,7 +18,6 @@ import li.cil.ocreloaded.minecraft.common.item.EepromItem;
 import li.cil.ocreloaded.minecraft.common.item.FloppyDiskItem;
 import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
 import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
-import li.cil.ocreloaded.minecraft.common.item.LuaEepromItem;
 import li.cil.ocreloaded.minecraft.common.item.ManualItem;
 import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
 import li.cil.ocreloaded.minecraft.common.menu.CaseMenu;
@@ -104,9 +103,9 @@ public class CommonRegistered {
 
     public static final RegistryObject<Item, Item> DISK = registerItem("disk", () -> new Item(DEFAULT_ITEM_PROPERTIES));
 
-    public static final RegistryObject<Item, Item> CHIP_TIER_1 = registerItem("chip1", () -> new CPUItem(DEFAULT_ITEM_PROPERTIES, 1));
-    public static final RegistryObject<Item, Item> CHIP_TIER_2 = registerItem("chip2", () -> new CPUItem(DEFAULT_ITEM_PROPERTIES, 2));
-    public static final RegistryObject<Item, Item> CHIP_TIER_3 = registerItem("chip3", () -> new CPUItem(DEFAULT_ITEM_PROPERTIES, 3));
+    public static final RegistryObject<Item, Item> CHIP_TIER_1 = registerItem("chip1", () -> new Item(DEFAULT_ITEM_PROPERTIES));
+    public static final RegistryObject<Item, Item> CHIP_TIER_2 = registerItem("chip2", () -> new Item(DEFAULT_ITEM_PROPERTIES));
+    public static final RegistryObject<Item, Item> CHIP_TIER_3 = registerItem("chip3", () -> new Item(DEFAULT_ITEM_PROPERTIES));
 
     public static final RegistryObject<Item, Item> NUMPAD = registerItem("numpad", () -> new Item(DEFAULT_ITEM_PROPERTIES));
 
@@ -147,7 +146,7 @@ public class CommonRegistered {
     public static final RegistryObject<Item, Item> FLOPPY_OPENOS = registerItem("floppy_openos", () -> new FloppyDiskItem(DEFAULT_ITEM_PROPERTIES, "loot:openos"));
     public static final RegistryObject<Item, Item> FLOPPY_PLAN9K = registerItem("floppy_plan9k", () -> new FloppyDiskItem(DEFAULT_ITEM_PROPERTIES, "loot:plan9k"));
 
-    public static final RegistryObject<Item, Item> EEPROM_LUA = registerItem("eeprom_lua", () -> new LuaEepromItem(DEFAULT_ITEM_PROPERTIES));
+    public static final RegistryObject<Item, Item> EEPROM_LUA = registerItem("eeprom_lua", () -> new EepromItem(DEFAULT_ITEM_PROPERTIES, EepromItem.read("data/ocreloaded/lua/bios.lua")));
 
     // Menu types
     public static final RegistryObject<MenuType<?>, MenuType<CaseMenu>> CASE_MENU_TYPE = MENUS.register("case", () -> IPlatformRegistryHelper.INSTANCE.registerMenuType(CaseMenu::new));

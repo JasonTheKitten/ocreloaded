@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "cam",
+    " r "
+  ],
+  "key": {
+    "m": { "item": "ocreloaded:memory1" },
+    "a": { "item": "ocreloaded:alu" },
+    "c": { "item": "ocreloaded:chip1" },
+    "r": { "item": "ocreloaded:card" }
+  },
+  "result": {
+    "id": "ocreloaded:graphicscard1"
+  }
+}

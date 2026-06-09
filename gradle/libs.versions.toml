@@ -9,7 +9,7 @@ neoForge = "21.1.209"
 neoForm = "1.21.1-20240808.144430"
 
 # Fabric
-fabricLoader = "0.16.0"
+fabricLoader = "0.16.3"
 fabricApi = "0.116.5+1.21.1"
 loom = "1.11-SNAPSHOT"
 
@@ -26,12 +26,14 @@ slf4j = "2.0.1"
 
 # Misc libraries
 typesafeConfig = "1.4.3"
+jsr305 = "3.0.2"
 
 [libraries]
 modDevGradle = { module = "net.neoforged.moddev:net.neoforged.moddev.gradle.plugin", version.ref = "modDevGradle" }
 shadow = { module = "com.gradleup.shadow:com.gradleup.shadow.gradle.plugin", version.ref = "shadow" }
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 typesafeConfig = { module = "com.typesafe:config", version.ref = "typesafeConfig" }
+jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
 
 [plugins]
 loom = { id = "fabric-loom", version.ref = "loom" }

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iri",
+    "rcg",
+    "iri"
+  ],
+  "key": {
+    "i": { "item": "minecraft:iron_ingot" },
+    "g": { "item": "minecraft:glass" },
+    "r": { "item": "minecraft:redstone" },
+    "c": { "item": "ocreloaded:chip1" }
+  },
+  "result": {
+    "id": "ocreloaded:screen1"
+  }
+}
