@@ -10,7 +10,8 @@ import li.cil.ocreloaded.core.network.NetworkNodes;
 import li.cil.ocreloaded.core.machine.filesystem.FileSystemSupplierRegistry;
 import net.minecraft.world.item.Item;
 
-public class HardDiskItem extends Item implements TieredItem, ComponentItem {
+public class HardDiskItem extends Item implements SlotItem, TieredItem, ComponentItem {
+
     private static FileSystemSupplierRegistry fileSystemFactory = FileSystemSupplierRegistry.getDefaultInstance();
 
     private final int tier;

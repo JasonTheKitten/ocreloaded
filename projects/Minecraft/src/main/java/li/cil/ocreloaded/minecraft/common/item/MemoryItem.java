@@ -2,7 +2,7 @@ package li.cil.ocreloaded.minecraft.common.item;
 
 import net.minecraft.world.item.Item;
 
-public class MemoryItem extends Item implements TieredItem {
+public class MemoryItem extends Item implements SlotItem, TieredItem {
 
     private final int tier;
 

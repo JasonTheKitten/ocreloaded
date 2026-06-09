@@ -10,7 +10,7 @@ import li.cil.ocreloaded.core.network.NetworkNodes;
 import li.cil.ocreloaded.core.machine.filesystem.FileSystemSupplierRegistry;
 import net.minecraft.world.item.Item;
 
-public class FloppyDiskItem extends Item implements ComponentItem {
+public class FloppyDiskItem extends Item implements SlotItem, ComponentItem {
 
     private static FileSystemSupplierRegistry fileSystemFactory = FileSystemSupplierRegistry.getDefaultInstance();
 

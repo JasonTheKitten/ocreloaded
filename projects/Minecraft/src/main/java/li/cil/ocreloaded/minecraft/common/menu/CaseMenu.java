@@ -7,12 +7,13 @@ import javax.annotation.Nonnull;
 import li.cil.ocreloaded.minecraft.common.assets.SharedTextures;
 import li.cil.ocreloaded.minecraft.common.container.BasicContainer;
 import li.cil.ocreloaded.minecraft.common.entity.CaseBlockEntity;
-import li.cil.ocreloaded.minecraft.common.item.CPUItem;
+import li.cil.ocreloaded.minecraft.common.item.CardItem;
 import li.cil.ocreloaded.minecraft.common.item.EepromItem;
 import li.cil.ocreloaded.minecraft.common.item.FloppyDiskItem;
-import li.cil.ocreloaded.minecraft.common.item.GraphicsCardItem;
 import li.cil.ocreloaded.minecraft.common.item.HardDiskItem;
 import li.cil.ocreloaded.minecraft.common.item.MemoryItem;
+import li.cil.ocreloaded.minecraft.common.item.ProcessorProviderItem;
+import li.cil.ocreloaded.minecraft.common.item.SlotItem;
 import li.cil.ocreloaded.minecraft.common.network.IPlatformNetworkHelper;
 import li.cil.ocreloaded.minecraft.common.network.packets.PowerPacket;
 import li.cil.ocreloaded.minecraft.common.registry.CommonRegistered;
@@ -25,34 +26,33 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 public class CaseMenu extends AbstractContainerMenu {
 
     private static final List<List<ComponentSlotEntry>> COMPONENT_SLOTS = List.of(
         List.of(
-            new ComponentSlotEntry(0, 0, GraphicsCardItem.class, SharedTextures.CARD_ICON, 1),
-            new ComponentSlotEntry(0, 1, GraphicsCardItem.class, SharedTextures.CARD_ICON, 1),
-            new ComponentSlotEntry(1, 0, CPUItem.class, SharedTextures.CPU_ICON, 1),
+            new ComponentSlotEntry(0, 0, CardItem.class, SharedTextures.CARD_ICON, 1),
+            new ComponentSlotEntry(0, 1, CardItem.class, SharedTextures.CARD_ICON, 1),
+            new ComponentSlotEntry(1, 0, ProcessorProviderItem.class, SharedTextures.CPU_ICON, 1),
             new ComponentSlotEntry(1, 1, MemoryItem.class, SharedTextures.MEMORY_ICON, 1),
             new ComponentSlotEntry(1, 2, MemoryItem.class, SharedTextures.MEMORY_ICON, 1),
             new ComponentSlotEntry(2, 0, HardDiskItem.class, SharedTextures.HDD_ICON, 1)
         ),
         List.of(
-            new ComponentSlotEntry(0, 0, GraphicsCardItem.class, SharedTextures.CARD_ICON, 2),
-            new ComponentSlotEntry(0, 1, GraphicsCardItem.class, SharedTextures.CARD_ICON, 1),
-            new ComponentSlotEntry(1, 0, CPUItem.class, SharedTextures.CPU_ICON, 2),
+            new ComponentSlotEntry(0, 0, CardItem.class, SharedTextures.CARD_ICON, 2),
+            new ComponentSlotEntry(0, 1, CardItem.class, SharedTextures.CARD_ICON, 1),
+            new ComponentSlotEntry(1, 0, ProcessorProviderItem.class, SharedTextures.CPU_ICON, 2),
             new ComponentSlotEntry(1, 1, MemoryItem.class, SharedTextures.MEMORY_ICON, 2),
             new ComponentSlotEntry(1, 2, MemoryItem.class, SharedTextures.MEMORY_ICON, 2),
             new ComponentSlotEntry(2, 0, HardDiskItem.class, SharedTextures.HDD_ICON, 2),
             new ComponentSlotEntry(2, 1, HardDiskItem.class, SharedTextures.HDD_ICON, 1)
         ),
         List.of(
-            new ComponentSlotEntry(0, 0, GraphicsCardItem.class, SharedTextures.CARD_ICON, 3),
-            new ComponentSlotEntry(0, 1, GraphicsCardItem.class, SharedTextures.CARD_ICON, 2),
-            new ComponentSlotEntry(0, 2, GraphicsCardItem.class, SharedTextures.CARD_ICON, 2),
-            new ComponentSlotEntry(1, 0, CPUItem.class, SharedTextures.CPU_ICON, 3),
+            new ComponentSlotEntry(0, 0, CardItem.class, SharedTextures.CARD_ICON, 3),
+            new ComponentSlotEntry(0, 1, CardItem.class, SharedTextures.CARD_ICON, 2),
+            new ComponentSlotEntry(0, 2, CardItem.class, SharedTextures.CARD_ICON, 2),
+            new ComponentSlotEntry(1, 0, ProcessorProviderItem.class, SharedTextures.CPU_ICON, 3),
             new ComponentSlotEntry(1, 1, MemoryItem.class, SharedTextures.MEMORY_ICON, 3),
             new ComponentSlotEntry(1, 2, MemoryItem.class, SharedTextures.MEMORY_ICON, 3),
             new ComponentSlotEntry(2, 0, HardDiskItem.class, SharedTextures.HDD_ICON, 3),
@@ -60,10 +60,10 @@ public class CaseMenu extends AbstractContainerMenu {
             new ComponentSlotEntry(2, 2, FloppyDiskItem.class, SharedTextures.FLOPPY_ICON, 1)
         ),
         List.of(
-            new ComponentSlotEntry(0, 0, GraphicsCardItem.class, SharedTextures.CARD_ICON, 3),
-            new ComponentSlotEntry(0, 1, GraphicsCardItem.class, SharedTextures.CARD_ICON, 3),
-            new ComponentSlotEntry(0, 2, GraphicsCardItem.class, SharedTextures.CARD_ICON, 3),
-            new ComponentSlotEntry(1, 0, CPUItem.class, SharedTextures.CPU_ICON, 3),
+            new ComponentSlotEntry(0, 0, CardItem.class, SharedTextures.CARD_ICON, 3),
+            new ComponentSlotEntry(0, 1, CardItem.class, SharedTextures.CARD_ICON, 3),
+            new ComponentSlotEntry(0, 2, CardItem.class, SharedTextures.CARD_ICON, 3),
+            new ComponentSlotEntry(1, 0, ProcessorProviderItem.class, SharedTextures.CPU_ICON, 3),
             new ComponentSlotEntry(1, 1, MemoryItem.class, SharedTextures.MEMORY_ICON, 3),
             new ComponentSlotEntry(1, 2, MemoryItem.class, SharedTextures.MEMORY_ICON, 3),
             new ComponentSlotEntry(2, 0, HardDiskItem.class, SharedTextures.HDD_ICON, 3),
@@ -157,6 +157,6 @@ public class CaseMenu extends AbstractContainerMenu {
             entry.teir()));
     }
 
-    private record ComponentSlotEntry(int x, int y, Class<? extends Item> itemClass, ResourceLocation texture, int teir) { }
+    private record ComponentSlotEntry(int x, int y, Class<? extends SlotItem> itemClass, ResourceLocation texture, int teir) { }
     
 }

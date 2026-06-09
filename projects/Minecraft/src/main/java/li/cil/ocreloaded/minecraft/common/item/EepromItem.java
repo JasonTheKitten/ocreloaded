@@ -13,7 +13,7 @@ import li.cil.ocreloaded.core.network.NetworkNode.Visibility;
 import li.cil.ocreloaded.core.network.NetworkNodes;
 import net.minecraft.world.item.Item;
 
-public class EepromItem extends Item implements ComponentItem {
+public class EepromItem extends Item implements SlotItem, ComponentItem {
     private static final Logger LOGGER = LoggerFactory.getLogger(EepromItem.class);
 
     private final String defaultCode;
