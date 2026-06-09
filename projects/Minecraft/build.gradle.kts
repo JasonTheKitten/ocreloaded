@@ -29,10 +29,6 @@ val generateBlockstatesTask = tasks.register<JavaExec>("generateBlockstates") {
 	outputs.dir(project.layout.buildDirectory.dir("generated/resources"))
 }
 
-tasks.named("processResources") {
-	dependsOn(generateBlockstatesTask)
-}
-
 sourceSets.main.get().resources {
 	srcDir(generateBlockstatesTask)
 }
